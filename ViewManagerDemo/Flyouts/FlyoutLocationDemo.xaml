@@ -1,0 +1,20 @@
+﻿<uview:Flyout
+    x:Class="ViewManagerDemo.Flyouts.FlyoutLocationDemo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ViewManagerDemo.Flyouts"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uview="clr-namespace:Unicorn.ViewManager;assembly=Unicorn.ViewManager"
+    x:Name="SELF"
+    d:DesignHeight="450"
+    d:DesignWidth="300"
+    Background="White"
+    mc:Ignorable="d">
+    <Button
+        Width="100"
+        Height="34"
+        Command="uview:ViewCommands.ClosePopupItem"
+        CommandParameter="{Binding ElementName=SELF}"
+        Content="关闭" />
+</uview:Flyout>

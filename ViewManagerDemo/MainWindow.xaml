@@ -1,0 +1,23 @@
+﻿<Window
+    x:Class="ViewManagerDemo.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ViewManagerDemo"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="MainWindow"
+    Width="1280"
+    Height="740"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <WindowChrome.WindowChrome>
+        <WindowChrome
+            CaptionHeight="60"
+            CornerRadius="0"
+            GlassFrameThickness="1"
+            NonClientFrameEdges="None"
+            ResizeBorderThickness="5"
+            UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <Grid />
+</Window>

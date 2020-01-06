@@ -1,0 +1,24 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Unicorn.ViewManager">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/MessageDialogBox.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/ProcessDialogBox.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/PopupStack.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/PopupStackControl.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/PopupItemContainer.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/DialogContainer.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/Dialog.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/FlyoutContainer.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/Flyout.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/RichViewItem.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/RichViewControl.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    
+
+    
+
+    
+</ResourceDictionary>

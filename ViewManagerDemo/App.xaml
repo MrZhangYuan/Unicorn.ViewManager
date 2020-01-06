@@ -1,0 +1,207 @@
+﻿<Application
+    x:Class="ViewManagerDemo.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ViewManagerDemo"
+    xmlns:usystem="clr-namespace:System.Windows;assembly=Unicorn.ViewManager"
+    ShutdownMode="OnMainWindowClose"
+    StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <Color x:Key="MainBackgroundColor">#FF338ECD</Color>
+        <Color x:Key="MainBackgroundLightColor">#FF338CC7</Color>
+        <Color x:Key="MainBackgroundDarkColor">#FF226FB7</Color>
+        <Color x:Key="MarkBackgroundColor">#07000000</Color>
+
+        <SolidColorBrush x:Key="MainBackgroundBrush" Color="{StaticResource MainBackgroundColor}" />
+        <SolidColorBrush x:Key="MainBackgroundLightBrush" Color="{StaticResource MainBackgroundLightColor}" />
+        <SolidColorBrush x:Key="MainBackgroundDarkBrush" Color="{StaticResource MainBackgroundDarkColor}" />
+        <SolidColorBrush x:Key="MarkBackgroundBrush" Color="{StaticResource MarkBackgroundColor}" />
+
+        <Style x:Key="DefaultButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <Rectangle
+                                    x:Name="mark"
+                                    Fill="#10FFFFFF"
+                                    Opacity="0" />
+                                <ContentPresenter
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    ContentSource="Content" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="mark" Property="Opacity" Value="1" />
+                                <Setter TargetName="mark" Property="Fill" Value="#20000000" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="mark" Property="Opacity" Value="1" />
+                                <Setter TargetName="mark" Property="Fill" Value="#30000000" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="mark" Property="Opacity" Value="1" />
+                                <Setter TargetName="mark" Property="Fill" Value="#60FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style
+            x:Key="DarkDefaultButtonStyle"
+            BasedOn="{StaticResource DefaultButtonStyle}"
+            TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource MainBackgroundDarkBrush}" />
+        </Style>
+        <Style
+            x:Key="LightDefaultButtonStyle"
+            BasedOn="{StaticResource DefaultButtonStyle}"
+            TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource MainBackgroundLightBrush}" />
+        </Style>
+
+        <BitmapImage x:Key="Box_Question" UriSource="/Unicorn.ViewManager;component/Resource/Images/box_question.png" />
+        <BitmapImage x:Key="Box_Information" UriSource="/Unicorn.ViewManager;component/Resource/Images/box_info.png" />
+        <BitmapImage x:Key="Box_Warning" UriSource="/Unicorn.ViewManager;component/Resource/Images/box_warning.png" />
+        <BitmapImage x:Key="Box_Error" UriSource="/Unicorn.ViewManager;component/Resource/Images/box_error.png" />
+
+
+        <!--如果有需要，可以重写MessageDialogBox的样式，就像这样（但要保证模板必须的组件）：-->
+        <Style TargetType="{x:Type usystem:MessageDialogBox}">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="MinHeight" Value="260" />
+            <Setter Property="MinWidth" Value="450" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type usystem:MessageDialogBox}">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="42" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="50" />
+                                </Grid.RowDefinitions>
+                                <Grid Background="{StaticResource MainBackgroundDarkBrush}">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontSize="15"
+                                        Foreground="White"
+                                        Text="{TemplateBinding Caption}" />
+                                    <Button
+                                        x:Name="PART_CLOSEBUTTON"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="0,0,5,0"
+                                        HorizontalAlignment="Right"
+                                        Background="Transparent"
+                                        Content="×"
+                                        FontSize="18"
+                                        Style="{StaticResource LightDefaultButtonStyle}"
+                                        WindowChrome.IsHitTestVisibleInChrome="True" />
+                                </Grid>
+
+
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image
+                                        x:Name="_boxImage"
+                                        Width="60"
+                                        Height="60"
+                                        Margin="30,30,0,30"
+                                        SnapsToDevicePixels="True"
+                                        Stretch="Uniform"
+                                        UseLayoutRounding="True" />
+
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Margin="30"
+                                        VerticalAlignment="Center"
+                                        FontSize="15"
+                                        Text="{TemplateBinding MessageText}"
+                                        TextWrapping="Wrap" />
+                                </Grid>
+
+
+                                <Grid Grid.Row="2" Background="{StaticResource MarkBackgroundBrush}">
+                                    <StackPanel
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <StackPanel.Resources>
+                                            <Style BasedOn="{StaticResource DarkDefaultButtonStyle}" TargetType="Button">
+                                                <Setter Property="Height" Value="28" />
+                                                <Setter Property="Width" Value="80" />
+                                                <Setter Property="Margin" Value="20,0" />
+                                            </Style>
+                                        </StackPanel.Resources>
+                                        <Button x:Name="PART_OKBUTTON" Content="确定" />
+                                        <Button x:Name="PART_YESBUTTON" Content="是" />
+                                        <Button x:Name="PART_NOBUTTON" Content="否" />
+                                        <Button x:Name="PART_CANCELBUTTON" Content="取消" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="MessageBoxImage" Value="None">
+                                <Setter TargetName="_boxImage" Property="Source" Value="{x:Null}" />
+                                <Setter TargetName="_boxImage" Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+
+                            <Trigger Property="MessageBoxImage" Value="Error">
+                                <Setter TargetName="_boxImage" Property="Source" Value="{StaticResource Box_Error}" />
+                            </Trigger>
+                            <Trigger Property="MessageBoxImage" Value="Stop">
+                                <Setter TargetName="_boxImage" Property="Source" Value="{StaticResource Box_Error}" />
+                            </Trigger>
+                            <Trigger Property="MessageBoxImage" Value="Hand">
+                                <Setter TargetName="_boxImage" Property="Source" Value="{StaticResource Box_Error}" />
+                            </Trigger>
+
+                            <Trigger Property="MessageBoxImage" Value="Question">
+                                <Setter TargetName="_boxImage" Property="Source" Value="{StaticResource Box_Question}" />
+                            </Trigger>
+
+                            <Trigger Property="MessageBoxImage" Value="Warning">
+                                <Setter TargetName="_boxImage" Property="Source" Value="{StaticResource Box_Warning}" />
+                            </Trigger>
+                            <Trigger Property="MessageBoxImage" Value="Exclamation">
+                                <Setter TargetName="_boxImage" Property="Source" Value="{StaticResource Box_Warning}" />
+                            </Trigger>
+
+                            <Trigger Property="MessageBoxImage" Value="Information">
+                                <Setter TargetName="_boxImage" Property="Source" Value="{StaticResource Box_Information}" />
+                            </Trigger>
+                            <Trigger Property="MessageBoxImage" Value="Asterisk">
+                                <Setter TargetName="_boxImage" Property="Source" Value="{StaticResource Box_Information}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Application.Resources>
+</Application>

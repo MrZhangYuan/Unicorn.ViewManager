@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Configurations>Debug;Release;Dev;Test</Configurations>
+    <Platforms>AnyCPU;x86</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resource\Images\box_error.png" />
+    <None Remove="Resource\Images\box_info.png" />
+    <None Remove="Resource\Images\box_question.png" />
+    <None Remove="Resource\Images\box_warning.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Unicorn.Utilities\Unicorn.Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resource\Images\box_error.png" />
+    <Resource Include="Resource\Images\box_info.png" />
+    <Resource Include="Resource\Images\box_question.png" />
+    <Resource Include="Resource\Images\box_warning.png" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,46 @@
+﻿<Window
+    x:Class="ViewManagerDemo.CommandListWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ViewManagerDemo"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ucmd="clr-namespace:Unicorn.Utilities.Commands;assembly=Unicorn.Utilities"
+    Title="CommandListWindow"
+    Width="200"
+    Height="800"
+    ResizeMode="NoResize"
+    mc:Ignorable="d">
+    <WindowChrome.WindowChrome>
+        <WindowChrome
+            CaptionHeight="0"
+            CornerRadius="0"
+            GlassFrameThickness="1"
+            NonClientFrameEdges="None"
+            ResizeBorderThickness="5"
+            UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel.Resources>
+            <Style TargetType="Button">
+                <Setter Property="Height" Value="32" />
+                <Setter Property="MinWidth" Value="100" />
+                <Setter Property="Margin" Value="0,10" />
+            </Style>
+        </StackPanel.Resources>
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[SwitchMainView1]}" Content="切换到主页1" />
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[SwitchMainView2]}" Content="切换到主页2" />
+
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowFlyoutLeft]}" Content="左 -&gt; 显示Flyout" />
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowFlyoutTop]}" Content="上 -&gt; 显示Flyout" />
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowFlyoutRight]}" Content="右 -&gt; 显示Flyout" />
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowFlyoutBottom]}" Content="下 -&gt; 显示Flyout" />
+
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowDialogFullScreen]}" Content="全屏Dialog" />
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowDialogNormal]}" Content="正常Dialog" />
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowDialogAsModal]}" Content="模态Dialog" />
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowMessageDialogBox]}" Content="MessageDialogBox" />
+        
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[Exit]}" Content="退出" />
+    </StackPanel>
+</Window>
