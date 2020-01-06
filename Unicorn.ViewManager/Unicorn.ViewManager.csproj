@@ -5,6 +5,8 @@
     <UseWPF>true</UseWPF>
     <Configurations>Debug;Release;Dev;Test</Configurations>
     <Platforms>AnyCPU;x86</Platforms>
+    <Authors>Mr.Zhang</Authors>
+    <Product>Unicorn</Product>
   </PropertyGroup>
 
   <ItemGroup>

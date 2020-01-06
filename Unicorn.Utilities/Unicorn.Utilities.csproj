@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
+    <Authors>Mr.Zhang</Authors>
+    <Product>Unicorn</Product>
   </PropertyGroup>
 
   <ItemGroup>
