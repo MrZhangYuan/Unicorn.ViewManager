@@ -91,8 +91,7 @@ namespace Unicorn.ViewManager
         {
             this.RestoreTransform();
 
-            if (ViewManager.Instance.ViewPreferences.UsePopupViewAnimations
-                && this._isTemplateApplyed)
+            if (this._isTemplateApplyed)
             {
                 this._border.Opacity = 0;
                 this._border.BeginTransformAnimation(new AnimationParameter
@@ -145,8 +144,7 @@ namespace Unicorn.ViewManager
 
             this.RestoreTransform();
 
-            if (ViewManager.Instance.ViewPreferences.UsePopupViewAnimations
-                && this._isTemplateApplyed)
+            if (this._isTemplateApplyed)
             {
                 this._border.IsHitTestVisible = false;
 

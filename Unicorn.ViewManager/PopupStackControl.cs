@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Unicorn.ViewManager.Preferences;
 
 namespace Unicorn.ViewManager
 {
@@ -274,7 +275,10 @@ namespace Unicorn.ViewManager
                 PopupItemContainer container = this.PopupContainerFromItem(item);
                 this._popupStack.Items.Remove(container);
                 this._popupStack.Items.Add(container);
-                container.OnShowAnimation(null);
+                if (ViewPreferences.Instance.UsePopupViewAnimations)
+                {
+                    container.OnShowAnimation(null);
+                }
             }
         }
 
@@ -465,11 +469,18 @@ namespace Unicorn.ViewManager
             }
             else if (!ce.Cancel)
             {
-                var container = this.PopupContainerFromItem(item);
-                container.OnCloseAnimation(_p =>
+                if (ViewPreferences.Instance.UsePopupViewAnimations)
+                {        
+                    var container = this.PopupContainerFromItem(item);
+                    container.OnCloseAnimation(_p =>
+                    {
+                        CloseAndDisposeItem(item);
+                    });
+                }
+                else
                 {
                     CloseAndDisposeItem(item);
-                });
+                }
             }
             else
             {

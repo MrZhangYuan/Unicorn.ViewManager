@@ -98,8 +98,7 @@ namespace Unicorn.ViewManager
         {
             this.RestoreTransform();
 
-            if (ViewManager.Instance.ViewPreferences.UsePopupViewAnimations
-                && this._isTemplateApplyed)
+            if (this._isTemplateApplyed)
             {
                 this._grid.Opacity = 0;
                 this._grid.BeginTransformAnimation(new AnimationParameter
@@ -176,8 +175,7 @@ namespace Unicorn.ViewManager
 
             this.RestoreTransform();
 
-            if (ViewManager.Instance.ViewPreferences.UsePopupViewAnimations
-                && this._isTemplateApplyed)
+            if (this._isTemplateApplyed)
             {
                 this._grid.IsHitTestVisible = false;
 

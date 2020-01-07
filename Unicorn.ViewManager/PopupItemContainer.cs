@@ -2,6 +2,7 @@
 using System.Media;
 using System.Windows;
 using System.Windows.Controls;
+using Unicorn.ViewManager.Preferences;
 
 namespace Unicorn.ViewManager
 {
@@ -29,7 +30,10 @@ namespace Unicorn.ViewManager
         {
             base.OnApplyTemplate();
 
-            this.OnShowAnimation(null);
+            if (ViewPreferences.Instance.UsePopupViewAnimations)
+            {
+                this.OnShowAnimation(null);
+            }
         }
 
         protected internal virtual void OnShowAnimation(Action<PopupItem> callback)
