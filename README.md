@@ -1,2 +1,2 @@
 # Unicorn.ViewManager
-a powerful WPF view manager
+A powerful WPF view management library
