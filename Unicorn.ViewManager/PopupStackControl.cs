@@ -227,6 +227,26 @@ namespace Unicorn.ViewManager
             }
         }
 
+        private void ShowCore(PopupItem item)
+        {
+            item.ParentHostStack = this;
+            this.AddItem(item);
+            item._isShowing = false;
+
+            if (ViewPreferences.Instance.UsePopupViewAnimations)
+            {
+                PopupItemContainer itemContainer = this.PopupContainerFromItem(item);
+                itemContainer.RequestShowAnimation(_p =>
+                {
+                    item.InternalShown(out EventArgs e);
+                });
+            }
+            else
+            {
+                item.InternalShown(out EventArgs e);
+            }
+        }
+
         private void AddItem(PopupItem item)
         {
             PopupItemContainer container = item.GetContainer();
@@ -277,7 +297,7 @@ namespace Unicorn.ViewManager
                 this._popupStack.Items.Add(container);
                 if (ViewPreferences.Instance.UsePopupViewAnimations)
                 {
-                    container.OnShowAnimation(null);
+                    container.RequestShowAnimation(null);
                 }
             }
         }
@@ -337,10 +357,7 @@ namespace Unicorn.ViewManager
                     ComponentDispatcher.PushModal();
                     modalpushedflag = true;
                     item._dispatcherFrame = new DispatcherFrame();
-                    item.ParentHostStack = this;
-                    this.AddItem(item);
-                    item._isShowing = false;
-                    item.InternalShown(out EventArgs e);
+                    this.ShowCore(item);
                     Dispatcher.PushFrame(item._dispatcherFrame);
                     return item.ModalResult;
                 }
@@ -408,10 +425,7 @@ namespace Unicorn.ViewManager
 
                 if (!ce.Cancel)
                 {
-                    item.ParentHostStack = this;
-                    this.AddItem(item);
-                    item._isShowing = false;
-                    item.InternalShown(out EventArgs e);
+                    this.ShowCore(item);
                 }
             }
         }

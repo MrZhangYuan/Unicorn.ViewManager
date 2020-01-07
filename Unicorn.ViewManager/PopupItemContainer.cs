@@ -26,13 +26,28 @@ namespace Unicorn.ViewManager
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PopupItemContainer), new FrameworkPropertyMetadata(typeof(PopupItemContainer)));
         }
 
+        private bool _isTemplateApply = false;
+        private bool _isShowAnimationRequest = false;
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
-            if (ViewPreferences.Instance.UsePopupViewAnimations)
+            if (this._isShowAnimationRequest)
             {
+                this._isShowAnimationRequest = false;
                 this.OnShowAnimation(null);
+            }
+        }
+
+        internal void RequestShowAnimation(Action<PopupItem> callback)
+        {
+            if (this._isTemplateApply)
+            {
+                this.OnShowAnimation(callback);
+            }
+            else
+            {
+                this._isShowAnimationRequest = true;
             }
         }
 
