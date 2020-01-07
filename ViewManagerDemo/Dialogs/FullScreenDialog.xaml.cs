@@ -22,5 +22,23 @@ namespace ViewManagerDemo.Dialogs
         {
             InitializeComponent();
         }
+
+        private void StackPanel_Click(object sender, RoutedEventArgs e)
+        {
+            switch (((Button)e.OriginalSource).Name)
+            {
+                case "_showChildDialogBt":
+                    this.Show(new NormalDialog());
+                    break;
+
+                case "_showChildDialogAsModalBt":
+                    var modalresult = this.ShowModal(new NormalDialog());
+                    if (modalresult != null)
+                    {
+                        MessageDialogBox.Show(modalresult.Result + "");
+                    }
+                    break;
+            }
+        }
     }
 }

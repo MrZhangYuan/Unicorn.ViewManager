@@ -21,9 +21,9 @@ namespace Unicorn.ViewManager
         private static readonly object EVENT_SHOWING = new object();
         private static readonly object EVENT_SHOWN = new object();
 
-        internal bool _isHostAtViewStack = true;
-        internal bool _isClosed = true;
+        internal bool _isHostAtViewStack = false;
         internal bool _isClosing = false;
+        internal bool _isShowing = false;
         internal bool _showingAsModal = false;
         internal DispatcherFrame _dispatcherFrame = null;
         internal ModalResult _modalResult;
@@ -78,7 +78,7 @@ namespace Unicorn.ViewManager
         public PopupItem ParentPopup
         {
             get;
-            private set;
+            internal set;
         }
 
         public bool IsEasyClose
@@ -144,7 +144,7 @@ namespace Unicorn.ViewManager
 
         public PopupItem()
         {
-            this._popupStackControl = new PopupStackControl();
+            this._popupStackControl = new PopupStackControl(this);
         }
 
         public override void OnApplyTemplate()
@@ -232,17 +232,9 @@ namespace Unicorn.ViewManager
             set;
         }
 
-        public void Close()
-        {
-            if (this.ParentHostStack != null)
-            {
-                this.ParentHostStack.Close(this);
-            }
-            else
-            {
-                ViewManager.Instance.MainRichView.Close(this);
-            }
-        }
+
+        
+        #region Show Self
 
         public void Show()
         {
@@ -256,6 +248,14 @@ namespace Unicorn.ViewManager
                 throw new ArgumentNullException(nameof(container));
             }
 
+            if (!object.ReferenceEquals(this.ParentHostStack, container))
+            {
+                if (container is PopupStackControl popupStackControl)
+                {
+                    popupStackControl.VerifyCanShow(this);
+                }
+            }
+
             container.Show(this);
         }
 
@@ -266,14 +266,62 @@ namespace Unicorn.ViewManager
                 throw new ArgumentNullException(nameof(container));
             }
 
+            if (container is PopupStackControl popupStackControl)
+            {
+                popupStackControl.VerifyCanShow(this);
+            }
+
             return container.ShowModal(this);
         }
+
+        public void Close()
+        {
+            if (this.ParentHostStack != null)
+            {
+                this.ParentHostStack.Close(this);
+            }
+            else
+            {
+                ViewManager.Instance.MainRichView.Close(this);
+            }
+        }
+
+        #endregion
+
+
+        #region Show Child
+        public ModalResult ShowModal(PopupItem item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            return this._popupStackControl.ShowModal(item);
+        }
+
+        public void Show(PopupItem item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            this._popupStackControl.Show(item);
+        }
+
+        public void Close(PopupItem item)
+        {
+            this._popupStackControl.Close(item);
+        }
+
+        #endregion
 
         internal void InternalDiapose()
         {
             this.ParentHostStack = null;
             this._isClosing = false;
-            this._isClosed = true;
+            this._isHostAtViewStack = false;
             this.ParentPopup = null;
 
             if (this._dispatcherFrame != null)
@@ -286,74 +334,5 @@ namespace Unicorn.ViewManager
         }
 
         protected internal abstract PopupItemContainer GetContainer();
-
-
-        internal void VerifyCanShow(PopupStackControl newpopupStackControl = null)
-        {
-            if (this._isClosing)
-            {
-                throw new Exception("该项当前不可显示，因为它当前正在关闭");
-            }
-
-            if (!this._isClosed)
-            {
-                throw new Exception("该项当前不可显示，因为它当前正在显示");
-            }
-
-            if (this._showingAsModal)
-            {
-                throw new Exception("该项当前不可显示，因为它当前正在以模态显示");
-            }
-
-            if (this.ParentHostStack != null
-                && !object.ReferenceEquals(this.ParentHostStack, newpopupStackControl))
-            {
-                throw new Exception("该项当前不可显示，因为它当前已处于某个视图堆栈中");
-            }
-        }
-
-        internal void VerifyCanAsParent(PopupItem item)
-        {
-            if (object.ReferenceEquals(this, item))
-            {
-                throw new Exception("项不能在自己的视图堆栈中显示");
-            }
-
-            if (this._isClosing)
-            {
-                throw new Exception("该项当前不可做为容器去显示其它PopupItem，因为它当前正在关闭");
-            }
-
-            if (this._isClosed)
-            {
-                throw new Exception("该项当前不可做为容器去显示其它PopupItem，因为它当前已关闭");
-            }
-
-            if (this._showingAsModal)
-            {
-                throw new Exception("该项当前不可做为容器去显示其它PopupItem，因为它当前正在以模态显示");
-            }
-        }
-
-        public ModalResult ShowModal(PopupItem item)
-        {
-            this.VerifyCanAsParent(item);
-            item.ParentPopup = this;
-
-            return this._popupStackControl.ShowModal(item);
-        }
-
-        public void Show(PopupItem item)
-        {
-            this.VerifyCanAsParent(item);
-            item.ParentPopup = this;
-
-            this._popupStackControl.Show(item);
-        }
-
-        public void Close(PopupItem item)
-        {
-            this._popupStackControl.Close(item);
-        }
     }
 }

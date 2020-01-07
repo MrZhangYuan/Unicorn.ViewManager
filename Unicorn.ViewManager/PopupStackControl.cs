@@ -42,6 +42,8 @@ namespace Unicorn.ViewManager
             }
         }
 
+        private readonly PopupItem _parentPopupItem = null;
+
         static PopupStackControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PopupStackControl), new FrameworkPropertyMetadata(typeof(PopupStackControl)));
@@ -53,6 +55,17 @@ namespace Unicorn.ViewManager
         public PopupStackControl()
         {
             this._popupStack = new PopupStack(this);
+        }
+
+        internal PopupStackControl(PopupItem popupItem)
+            : this()
+        {
+            if (popupItem == null)
+            {
+                throw new ArgumentNullException(nameof(popupItem));
+            }
+
+            this._parentPopupItem = popupItem;
         }
 
         private static void OnCanClosePopupItem(object sender, CanExecuteRoutedEventArgs e)
@@ -153,12 +166,73 @@ namespace Unicorn.ViewManager
             return false;
         }
 
+        internal void VerifyCanShow(PopupItem item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            //当前是独立作为视图栈
+            if (this._parentPopupItem == null)
+            {
+                if (item._isClosing)
+                {
+                    throw new Exception("该项当前不可显示，因为它当前正在关闭");
+                }
+
+                if (item._isShowing)
+                {
+                    throw new Exception("该项当前不可显示，因为它当前正在显示");
+                }
+
+                if (item._showingAsModal)
+                {
+                    throw new Exception("该项当前不可显示，因为它当前正在以模态显示");
+                }
+
+                if (item._isHostAtViewStack)
+                {
+                    throw new Exception("该项当前不可显示，因为它当前正在其它视图堆栈中显示");
+                }
+            }
+            else
+            {
+                //PopupItem 中的视图栈
+                if (this.VerifyIsSpecialItem(this._parentPopupItem))
+                {
+                    throw new Exception($"不可在 {typeof(MessageDialogBox)}、{typeof(ProcessDialogBox)} 等特殊视图中显示子视图");
+                }
+
+                if (object.ReferenceEquals(this._parentPopupItem, item))
+                {
+                    throw new Exception("不可在自己的视图堆栈中显示自己");
+                }
+
+                if (this._parentPopupItem._isClosing)
+                {
+                    throw new Exception("该项当前不可做为容器去显示其它PopupItem，因为它当前正在关闭");
+                }
+
+                if (!this._parentPopupItem._isHostAtViewStack)
+                {
+                    throw new Exception("该项当前不可做为容器去显示其它PopupItem，因为它当前未显示");
+                }
+
+                if (this._parentPopupItem._showingAsModal)
+                {
+                    throw new Exception("该项当前不可做为容器去显示其它PopupItem，因为它当前正在以模态显示");
+                }
+            }
+        }
+
         private void AddItem(PopupItem item)
         {
             PopupItemContainer container = item.GetContainer();
             container.PopupItem = item;
             this._popupStack.Items.Add(container);
             item._isHostAtViewStack = true;
+            item.ParentPopup = this._parentPopupItem;
         }
 
         private void RemoveItem(PopupItem item)
@@ -166,6 +240,7 @@ namespace Unicorn.ViewManager
             var container = this.PopupContainerFromItem(item);
             this._popupStack.Items.Remove(container);
             item._isHostAtViewStack = false;
+            item.ParentPopup = null;
         }
 
         public PopupItemContainer PopupContainerFromIndex(int index)
@@ -233,8 +308,9 @@ namespace Unicorn.ViewManager
                 }
             }
 
-            item.VerifyCanShow(this);
+            this.VerifyCanShow(item);
 
+            item._isShowing = true;
             item._showingAsModal = true;
             item._modalResult = null;
             CancelEventArgs ce = null;
@@ -244,19 +320,22 @@ namespace Unicorn.ViewManager
             }
             catch (Exception)
             {
+                item._isShowing = false;
                 item._showingAsModal = false;
                 throw;
             }
 
+            bool modalpushedflag = false;
             try
             {
                 if (!ce.Cancel)
                 {
                     ComponentDispatcher.PushModal();
+                    modalpushedflag = true;
                     item._dispatcherFrame = new DispatcherFrame();
                     item.ParentHostStack = this;
-                    item._isClosed = false;
                     this.AddItem(item);
+                    item._isShowing = false;
                     item.InternalShown(out EventArgs e);
                     Dispatcher.PushFrame(item._dispatcherFrame);
                     return item.ModalResult;
@@ -264,7 +343,11 @@ namespace Unicorn.ViewManager
             }
             finally
             {
-                ComponentDispatcher.PopModal();
+                if (modalpushedflag)
+                {
+                    ComponentDispatcher.PopModal();
+                }
+
                 item.InternalDiapose();
             }
 
@@ -299,22 +382,33 @@ namespace Unicorn.ViewManager
                 }
             }
 
-            if (!this.Contains(item))
+            if (this.Contains(item))
             {
-                item.VerifyCanShow(this);
-
-                item.InternalShowing(out CancelEventArgs ce);
-                if (!ce.Cancel)
-                {
-                    item._isClosed = false;
-                    item.ParentHostStack = this;
-                    this.AddItem(item);
-                    item.InternalShown(out EventArgs e);
-                }
+                this.MoveItemToTop(item);
             }
             else
             {
-                this.MoveItemToTop(item);
+                this.VerifyCanShow(item);
+
+                item._isShowing = true;
+                CancelEventArgs ce = null;
+                try
+                {
+                    item.InternalShowing(out ce);
+                }
+                catch (Exception)
+                {
+                    item._isShowing = false;
+                    throw;
+                }
+
+                if (!ce.Cancel)
+                {
+                    item.ParentHostStack = this;
+                    this.AddItem(item);
+                    item._isShowing = false;
+                    item.InternalShown(out EventArgs e);
+                }
             }
         }
 
@@ -326,7 +420,7 @@ namespace Unicorn.ViewManager
             }
 
             if (item._isClosing
-                || item._isClosed)
+                || !item._isHostAtViewStack)
             {
                 return;
             }
@@ -353,6 +447,7 @@ namespace Unicorn.ViewManager
             void CloseAndDisposeItem(PopupItem popupItem)
             {
                 this.RemoveItem(popupItem);
+                popupItem._isClosing = false;
                 try
                 {
                     popupItem.InternalClosed(out EventArgs e);
@@ -363,8 +458,8 @@ namespace Unicorn.ViewManager
                 }
             }
 
-            //若所属父视图堆栈已关闭
-            if (item.ParentPopup?._isClosed == true)
+            //若所属父视图堆栈已关闭，不验证关于取消关闭的操作
+            if (item.ParentPopup?._isHostAtViewStack == false)
             {
                 CloseAndDisposeItem(item);
             }
