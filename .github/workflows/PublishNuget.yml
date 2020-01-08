@@ -27,9 +27,8 @@ jobs:
         uses: rohith/publish-nuget@v1
         with: # All inputs are optional (details given below)
            project_dir: src/Unicorn.ViewManager # Defaults to repository root
-           tag_format: v* # [*] gets replaced with version
+           tag_format: 1.0.0 # [*] gets replaced with version
            nuget_key: ${{ secrets.NUGET_VIEW_MANAGER_KEY }} # nuget.org API key
-
 
 
 
