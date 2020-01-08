@@ -21,7 +21,10 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
          dotnet-version: 3.1.100
-      
+      - name: Build
+        run: dotnet build
+        working-directory: src/Unicorn.ViewManager
+        
       # Publish
       - name: Publish if version is updated
         uses: rohith/publish-nuget@v1
@@ -29,9 +32,6 @@ jobs:
            project_dir: src/Unicorn.ViewManager # Defaults to repository root
            tag_format: v* # [*] gets replaced with version
            nuget_key: ${{ secrets.NUGET_VIEW_MANAGER_KEY }} # nuget.org API key
-
-
-
 
 
 
