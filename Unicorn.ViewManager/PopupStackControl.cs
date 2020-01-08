@@ -257,6 +257,10 @@ namespace Unicorn.ViewManager
         private void AddItem(PopupItem item)
         {
             PopupItemContainer container = item.GetContainer();
+            if (container == null)
+            {
+                throw new Exception("处理PopupItem容器时出现异常，PopupItem.GetContainer()方法不能返回null");
+            }
             container.PopupItem = item;
             this._popupStack.Items.Add(container);
             item._isHostAtViewStack = true;

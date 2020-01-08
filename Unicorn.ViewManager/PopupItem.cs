@@ -187,12 +187,12 @@ namespace Unicorn.ViewManager
             eventHandler((object)this, e);
         }
 
-
         internal void InternalClosing(out CancelEventArgs e)
         {
             e = new CancelEventArgs(false);
             this.OnClosing(e);
         }
+
         protected virtual void OnClosing(CancelEventArgs e)
         {
             CancelEventHandler cancelEventHandler = (CancelEventHandler)this.Events[PopupItem.EVENT_CLOSING];
