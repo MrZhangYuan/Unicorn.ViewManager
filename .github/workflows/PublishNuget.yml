@@ -6,15 +6,14 @@ on:
       - master
 
 jobs:
-  build:
-
+  publish:
+    name: Publish to Nuget
     runs-on: windows-latest
     
     
-
     steps:
       # Checkout
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       # Optional step, add only for a specific dotnet version that doesn't come with ubuntu-latest / windows-latest
       # Visit bit.ly/2synnZl for a list of software that comes pre-installed with ubuntu-latest / windows-latest
