@@ -5,6 +5,7 @@
     <UseWPF>true</UseWPF>
     <Authors>Mr.Zhang</Authors>
     <Product>Unicorn</Product>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
