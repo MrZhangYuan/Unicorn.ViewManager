@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Unicorn.Utilities\Unicorn.Utilities.csproj" />
-    <ProjectReference Include="..\Unicorn.ViewManager\Unicorn.ViewManager.csproj" />
+    <ProjectReference Include="..\..\src\Unicorn.ViewManager\Unicorn.ViewManager.csproj" />
   </ItemGroup>
 
 </Project>
