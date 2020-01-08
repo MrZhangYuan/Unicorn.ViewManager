@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace Unicorn.ViewManager.Preferences
 {
-    public class ViewPreferences : DependencyObject
+    public sealed class ViewPreferences : DependencyObject
     {
         private static ViewPreferences _instance = null;
         public static ViewPreferences Instance

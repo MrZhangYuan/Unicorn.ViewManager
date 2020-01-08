@@ -238,7 +238,14 @@ namespace Unicorn.ViewManager
                 PopupItemContainer itemContainer = this.PopupContainerFromItem(item);
                 itemContainer.RequestShowAnimation(_p =>
                 {
-                    item.InternalShown(out EventArgs e);
+                    try
+                    {
+                        item.InternalShown(out EventArgs e);
+                    }
+                    finally
+                    {
+                        item.InternalDiapose();
+                    }
                 });
             }
             else
@@ -349,13 +356,12 @@ namespace Unicorn.ViewManager
                 throw;
             }
 
-            bool modalpushedflag = false;
+            bool notcanceled = !ce.Cancel;
             try
             {
-                if (!ce.Cancel)
+                if (notcanceled)
                 {
                     ComponentDispatcher.PushModal();
-                    modalpushedflag = true;
                     item._dispatcherFrame = new DispatcherFrame();
                     this.ShowCore(item);
                     Dispatcher.PushFrame(item._dispatcherFrame);
@@ -364,7 +370,7 @@ namespace Unicorn.ViewManager
             }
             finally
             {
-                if (modalpushedflag)
+                if (notcanceled)
                 {
                     ComponentDispatcher.PopModal();
                 }
@@ -484,7 +490,7 @@ namespace Unicorn.ViewManager
             else if (!ce.Cancel)
             {
                 if (ViewPreferences.Instance.UsePopupViewAnimations)
-                {        
+                {
                     var container = this.PopupContainerFromItem(item);
                     container.OnCloseAnimation(_p =>
                     {
