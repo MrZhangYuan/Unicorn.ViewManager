@@ -25,5 +25,5 @@ jobs:
         Invoke-WebRequest $sourceNugetExe -OutFile $targetNugetExe
     - name: Push generated package to GitHub registry
       run: |
-        .\nuget push .\bin\release\*.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate -ApiKey ${{ secrets.NUGET_VIEW_MANAGER_KEY }} -NoSymbols 
+        .\nuget push .\bin\release\*.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate -ApiKey ${{ secrets.NUGET_VIEW_MANAGER_KEY }}
 
