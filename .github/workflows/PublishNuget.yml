@@ -16,6 +16,7 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.100
+        project_dir: src/Unicorn.ViewManager # Defaults to repository root
     - name: Build with dotnet
       run: dotnet build --configuration Release
     - name: Install Nuget
@@ -25,5 +26,5 @@ jobs:
         Invoke-WebRequest $sourceNugetExe -OutFile $targetNugetExe
     - name: Push generated package to GitHub registry
       run: |
-        .\nuget push .\bin\release\*.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate -ApiKey ${{ secrets.NUGET_VIEW_MANAGER_KEY }}
+        .\nuget push .\bin\release\*.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate -ApiKey ${{ secrets.NUGET_VIEW_MANAGER_KEY }} -NoSymbols
 
