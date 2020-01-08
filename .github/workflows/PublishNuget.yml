@@ -9,22 +9,52 @@ jobs:
   build:
 
     runs-on: windows-latest
+    
+    
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.100
-        project_dir: src/Unicorn.ViewManager # Defaults to repository root
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
-    - name: Install Nuget
-      run: |
-        $sourceNugetExe = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-        $targetNugetExe = "nuget.exe"
-        Invoke-WebRequest $sourceNugetExe -OutFile $targetNugetExe
-    - name: Push generated package to GitHub registry
-      run: |
-        .\nuget push .\src\Unicorn.ViewManager\bin\release\*.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate -ApiKey ${{ secrets.NUGET_VIEW_MANAGER_KEY }} -NoSymbols
+      # Checkout
+      - uses: actions/checkout@v1
+
+      # Optional step, add only for a specific dotnet version that doesn't come with ubuntu-latest / windows-latest
+      # Visit bit.ly/2synnZl for a list of software that comes pre-installed with ubuntu-latest / windows-latest
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+         dotnet-version: 3.1.100
+      
+      # Publish
+      - name: Publish if version is updated
+        uses: rohith/publish-nuget@v1
+        with: # All inputs are optional (details given below)
+           project_dir: src # Defaults to repository root
+           tag_format: v* # [*] gets replaced with version
+           nuget_key: ${{ secrets.NUGET_VIEW_MANAGER_KEY }} # nuget.org API key
+
+
+
+
+
+
+
+
+
+
+#    steps:
+#    - uses: actions/checkout@v1
+#    - name: Setup .NET Core
+#      uses: actions/setup-dotnet@v1
+#      with:
+#        dotnet-version: 3.1.100
+#        project_dir: src/Unicorn.ViewManager # Defaults to repository root
+#    - name: Build with dotnet
+#      run: dotnet build --configuration Release
+#    - name: Install Nuget
+#      run: |
+#        $sourceNugetExe = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+#        $targetNugetExe = "nuget.exe"
+#        Invoke-WebRequest $sourceNugetExe -OutFile $targetNugetExe
+#    - name: Push generated package to GitHub registry
+#      run: |
+#        .\nuget push .\src\Unicorn.ViewManager\bin\release\*.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate -ApiKey ${{ secrets.NUGET_VIEW_MANAGER_KEY }} -NoSymbols
 
