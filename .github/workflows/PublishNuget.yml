@@ -32,7 +32,7 @@ jobs:
         with: # All inputs are optional (details given below)
            project_dir: src/Unicorn.ViewManager # Defaults to repository root
            tag_format: v* # [*] gets replaced with version
-           nuget_key: ${{ secrets.NUGET_VIEW_MANAGER_KEY }} # nuget.org API key
+           nuget_key: ${{ secrets.NUGET_API_KEY }} # nuget.org API key
 
 
 
