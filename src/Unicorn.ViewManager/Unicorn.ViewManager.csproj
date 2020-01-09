@@ -13,6 +13,7 @@
     <RepositoryUrl>https://github.com/MrZhangYuan/Unicorn.ViewManager.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>WPF;C#;.NET;.NET Core;WPF View Manager</PackageTags>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

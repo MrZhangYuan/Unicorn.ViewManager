@@ -37,10 +37,26 @@ namespace Unicorn.ViewManager
             if (this._isShowAnimationRequest)
             {
                 this._isShowAnimationRequest = false;
-                this.OnShowAnimation(null);
+                this._requestCallback = _p =>
+                {
+                    try
+                    {
+                        this._callback?.Invoke(_p);
+
+                    }
+                    finally
+                    {
+                        this._callback = null;
+                        this._requestCallback = null;
+                    }
+                };
+
+                this.OnShowAnimation(this._requestCallback);
             }
         }
 
+        private Action<PopupItem> _requestCallback = null;
+        private Action<PopupItem> _callback = null;
         internal void RequestShowAnimation(Action<PopupItem> callback)
         {
             if (this._isTemplateApply)
@@ -49,6 +65,7 @@ namespace Unicorn.ViewManager
             }
             else
             {
+                this._callback = callback;
                 this._isShowAnimationRequest = true;
             }
         }
