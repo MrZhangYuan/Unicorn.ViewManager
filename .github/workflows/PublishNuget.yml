@@ -22,4 +22,4 @@ jobs:
       run: dotnet pack -c Release src/Unicorn.ViewManager/Unicorn.ViewManager.csproj -o .
       
     - name: Push generated package to GitHub registry
-      run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+      run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
