@@ -87,7 +87,7 @@ namespace ViewManagerDemo
             return true;
         }
 
-        private static void CommandExecuteAction(string cmdkey, UICommandParameter<string> parameter)
+        private async static void CommandExecuteAction(string cmdkey, UICommandParameter<string> parameter)
         {
             switch (cmdkey)
             {
@@ -169,6 +169,15 @@ namespace ViewManagerDemo
                         else
                         {
                             MessageDialogBox.Show("不应该返回此结果");
+                        }
+                    }
+                    break;
+
+                case "ShowProcessDialogBox":
+                    {
+                        using (ProcessDialogBox box = ProcessDialogBox.Show(ViewManager.Instance, "测试信息", "标题"))
+                        {
+                            await Task.Delay(3000);
                         }
                     }
                     break;

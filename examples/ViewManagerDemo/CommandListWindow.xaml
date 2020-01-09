@@ -40,7 +40,7 @@
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowDialogNormal]}" Content="正常Dialog" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowDialogAsModal]}" Content="模态Dialog" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowMessageDialogBox]}" Content="MessageDialogBox" />
-        
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowProcessDialogBox]}" Content="ShowProcessDialogBox" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[Exit]}" Content="退出" />
     </StackPanel>
 </Window>

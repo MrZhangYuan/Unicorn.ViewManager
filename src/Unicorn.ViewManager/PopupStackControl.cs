@@ -238,14 +238,7 @@ namespace Unicorn.ViewManager
                 PopupItemContainer itemContainer = this.PopupContainerFromItem(item);
                 itemContainer.RequestShowAnimation(_p =>
                 {
-                    try
-                    {
-                        item.InternalShown(out EventArgs e);
-                    }
-                    finally
-                    {
-                        item.InternalDiapose();
-                    }
+                    item.InternalShown(out EventArgs e);
                 });
             }
             else
