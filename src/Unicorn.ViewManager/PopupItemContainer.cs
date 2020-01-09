@@ -32,6 +32,8 @@ namespace Unicorn.ViewManager
         {
             base.OnApplyTemplate();
 
+            this._isTemplateApply = true;
+
             if (this._isShowAnimationRequest)
             {
                 this._isShowAnimationRequest = false;
