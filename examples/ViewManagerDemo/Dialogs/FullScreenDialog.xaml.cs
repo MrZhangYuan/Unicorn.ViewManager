@@ -21,6 +21,12 @@ namespace ViewManagerDemo.Dialogs
         public FullScreenDialog()
         {
             InitializeComponent();
+            this.Shown += FullScreenDialog_Shown;
+        }
+
+        private void FullScreenDialog_Shown(object sender, EventArgs e)
+        {
+
         }
 
         private void StackPanel_Click(object sender, RoutedEventArgs e)
