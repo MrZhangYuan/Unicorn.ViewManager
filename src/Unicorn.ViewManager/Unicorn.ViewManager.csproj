@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Unicorn.Utilities" Version="1.0.3" />
+    <PackageReference Include="Unicorn.Utilities" Version="1.0.4" />
   </ItemGroup>
 
   <ItemGroup>
