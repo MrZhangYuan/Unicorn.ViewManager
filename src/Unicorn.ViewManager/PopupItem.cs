@@ -233,7 +233,7 @@ namespace Unicorn.ViewManager
         }
 
 
-        
+
         #region Show Self
 
         public void Show()
@@ -259,6 +259,10 @@ namespace Unicorn.ViewManager
             container.Show(this);
         }
 
+        public ModalResult ShowAsModal()
+        {
+            return ViewManager.Instance.MainRichView.ShowModal(this);
+        }
         public ModalResult ShowAsModal(IPopupItemContainer container)
         {
             if (container == null)

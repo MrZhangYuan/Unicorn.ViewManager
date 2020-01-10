@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,7 @@ using Unicorn.Utilities.Commands;
 using Unicorn.ViewManager;
 using ViewManagerDemo.Dialogs;
 using ViewManagerDemo.Flyouts;
+using ViewManagerDemo.Views;
 
 namespace ViewManagerDemo
 {
@@ -51,7 +53,7 @@ namespace ViewManagerDemo
             InitializeComponent();
             ViewManager.Instance.InitializeRichView(this);
             ViewManager.Instance.ViewPreferences.UsePopupViewAnimations = true;
-            ViewManager.Instance.MainRichView.SwitchView(MainDemoView.Instance);
+            //ViewManager.Instance.MainRichView.SwitchView(MainDemoView.Instance);
 
             this.IsVisibleChanged += (sender, e) =>
             {
@@ -91,12 +93,12 @@ namespace ViewManagerDemo
         {
             switch (cmdkey)
             {
-                case "SwitchMainView1":
-                    ViewManager.Instance.MainRichView.SwitchView(MainDemoView.Instance);
+                case "DialogsDemoView":
+                    ViewManager.Instance.MainRichView.SwitchView(DialogsDemoView.Instance);
                     break;
 
-                case "SwitchMainView2":
-                    ViewManager.Instance.MainRichView.SwitchView(MainDemoView2.Instance);
+                case "FlyoutsDemoView":
+                    ViewManager.Instance.MainRichView.SwitchView(FlyoutsDemoView.Instance);
                     break;
 
                 case "ShowFlyoutLeft":
@@ -143,10 +145,10 @@ namespace ViewManagerDemo
                 //当Dialog以模态显示时，其同一个显示堆栈上只可以再堆叠MessageDialogBox，其余的任何可弹出组件不可显示
                 case "ShowDialogAsModal":
                     {
-                        ModalResult result = ViewManager.Instance.MainRichView.ShowModal(new NormalDialog());
+                        ModalResult result = new NormalDialog() { SetModalResultBtVisibility = Visibility.Visible }.ShowAsModal();
                         if (result != null)
                         {
-                            MessageDialogBox.Show(result.Result + "");
+                            MessageDialogBox.Show(result.Result + "","信息");
                         }
                     }
                     break;
@@ -175,10 +177,46 @@ namespace ViewManagerDemo
 
                 case "ShowProcessDialogBox":
                     {
-                        using (ProcessDialogBox box = ProcessDialogBox.Show(ViewManager.Instance, "测试信息", "标题"))
+                        using (ProcessDialogBox box = ProcessDialogBox.Show(ViewManager.Instance, "测试信息", "标题", false, ProcessBoxButton.Cancel | ProcessBoxButton.PauseContinue | ProcessBoxButton.Stop))
+                        using (CancellationTokenSource cancellationTokenSource = new CancellationTokenSource())
                         {
-                            await Task.Delay(3000);
+                            bool ispause = false;
+
+                            box.CancelAction = () =>
+                            {
+                                cancellationTokenSource.Cancel();
+                            };
+                            box.PauseAction = () =>
+                            {
+                                ispause = true;
+                            };
+                            box.StopAction = () =>
+                            {
+                                cancellationTokenSource.Cancel();
+                            };
+                            box.ContinueAction = () =>
+                              {
+                                  ispause = false;
+                              };
+
+                            await Task.Factory.StartNew(() =>
+                            {
+                                for (int i = 0; i < 1000; i++)
+                                {
+                                    SpinWait.SpinUntil(() => !ispause || cancellationTokenSource.IsCancellationRequested);
+                                    if (cancellationTokenSource.IsCancellationRequested)
+                                    {
+                                        break;
+                                    }
+
+                                    box.ProcessValue = (double)i / 1000 * 100;
+
+                                    Thread.Sleep(100);
+                                }
+
+                            }, cancellationTokenSource.Token);
                         }
+
                     }
                     break;
 

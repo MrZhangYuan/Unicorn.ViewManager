@@ -28,8 +28,8 @@
                 <Setter Property="Margin" Value="0,10" />
             </Style>
         </StackPanel.Resources>
-        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[SwitchMainView1]}" Content="切换到主页1" />
-        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[SwitchMainView2]}" Content="切换到主页2" />
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[DialogsDemoView]}" Content="Dialog Demos" />
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[FlyoutsDemoView]}" Content="Flyout Demos" />
 
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowFlyoutLeft]}" Content="左 -&gt; 显示Flyout" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowFlyoutTop]}" Content="上 -&gt; 显示Flyout" />

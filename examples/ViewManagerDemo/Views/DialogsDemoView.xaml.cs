@@ -11,28 +11,28 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ViewManagerDemo
+namespace ViewManagerDemo.Views
 {
     /// <summary>
-    /// MainDemoView2.xaml 的交互逻辑
+    /// DialogsDemoView.xaml 的交互逻辑
     /// </summary>
-    public partial class MainDemoView2 : UserControl
+    public partial class DialogsDemoView
     {
 
-        private static MainDemoView2 _instance = null;
-        public static MainDemoView2 Instance
+        private static DialogsDemoView _instance = null;
+        public static DialogsDemoView Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new MainDemoView2();
+                    _instance = new DialogsDemoView();
                 }
                 return _instance;
             }
         }
 
-        public MainDemoView2()
+        public DialogsDemoView()
         {
             InitializeComponent();
         }

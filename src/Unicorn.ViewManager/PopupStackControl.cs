@@ -230,8 +230,14 @@ namespace Unicorn.ViewManager
         private void ShowCore(PopupItem item)
         {
             item.ParentHostStack = this;
-            this.AddItem(item);
-            item._isShowing = false;
+            try
+            {
+                this.AddItem(item);
+            }
+            finally
+            {
+                item._isShowing = false;
+            }
 
             if (ViewPreferences.Instance.UsePopupViewAnimations)
             {
@@ -348,6 +354,7 @@ namespace Unicorn.ViewManager
             }
             catch (Exception)
             {
+                //状态还原
                 item._isShowing = false;
                 item._showingAsModal = false;
                 throw;
@@ -360,13 +367,21 @@ namespace Unicorn.ViewManager
                 {
                     ComponentDispatcher.PushModal();
                     item._dispatcherFrame = new DispatcherFrame();
-                    this.ShowCore(item);
-                    Dispatcher.PushFrame(item._dispatcherFrame);
+                    try
+                    {
+                        this.ShowCore(item);
+                    }
+                    finally
+                    {
+                        //确保Shown事件异常时，Modal的结果不受影响
+                        Dispatcher.PushFrame(item._dispatcherFrame);
+                    }
                     return item.ModalResult;
                 }
             }
             finally
             {
+                //确保ComponentDispatcher有进有出
                 if (notcanceled)
                 {
                     ComponentDispatcher.PopModal();
