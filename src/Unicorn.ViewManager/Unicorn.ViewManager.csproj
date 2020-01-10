@@ -14,6 +14,8 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>WPF;C#;.NET;.NET Core;WPF View Manager</PackageTags>
     <AssemblyVersion>1.0.6.0</AssemblyVersion>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
