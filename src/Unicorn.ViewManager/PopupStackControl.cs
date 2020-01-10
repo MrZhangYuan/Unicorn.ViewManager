@@ -371,8 +371,6 @@ namespace Unicorn.ViewManager
                 {
                     ComponentDispatcher.PopModal();
                 }
-
-                item.InternalDiapose();
             }
 
             return null;
