@@ -7,7 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Images\Background.jpg" />
+    <None Remove="Resources\Images\Logo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Unicorn.ViewManager\Unicorn.ViewManager.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Images\Background.jpg" />
+    <Resource Include="Resources\Images\Logo.ico" />
   </ItemGroup>
 
 </Project>

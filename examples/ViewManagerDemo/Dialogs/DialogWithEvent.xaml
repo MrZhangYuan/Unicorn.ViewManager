@@ -1,5 +1,5 @@
 ﻿<uview:Dialog
-    x:Class="ViewManagerDemo.Dialogs.NormalDialog"
+    x:Class="ViewManagerDemo.Dialogs.DialogWithEvent"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:components="clr-namespace:ViewManagerDemo.Components"
@@ -22,35 +22,18 @@
         </Grid.RowDefinitions>
         <components:PopupViewHeader>
             <components:PopupViewHeader.TitleContent>
-                <TextBlock Style="{StaticResource ViewTitleTextBlockStyle}" Text="Normal Dialog" />
+                <TextBlock Style="{StaticResource ViewTitleTextBlockStyle}" Text="Dialog With Event" />
             </components:PopupViewHeader.TitleContent>
         </components:PopupViewHeader>
         <StackPanel
             Grid.Row="1"
             Margin="50"
-            VerticalAlignment="Top"
-            Visibility="{Binding ElementName=SELF, Path=SetModalResultBtVisibility}">
+            VerticalAlignment="Top">
             <TextBlock
+                x:Name="_outPutText"
                 Margin="0,0,0,50"
                 FontSize="16"
-                TextWrapping="Wrap">
-                <TextBlock.Inlines>
-                    <Run>当Dialog以模态方式显示时，在同一个视图栈其上不可再显示其它任何视图，MessageDialogBox、ProcessDialogBox除外。当强行在同一个视图栈</Run>
-                    <Hyperlink x:Name="_showAtSameStack" Click="_showAtSameStack_Click">
-                        <Run FontWeight="Bold">
-                            显示
-                        </Run>
-                    </Hyperlink>
-                    <Run>其它时，该模态Dialog会以周围闪烁阴影同时系统蜂鸣提示。点击Dialog周围的灰色区域时，该Dialog也会提示。</Run>
-                </TextBlock.Inlines>
-            </TextBlock>
-
-            <TextBox
-                x:Name="_text"
-                Height="40"
-                Padding="5,0"
-                VerticalContentAlignment="Center"
-                Text="这里输入该模态Dialog的结果，点击右下方按钮设置结果并返回给调用方，结果不限于文本，可以是任何Object类型的对象" />
+                TextWrapping="Wrap" />
         </StackPanel>
 
 
@@ -69,10 +52,7 @@
                         <Setter Property="Margin" Value="5,0" />
                     </Style>
                 </StackPanel.Resources>
-                <Button
-                    x:Name="_setResultBt"
-                    Content="设置返回结果"
-                    Visibility="{Binding ElementName=SELF, Path=SetModalResultBtVisibility}" />
+
             </StackPanel>
         </Border>
     </Grid>

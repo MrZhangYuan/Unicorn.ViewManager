@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,7 @@ using Unicorn.Utilities.Commands;
 using Unicorn.ViewManager;
 using ViewManagerDemo.Dialogs;
 using ViewManagerDemo.Flyouts;
+using ViewManagerDemo.Views;
 
 namespace ViewManagerDemo
 {
@@ -25,18 +27,10 @@ namespace ViewManagerDemo
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        private static MainWindow _instance = null;
         public static MainWindow Instance
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new MainWindow();
-                }
-                return _instance;
-            }
+            get;
+            private set;
         }
 
         static MainWindow()
@@ -48,10 +42,12 @@ namespace ViewManagerDemo
         private CommandListWindow _cmdListWindow = new CommandListWindow();
         public MainWindow()
         {
+            Instance = this;
+
             InitializeComponent();
             ViewManager.Instance.InitializeRichView(this);
             ViewManager.Instance.ViewPreferences.UsePopupViewAnimations = true;
-            ViewManager.Instance.MainRichView.SwitchView(MainDemoView.Instance);
+            ViewManager.Instance.MainRichView.SwitchView(ReadMe.Instance);
 
             this.IsVisibleChanged += (sender, e) =>
             {
@@ -91,64 +87,12 @@ namespace ViewManagerDemo
         {
             switch (cmdkey)
             {
-                case "SwitchMainView1":
-                    ViewManager.Instance.MainRichView.SwitchView(MainDemoView.Instance);
+                case "DialogsDemoView":
+                    ViewManager.Instance.MainRichView.SwitchView(DialogsDemoView.Instance);
                     break;
 
-                case "SwitchMainView2":
-                    ViewManager.Instance.MainRichView.SwitchView(MainDemoView2.Instance);
-                    break;
-
-                case "ShowFlyoutLeft":
-                    ViewManager.Instance.MainRichView.Show(new FlyoutLocationDemo
-                    {
-                        FlyoutLocation = FlyoutLocation.Left,
-                        Width = 250
-                    });
-                    break;
-
-                case "ShowFlyoutTop":
-                    ViewManager.Instance.MainRichView.Show(new FlyoutLocationDemo
-                    {
-                        FlyoutLocation = FlyoutLocation.Top,
-                        Height = 250
-                    });
-                    break;
-
-                case "ShowFlyoutRight":
-                    ViewManager.Instance.MainRichView.Show(new FlyoutLocationDemo
-                    {
-                        FlyoutLocation = FlyoutLocation.Right,
-                        Width = 250
-                    });
-                    break;
-
-                case "ShowFlyoutBottom":
-                    ViewManager.Instance.MainRichView.Show(new FlyoutLocationDemo
-                    {
-                        FlyoutLocation = FlyoutLocation.Bottom,
-                        Height = 250
-                    });
-                    break;
-
-
-                case "ShowDialogFullScreen":
-                    ViewManager.Instance.MainRichView.Show(new FullScreenDialog());
-                    break;
-
-                case "ShowDialogNormal":
-                    ViewManager.Instance.MainRichView.Show(new NormalDialog());
-                    break;
-
-                //当Dialog以模态显示时，其同一个显示堆栈上只可以再堆叠MessageDialogBox，其余的任何可弹出组件不可显示
-                case "ShowDialogAsModal":
-                    {
-                        ModalResult result = ViewManager.Instance.MainRichView.ShowModal(new NormalDialog());
-                        if (result != null)
-                        {
-                            MessageDialogBox.Show(result.Result + "");
-                        }
-                    }
+                case "FlyoutsDemoView":
+                    ViewManager.Instance.MainRichView.SwitchView(FlyoutsDemoView.Instance);
                     break;
 
                 case "ShowMessageDialogBox":
@@ -156,29 +100,65 @@ namespace ViewManagerDemo
                         var msresult = MessageDialogBox.Show($"是、否、取消MessageDialogBox，根据需要返回结果，请继续...{Environment.NewLine}[是]：是{Environment.NewLine}[否]：否{Environment.NewLine}[取消]：取消", "提示", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                         if (msresult == MessageBoxResult.Yes)
                         {
-                            MessageDialogBox.Show("你点击了 [是]");
+                            MessageDialogBox.Show("你点击了 [是]", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         else if (msresult == MessageBoxResult.No)
                         {
-                            MessageDialogBox.Show("你点击了 [否]");
+                            MessageDialogBox.Show("你点击了 [否]", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         else if (msresult == MessageBoxResult.Cancel)
                         {
-                            MessageDialogBox.Show("你点击了 [取消]，或者直接关闭了");
+                            MessageDialogBox.Show("你点击了 [取消]，或者直接关闭了", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         else
                         {
-                            MessageDialogBox.Show("不应该返回此结果");
+                            MessageDialogBox.Show("不应该返回此结果", "信息", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                     break;
 
                 case "ShowProcessDialogBox":
                     {
-                        using (ProcessDialogBox box = ProcessDialogBox.Show(ViewManager.Instance, "测试信息", "标题"))
+                        using (ProcessDialogBox box = ProcessDialogBox.Show(ViewManager.Instance, "测试信息", "标题", false, ProcessBoxButton.Cancel | ProcessBoxButton.PauseContinue | ProcessBoxButton.Stop))
+                        using (CancellationTokenSource cancellationTokenSource = new CancellationTokenSource())
                         {
-                            await Task.Delay(3000);
+                            bool ispause = false;
+
+                            box.CancelAction = () =>
+                            {
+                                cancellationTokenSource.Cancel();
+                            };
+                            box.PauseAction = () =>
+                            {
+                                ispause = true;
+                            };
+                            box.StopAction = () =>
+                            {
+                                cancellationTokenSource.Cancel();
+                            };
+                            box.ContinueAction = () =>
+                            {
+                                ispause = false;
+                            };
+
+                            await Task.Factory.StartNew(() =>
+                            {
+                                for (int i = 0; i < 1000; i++)
+                                {
+                                    SpinWait.SpinUntil(() => !ispause || cancellationTokenSource.IsCancellationRequested);
+                                    if (cancellationTokenSource.IsCancellationRequested)
+                                    {
+                                        break;
+                                    }
+
+                                    box.ProcessValue = (double)i / 1000 * 100;
+
+                                    Thread.Sleep(100);
+                                }
+
+                            }, cancellationTokenSource.Token);
                         }
+
                     }
                     break;
 

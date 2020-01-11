@@ -7,6 +7,15 @@
     ShutdownMode="OnMainWindowClose"
     StartupUri="MainWindow.xaml">
     <Application.Resources>
+        <ImageBrush
+            x:Key="DefaultLogoBrush"
+            ImageSource="/Resources/Images/Logo.ico"
+            Stretch="Uniform" />
+        <ImageBrush
+            x:Key="DefaultBackgroundBrush"
+            ImageSource="/Resources/Images/Background.jpg"
+            Stretch="UniformToFill" />
+
         <Color x:Key="MainBackgroundColor">#FF338ECD</Color>
         <Color x:Key="MainBackgroundLightColor">#FF338CC7</Color>
         <Color x:Key="MainBackgroundDarkColor">#FF226FB7</Color>
@@ -17,6 +26,13 @@
         <SolidColorBrush x:Key="MainBackgroundDarkBrush" Color="{StaticResource MainBackgroundDarkColor}" />
         <SolidColorBrush x:Key="MarkBackgroundBrush" Color="{StaticResource MarkBackgroundColor}" />
 
+        <Style x:Key="ViewTitleTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="10,0" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        
         <Style x:Key="DefaultButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -203,5 +219,80 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+
+        <Style TargetType="{x:Type usystem:ProcessDialogBox}">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="MinHeight" Value="260" />
+            <Setter Property="MinWidth" Value="550" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type usystem:ProcessDialogBox}">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="44" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Border Background="{StaticResource MainBackgroundDarkBrush}">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontSize="15"
+                                        Foreground="White"
+                                        Text="{TemplateBinding Caption}" />
+                                </Border>
+
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Margin="20"
+                                    FontSize="16"
+                                    Text="{TemplateBinding MessageText}"
+                                    TextWrapping="Wrap" />
+
+                                <ProgressBar
+                                    Grid.Row="2"
+                                    Height="6"
+                                    Margin="20,0"
+                                    VerticalAlignment="Top"
+                                    BorderThickness="0"
+                                    Foreground="{StaticResource MainBackgroundDarkBrush}"
+                                    IsIndeterminate="{TemplateBinding IsIndeterminate}"
+                                    Maximum="100"
+                                    Value="{TemplateBinding ProcessValue}" />
+
+                                <Border Grid.Row="3" Background="{StaticResource MarkBackgroundBrush}">
+                                    <StackPanel
+                                        Margin="10"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <StackPanel.Resources>
+                                            <Style BasedOn="{StaticResource DarkDefaultButtonStyle}" TargetType="Button">
+                                                <Setter Property="Height" Value="30" />
+                                                <Setter Property="Width" Value="90" />
+                                                <Setter Property="Margin" Value="20,0" />
+                                            </Style>
+                                        </StackPanel.Resources>
+                                        <Button x:Name="PART_CANCELBUTTON" Content="取消" />
+                                        <Button x:Name="PART_PAUSEBUTTON" Content="暂停" />
+                                        <Button x:Name="PART_CONTINUEBUTTON" Content="继续" />
+                                        <Button x:Name="PART_STOPBUTTON" Content="停止" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Application.Resources>
 </Application>

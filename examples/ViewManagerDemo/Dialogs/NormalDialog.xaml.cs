@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Unicorn.ViewManager;
 
 namespace ViewManagerDemo.Dialogs
 {
@@ -18,17 +19,41 @@ namespace ViewManagerDemo.Dialogs
     /// </summary>
     public partial class NormalDialog
     {
+        public Visibility SetModalResultBtVisibility
+        {
+            get
+            {
+                return (Visibility)GetValue(SetModalResultBtVisibilityProperty);
+            }
+            set
+            {
+                SetValue(SetModalResultBtVisibilityProperty, value);
+            }
+        }
+        public static readonly DependencyProperty SetModalResultBtVisibilityProperty = DependencyProperty.Register("SetModalResultBtVisibility", typeof(Visibility), typeof(NormalDialog), new PropertyMetadata(Visibility.Collapsed));
+
+
         public NormalDialog()
         {
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void StackPanel_Click(object sender, RoutedEventArgs e)
         {
-            this.ModalResult = new Unicorn.ViewManager.ModalResult
+            switch (((Button)e.OriginalSource).Name)
             {
-                Result="Hello Show as Modal"
-            };
+                case "_setResultBt":
+                    this.ModalResult = new Unicorn.ViewManager.ModalResult
+                    {
+                        Result = $"你输入了 \" {_text.Text} \""
+                    };
+                    break;
+            }
+        }
+
+        private void _showAtSameStack_Click(object sender, RoutedEventArgs e)
+        {
+            this.ParentHostContainer.Show(new NormalDialog());
         }
     }
 }

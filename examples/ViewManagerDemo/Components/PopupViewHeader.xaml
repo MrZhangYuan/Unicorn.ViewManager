@@ -1,0 +1,37 @@
+﻿<UserControl
+    x:Class="ViewManagerDemo.Components.PopupViewHeader"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ViewManagerDemo.Components"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uviews="clr-namespace:Unicorn.ViewManager;assembly=Unicorn.ViewManager"
+    x:Name="SELF"
+    Height="53"
+    d:DesignHeight="53"
+    Background="#10000000"
+    d:DesignWidth="1000"
+    BorderBrush="{StaticResource MainBackgroundDarkBrush}"
+    BorderThickness="0,0,0,3"
+    mc:Ignorable="d">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="50" />
+        </Grid.ColumnDefinitions>
+        <Border Margin="6" Background="{StaticResource DefaultLogoBrush}" />
+        <ContentControl Grid.Column="1" Content="{Binding ElementName=SELF, Path=TitleContent}" />
+        <Button
+            Grid.Column="2"
+            Width="40"
+            Height="40"
+            Command="uviews:ViewCommands.ClosePopupItem"
+            CommandParameter="{Binding RelativeSource={RelativeSource AncestorLevel=1, AncestorType=uviews:PopupItem, Mode=FindAncestor}}"
+            Content="×"
+            FontSize="20"
+            Foreground="Black"
+            Style="{StaticResource DefaultButtonStyle}"
+            WindowChrome.IsHitTestVisibleInChrome="True" />
+    </Grid>
+</UserControl>
