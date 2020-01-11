@@ -8,6 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uview="clr-namespace:Unicorn.ViewManager;assembly=Unicorn.ViewManager"
     x:Name="SELF"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
     d:DesignHeight="1080"
     d:DesignWidth="1920"
     Background="{StaticResource DefaultBackgroundBrush}"
@@ -16,6 +18,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
         </Grid.RowDefinitions>
         <components:PopupViewHeader>
             <components:PopupViewHeader.TitleContent>
@@ -25,25 +28,31 @@
 
         <StackPanel
             Grid.Row="1"
-            Height="34"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            ButtonBase.Click="StackPanel_Click"
-            Orientation="Horizontal">
-            <Button
-                Command="uview:ViewCommands.ClosePopupItem"
-                CommandParameter="{Binding ElementName=SELF}"
-                Content="这是一个全屏Dialog，其实就是没有设置Width、Height等布局属性，点此可关闭" />
-
-            <Button
-                x:Name="_showChildDialogBt"
-                Margin="5,0"
-                Content="显示子Dialog" />
-
-            <Button
-                x:Name="_showChildDialogAsModalBt"
-                Margin="5,0"
-                Content="以模态显示子Dialog" />
+            Margin="50"
+            VerticalAlignment="Top">
+            <TextBlock
+                FontSize="16"
+                Text="全屏式Dialog并不是在屏幕级别做到全屏幕，而是在当前的软件界面全覆盖，设置很简单不用设置Dialog的Height、Width属性，同时设置 HorizontalAlignment=&quot;Stretch&quot; VerticalAlignment=&quot;Stretch&quot;，这两个值也是默认值。"
+                TextWrapping="Wrap" />
         </StackPanel>
+
+        <Border Grid.Row="2" Background="{StaticResource MarkBackgroundBrush}">
+            <StackPanel
+                Grid.Row="1"
+                Height="34"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                ButtonBase.Click="StackPanel_Click"
+                Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style BasedOn="{StaticResource DarkDefaultButtonStyle}" TargetType="Button">
+                        <Setter Property="Height" Value="34" />
+                        <Setter Property="MinWidth" Value="100" />
+                        <Setter Property="Margin" Value="5,0" />
+                    </Style>
+                </StackPanel.Resources>
+                <Button x:Name="_showChildDialogBt" Content="显示子Dialog" />
+            </StackPanel>
+        </Border>
     </Grid>
 </uview:Dialog>

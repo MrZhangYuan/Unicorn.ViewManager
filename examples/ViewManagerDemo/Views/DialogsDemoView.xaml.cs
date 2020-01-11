@@ -10,6 +10,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Unicorn.ViewManager;
+using ViewManagerDemo.Dialogs;
 
 namespace ViewManagerDemo.Views
 {
@@ -35,6 +37,31 @@ namespace ViewManagerDemo.Views
         public DialogsDemoView()
         {
             InitializeComponent();
+        }
+
+        private void StackPanel_Click(object sender, RoutedEventArgs e)
+        {
+            switch (((Button)e.OriginalSource).Name)
+            {
+                case "_showFullScreen":
+                   ViewManager.Instance.Show(new FullScreenDialog());
+                    break;
+
+                case "_showNormal":
+                    ViewManager.Instance.Show(new NormalDialog());
+                    break;
+                case "_showEventBt":
+                    ViewManager.Instance.Show(new DialogWithEvent());
+                    break;
+
+                case "_showDialogAsModalBt":
+                    var modalresult = ViewManager.Instance.ShowModal(new NormalDialog() { SetModalResultBtVisibility = Visibility.Visible });
+                    if (modalresult != null)
+                    {
+                        MessageDialogBox.Show(modalresult.Result + "");
+                    }
+                    break;
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Unicorn.ViewManager;
 
 namespace ViewManagerDemo.Dialogs
 {
@@ -37,12 +38,22 @@ namespace ViewManagerDemo.Dialogs
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void StackPanel_Click(object sender, RoutedEventArgs e)
         {
-            this.ModalResult = new Unicorn.ViewManager.ModalResult
+            switch (((Button)e.OriginalSource).Name)
             {
-                Result=$"你输入了 \" {_text.Text} \""
-            };
+                case "_setResultBt":
+                    this.ModalResult = new Unicorn.ViewManager.ModalResult
+                    {
+                        Result = $"你输入了 \" {_text.Text} \""
+                    };
+                    break;
+            }
+        }
+
+        private void _showAtSameStack_Click(object sender, RoutedEventArgs e)
+        {
+            this.ParentHostContainer.Show(new NormalDialog());
         }
     }
 }

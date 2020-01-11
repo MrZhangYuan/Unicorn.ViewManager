@@ -29,6 +29,21 @@ namespace Unicorn.ViewManager
         internal ModalResult _modalResult;
         private EventHandlerList _events;
         private readonly PopupStackControl _popupStackControl = null;
+        private IPopupItemContainer _parentHostContainer = null;
+        private PopupStackControl _parentHostStack = null;
+
+        public IPopupItemContainer ParentHostContainer
+        {
+            get
+            {
+                if (this.ParentHostStack != null)
+                {
+                    return this.ParentHostStack;
+                }
+
+                return _parentHostContainer;
+            }
+        }
 
         internal PopupStackControl PopupStackControl
         {
@@ -228,8 +243,15 @@ namespace Unicorn.ViewManager
 
         internal PopupStackControl ParentHostStack
         {
-            get;
-            set;
+            get
+            {
+                return this._parentHostStack;
+            }
+            set
+            {
+                this._parentHostStack = value;
+                this._parentHostContainer = value;
+            }
         }
 
 
@@ -248,15 +270,17 @@ namespace Unicorn.ViewManager
                 throw new ArgumentNullException(nameof(container));
             }
 
-            if (!object.ReferenceEquals(this.ParentHostStack, container))
+            var oldcontainer = this._parentHostContainer;
+            this._parentHostContainer = container;
+            try
             {
-                if (container is PopupStackControl popupStackControl)
-                {
-                    popupStackControl.VerifyCanShow(this);
-                }
+                container.Show(this);
             }
-
-            container.Show(this);
+            catch (Exception)
+            {
+                this._parentHostContainer = oldcontainer;
+                throw;
+            }
         }
 
         public ModalResult ShowAsModal()
@@ -270,12 +294,17 @@ namespace Unicorn.ViewManager
                 throw new ArgumentNullException(nameof(container));
             }
 
-            if (container is PopupStackControl popupStackControl)
+            var oldcontainer = this._parentHostContainer;           
+            this._parentHostContainer = container;
+            try
             {
-                popupStackControl.VerifyCanShow(this);
+                return container.ShowModal(this);
             }
-
-            return container.ShowModal(this);
+            catch (Exception)
+            {
+                this._parentHostContainer = oldcontainer;
+                throw;
+            }
         }
 
         public void Close()

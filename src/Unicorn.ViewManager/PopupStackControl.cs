@@ -16,6 +16,7 @@ using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Unicorn.ViewManager.Preferences;
+using System.Threading;
 
 namespace Unicorn.ViewManager
 {
@@ -244,7 +245,12 @@ namespace Unicorn.ViewManager
                 PopupItemContainer itemContainer = this.PopupContainerFromItem(item);
                 itemContainer.RequestShowAnimation(_p =>
                 {
-                    item.InternalShown(out EventArgs e);
+                    //若不使用InvokeAsync调度，某些情况可能会出现页面不绘制问题
+                    this.Dispatcher.InvokeAsync(() =>
+                    {
+                        item.InternalShown(out EventArgs e);
+
+                    },DispatcherPriority.Send);
                 });
             }
             else
@@ -504,7 +510,12 @@ namespace Unicorn.ViewManager
                     var container = this.PopupContainerFromItem(item);
                     container.OnCloseAnimation(_p =>
                     {
-                        CloseAndDisposeItem(item);
+                        //若不使用InvokeAsync调度，某些情况可能会出现页面不绘制问题
+                        this.Dispatcher.InvokeAsync(() =>
+                        {
+                            CloseAndDisposeItem(item);
+
+                        }, DispatcherPriority.Send);
                     });
                 }
                 else

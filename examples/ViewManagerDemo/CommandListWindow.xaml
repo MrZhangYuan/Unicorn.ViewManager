@@ -20,7 +20,7 @@
             ResizeBorderThickness="5"
             UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top">
         <StackPanel.Resources>
             <Style TargetType="Button">
                 <Setter Property="Height" Value="32" />
@@ -31,16 +31,16 @@
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[DialogsDemoView]}" Content="Dialog Demos" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[FlyoutsDemoView]}" Content="Flyout Demos" />
 
-        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowFlyoutLeft]}" Content="左 -&gt; 显示Flyout" />
+        <!--<Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowFlyoutLeft]}" Content="左 -&gt; 显示Flyout" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowFlyoutTop]}" Content="上 -&gt; 显示Flyout" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowFlyoutRight]}" Content="右 -&gt; 显示Flyout" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowFlyoutBottom]}" Content="下 -&gt; 显示Flyout" />
 
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowDialogFullScreen]}" Content="全屏Dialog" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowDialogNormal]}" Content="正常Dialog" />
-        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowDialogAsModal]}" Content="模态Dialog" />
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowDialogAsModal]}" Content="模态Dialog" />-->
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowMessageDialogBox]}" Content="MessageDialogBox" />
-        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowProcessDialogBox]}" Content="ShowProcessDialogBox" />
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowProcessDialogBox]}" Content="ProcessDialogBox" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[Exit]}" Content="退出" />
     </StackPanel>
 </Window>
