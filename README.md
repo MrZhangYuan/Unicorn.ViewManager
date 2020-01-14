@@ -9,8 +9,32 @@
 </div>
 
 
-## Let's get started
+## Installation
 - [Nuget](https://www.nuget.org/packages/Unicorn.ViewManager/)
+
+```
+PM> Install-Package Unicorn.ViewManager
+```
+
+## Let's get started
+To start, first add this code at MainWindow's constructor.This step is to initialize a main view stack. ViewManager.Instance.MainRichView.SwitchView(object) method is used to switch the main view in the program,it does not belong to the view stack.
+```csharp
+public MainWindow()
+{
+  InitializeComponent();
+  
+  ViewManager.Instance.InitializeRichView(this);
+  ViewManager.Instance.ViewPreferences.UsePopupViewAnimations = true;
+  ViewManager.Instance.MainRichView.SwitchView(new MainView());
+}
+```
+The second step is to initialize a Unicorn.ViewManager.Dialog or Unicorn.ViewManager.Flyout,you can inherit it in xaml,when you have a Unicorn.ViewManager.Dialog or Unicorn.ViewManager.Flyout, you can display it with ViewManager.Instance.Show(PopupItem item) method.
+```csharp
+ViewManager.Instance.Show(new FullScreenDialog());--FullScreenDialog is my Dialog instance inherit Dialog
+--OR
+ViewManager.Instance.Show(new LeftFlyout());--LeftFlyout is my flyout instance inherit Flyout
+```
+See more details in the demo.
 
 
 ## Screenshots
