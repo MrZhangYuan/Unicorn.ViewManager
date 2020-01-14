@@ -52,7 +52,7 @@ dialog.Close();
 Each view item has four events, they are 'Showing','Shown','Closing','Closed'.
 'Showing','Closing' can be canceled. you can use it like that:
 ```csharp
-public partial class DialogWithEvent
+public partial class DialogWithEvent : Dialog
 {
     public DialogWithEvent()
     {
