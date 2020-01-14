@@ -1,5 +1,12 @@
-# Unicorn.ViewManager
-A powerful WPF view management library
+<div align="center">
+  <h1>Unicorn.ViewManager</h1>
+  <p>
+    A powerful WPF view management library
+  </p>
+  <p>
+    Supporting .NET Core (3.0 and 3.1)
+  </p>
+</div>
 
 
 ## Let's get started
