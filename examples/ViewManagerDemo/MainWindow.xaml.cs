@@ -25,7 +25,7 @@ namespace ViewManagerDemo
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public static MainWindow Instance
         {
@@ -143,7 +143,7 @@ namespace ViewManagerDemo
 
                             await Task.Factory.StartNew(() =>
                             {
-                                for (int i = 0; i < 1000; i++)
+                                for (int i = 0; i < 200; i++)
                                 {
                                     SpinWait.SpinUntil(() => !ispause || cancellationTokenSource.IsCancellationRequested);
                                     if (cancellationTokenSource.IsCancellationRequested)
@@ -151,14 +151,13 @@ namespace ViewManagerDemo
                                         break;
                                     }
 
-                                    box.ProcessValue = (double)i / 1000 * 100;
+                                    box.ProcessValue = (double)i / 200 * 100;
 
                                     Thread.Sleep(100);
                                 }
 
                             }, cancellationTokenSource.Token);
                         }
-
                     }
                     break;
 

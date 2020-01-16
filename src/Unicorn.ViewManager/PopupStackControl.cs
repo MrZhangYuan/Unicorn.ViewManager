@@ -25,7 +25,6 @@ namespace Unicorn.ViewManager
     {
         const string PART_POPUPSTACKPRESENTER = "PART_POPUPSTACKPRESENTER";
 
-        private ContentPresenter _stackPresenter = null;
         private readonly PopupStack _popupStack = null;
 
         public IEnumerable<PopupItem> Items
@@ -102,14 +101,12 @@ namespace Unicorn.ViewManager
         {
             base.OnApplyTemplate();
 
-            this._stackPresenter = this.GetTemplateChild(PART_POPUPSTACKPRESENTER) as ContentPresenter;
+            var stackPresenter = this.GetTemplateChild(PART_POPUPSTACKPRESENTER) as ContentPresenter;
 
-            if (this._stackPresenter == null)
+            if (stackPresenter != null)
             {
-                throw new Exception($"模板缺少名为 {PART_POPUPSTACKPRESENTER} 且类型为 {typeof(ContentPresenter)} 的组件，该组件为视图容器");
+                stackPresenter.Content = this._popupStack;
             }
-
-            this._stackPresenter.Content = this._popupStack;
         }
 
         private bool VerifyTopItemModal()
@@ -180,22 +177,22 @@ namespace Unicorn.ViewManager
             {
                 if (item._isClosing)
                 {
-                    throw new Exception("该项当前不可显示，因为它当前正在关闭");
+                    throw new InvalidOperationException("该项当前不可显示，因为它当前正在关闭");
                 }
 
                 if (item._isShowing)
                 {
-                    throw new Exception("该项当前不可显示，因为它当前正在显示");
+                    throw new InvalidOperationException("该项当前不可显示，因为它当前正在显示");
                 }
 
                 if (item._showingAsModal)
                 {
-                    throw new Exception("该项当前不可显示，因为它当前正在以模态显示");
+                    throw new InvalidOperationException("该项当前不可显示，因为它当前正在以模态显示");
                 }
 
                 if (item._isHostAtViewStack)
                 {
-                    throw new Exception("该项当前不可显示，因为它当前正在其它视图堆栈中显示");
+                    throw new InvalidOperationException("该项当前不可显示，因为它当前正在其它视图堆栈中显示");
                 }
             }
             else
@@ -203,27 +200,27 @@ namespace Unicorn.ViewManager
                 //PopupItem 中的视图栈
                 if (this.VerifyIsSpecialItem(this._parentPopupItem))
                 {
-                    throw new Exception($"不可在 {typeof(MessageDialogBox)}、{typeof(ProcessDialogBox)} 等特殊视图中显示子视图");
+                    throw new InvalidOperationException($"不可在 {typeof(MessageDialogBox)}、{typeof(ProcessDialogBox)} 等特殊视图中显示子视图");
                 }
 
                 if (object.ReferenceEquals(this._parentPopupItem, item))
                 {
-                    throw new Exception("不可在自己的视图堆栈中显示自己");
+                    throw new InvalidOperationException("不可在自己的视图堆栈中显示自己");
                 }
 
                 if (this._parentPopupItem._isClosing)
                 {
-                    throw new Exception("该项当前不可做为容器去显示其它PopupItem，因为它当前正在关闭");
+                    throw new InvalidOperationException("该项当前不可做为容器去显示其它PopupItem，因为它当前正在关闭");
                 }
 
                 if (!this._parentPopupItem._isHostAtViewStack)
                 {
-                    throw new Exception("该项当前不可做为容器去显示其它PopupItem，因为它当前未显示");
+                    throw new InvalidOperationException("该项当前不可做为容器去显示其它PopupItem，因为它当前未显示");
                 }
 
                 if (this._parentPopupItem._showingAsModal)
                 {
-                    throw new Exception("该项当前不可做为容器去显示其它PopupItem，因为它当前正在以模态显示");
+                    throw new InvalidOperationException("该项当前不可做为容器去显示其它PopupItem，因为它当前正在以模态显示");
                 }
             }
         }
@@ -264,7 +261,7 @@ namespace Unicorn.ViewManager
             PopupItemContainer container = item.GetContainer();
             if (container == null)
             {
-                throw new Exception("处理PopupItem容器时出现异常，PopupItem.GetContainer()方法不能返回null");
+                container = new DefaultPopupItemContainer();
             }
             container.PopupItem = item;
             this._popupStack.Items.Add(container);
@@ -327,7 +324,7 @@ namespace Unicorn.ViewManager
 
             if (this.VerifyIsProcessDialogBox(item))
             {
-                throw new Exception($"视图类型 {typeof(ProcessDialogBox)} 不可以模态方式进行显示。");
+                throw new InvalidOperationException($"视图类型 {typeof(ProcessDialogBox)} 不可以模态方式进行显示。");
             }
 
             //以模态显示窗口时，若发现最上层是模态窗口
@@ -406,7 +403,7 @@ namespace Unicorn.ViewManager
 
             if (this.VerifyIsMessageDialogBox(item))
             {
-                throw new Exception($"视图类型 {typeof(MessageDialogBox)} 必须以模态方式进行显示。");
+                throw new InvalidOperationException($"视图类型 {typeof(MessageDialogBox)} 必须以模态方式进行显示。");
             }
 
             //堆栈最上层若是模态窗口，则不予显示当前窗口，并激活最上层的模态窗口
@@ -467,7 +464,7 @@ namespace Unicorn.ViewManager
 
             if (!this.Contains(item))
             {
-                throw new Exception("该项当前不可关闭，因为它不处于当前的试图堆栈");
+                throw new InvalidOperationException("该项当前不可关闭，因为它不处于当前的视图栈");
             }
 
             item._isClosing = true;

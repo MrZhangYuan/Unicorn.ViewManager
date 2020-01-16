@@ -59,13 +59,13 @@ namespace Unicorn.ViewManager
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            var contentPresenter = GetTemplateChild(PART_POPUPSTACKCONTROL) as ContentPresenter;
-            if (contentPresenter == null)
-            {
-                throw new Exception($"缺少模板名称为 {PART_POPUPSTACKCONTROL} 类型为 {typeof(ContentPresenter)} 的组件");
-            }
 
-            contentPresenter.Content = this._popupStackControl;
+            var contentPresenter = GetTemplateChild(PART_POPUPSTACKCONTROL) as ContentPresenter;
+
+            if (contentPresenter != null)
+            {
+                contentPresenter.Content = this._popupStackControl;
+            }
         }
 
         protected override bool IsItemItsOwnContainerOverride(object item)

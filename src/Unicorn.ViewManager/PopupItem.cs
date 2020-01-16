@@ -63,7 +63,7 @@ namespace Unicorn.ViewManager
             {
                 if (!this._showingAsModal)
                 {
-                    throw new Exception($"当前 {this.GetType()} 不作为模态显示，因此不能设置ModalResult");
+                    throw new InvalidOperationException($"当前 {this.GetType()} 不作为模态显示，因此不能设置ModalResult");
                 }
                 _modalResult = value;
                 this.Close();

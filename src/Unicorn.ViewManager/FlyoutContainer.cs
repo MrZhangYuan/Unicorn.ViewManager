@@ -57,7 +57,8 @@ namespace Unicorn.ViewManager
         private void _funcBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.OriginalSource == sender
-                && e.OriginalSource is Border)
+                && e.OriginalSource is Border
+                && !this.PopupItem._isClosing)
             {
                 if (this.PopupItem._showingAsModal)
                 {

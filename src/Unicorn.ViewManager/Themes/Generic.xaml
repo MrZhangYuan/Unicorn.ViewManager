@@ -7,6 +7,7 @@
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/ProcessDialogBox.xaml" />
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/PopupStack.xaml" />
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/PopupStackControl.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/DefaultPopupItemContainer.xaml" />
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/PopupItemContainer.xaml" />
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/DialogContainer.xaml" />
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/Dialog.xaml" />
@@ -15,10 +16,4 @@
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/RichViewItem.xaml" />
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/RichViewControl.xaml" />
     </ResourceDictionary.MergedDictionaries>
-
-    
-
-    
-
-    
 </ResourceDictionary>
