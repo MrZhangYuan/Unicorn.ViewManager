@@ -353,8 +353,11 @@ namespace System.Windows
 
         public void Dispose()
         {
-            this._isFreezed = false;
-            this._owner.Close(this);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this._isFreezed = false;
+                this._owner.Close(this);
+            }, DispatcherPriority.Send);
         }
 
         public static ProcessDialogBox Show(string text, string caption)
