@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Unicorn.ViewManager.Preferences;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Unicorn.ViewManager
 {
@@ -79,7 +80,7 @@ namespace Unicorn.ViewManager
         private static void OnClosePopupItem(object sender, ExecutedRoutedEventArgs e)
         {
             PopupStackControl stackControl = (PopupStackControl)sender;
-            stackControl.Close((PopupItem)e.Parameter);
+            stackControl.Close(e.Parameter as PopupItem);
             e.Handled = true;
         }
 
@@ -93,7 +94,7 @@ namespace Unicorn.ViewManager
         private static void OnShowPopupItem(object sender, ExecutedRoutedEventArgs e)
         {
             PopupStackControl stackControl = (PopupStackControl)sender;
-            stackControl.Show((PopupItem)e.Parameter);
+            stackControl.Show(e.Parameter as PopupItem);
             e.Handled = true;
         }
 
@@ -147,6 +148,18 @@ namespace Unicorn.ViewManager
                 var topitem = this.PopupItemFromIndex(this._popupStack.Items.Count - 1);
 
                 return topitem is MessageDialogBox;
+            }
+
+            return false;
+        }
+
+        private bool VerifyTopItemIsProcessDialogBox()
+        {
+            if (this._popupStack.Items.Count > 0)
+            {
+                var topitem = this.PopupItemFromIndex(this._popupStack.Items.Count - 1);
+
+                return topitem is ProcessDialogBox;
             }
 
             return false;
@@ -247,7 +260,7 @@ namespace Unicorn.ViewManager
                     {
                         item.InternalShown(out EventArgs e);
 
-                    },DispatcherPriority.Send);
+                    }, DispatcherPriority.Send);
                 });
             }
             else
@@ -297,7 +310,13 @@ namespace Unicorn.ViewManager
 
         public PopupItem PopupItemFromIndex(int index)
         {
-            return this.PopupContainerFromIndex(index).PopupItem;
+            if (index >= 0
+                && this._popupStack.Items.Count > index)
+            {
+                return this.PopupContainerFromIndex(index).PopupItem;
+            }
+
+            return null;
         }
 
         private void MoveItemToTop(PopupItem item)
@@ -315,6 +334,14 @@ namespace Unicorn.ViewManager
             }
         }
 
+        private void TopFlicker()
+        {
+            PopupItemContainer container = this.PopupContainerFromIndex(this._popupStack.Items.Count - 1);
+            if (container != null)
+            {
+                container.Flicker();
+            }
+        }
         public ModalResult ShowModal(PopupItem item)
         {
             if (item == null)
@@ -335,11 +362,7 @@ namespace Unicorn.ViewManager
                 if (this.VerifyTopItemIsMessageDialogBox()
                     || !this.VerifyIsMessageDialogBox(item))
                 {
-                    PopupItemContainer container = this.PopupContainerFromIndex(this._popupStack.Items.Count - 1);
-                    if (container != null)
-                    {
-                        container.Flicker();
-                    }
+                    this.TopFlicker();
 
                     return null;
                 }
@@ -524,6 +547,33 @@ namespace Unicorn.ViewManager
             {
                 item._isClosing = false;
             }
+        }
+
+        public bool Close()
+        {
+            var topitem = this.TopItem;
+
+            if (topitem != null)
+            {
+                if (this.VerifyIsSpecialItem(topitem))
+                {
+                    this.TopFlicker();
+                }
+                else
+                {
+                        return ((IPopupItemContainer)topitem).Close();
+                }
+            }
+            else
+            {
+                if (this._parentPopupItem != null)
+                {
+                    this._parentPopupItem.Close();
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

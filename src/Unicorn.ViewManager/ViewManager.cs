@@ -84,5 +84,10 @@ namespace Unicorn.ViewManager
         {
             this.MainRichView.SwitchView(item);
         }
+
+        public bool Close()
+        {
+            return this.MainRichView.Close();
+        }
     }
 }

@@ -28,7 +28,7 @@ namespace Unicorn.ViewManager
         internal DispatcherFrame _dispatcherFrame = null;
         internal ModalResult _modalResult;
         private EventHandlerList _events;
-        private readonly PopupStackControl _popupStackControl = null;
+        private readonly PopupStackControl _childPopupStackControl = null;
         private IPopupItemContainer _parentHostContainer = null;
         private PopupStackControl _parentHostStack = null;
 
@@ -49,7 +49,7 @@ namespace Unicorn.ViewManager
         {
             get
             {
-                return this._popupStackControl;
+                return this._childPopupStackControl;
             }
         }
 
@@ -86,7 +86,7 @@ namespace Unicorn.ViewManager
         {
             get
             {
-                return this._popupStackControl.Items;
+                return this._childPopupStackControl.Items;
             }
         }
 
@@ -159,7 +159,7 @@ namespace Unicorn.ViewManager
 
         public PopupItem()
         {
-            this._popupStackControl = new PopupStackControl(this);
+            this._childPopupStackControl = new PopupStackControl(this);
         }
 
         public override void OnApplyTemplate()
@@ -170,7 +170,7 @@ namespace Unicorn.ViewManager
 
             if (presenter != null)
             {
-                presenter.Content = this._popupStackControl;
+                presenter.Content = this._childPopupStackControl;
             }
         }
 
@@ -330,7 +330,7 @@ namespace Unicorn.ViewManager
                 throw new ArgumentNullException(nameof(item));
             }
 
-            return this._popupStackControl.ShowModal(item);
+            return this._childPopupStackControl.ShowModal(item);
         }
 
         public void Show(PopupItem item)
@@ -340,12 +340,12 @@ namespace Unicorn.ViewManager
                 throw new ArgumentNullException(nameof(item));
             }
 
-            this._popupStackControl.Show(item);
+            this._childPopupStackControl.Show(item);
         }
 
         public void Close(PopupItem item)
         {
-            this._popupStackControl.Close(item);
+            this._childPopupStackControl.Close(item);
         }
 
         #endregion
@@ -366,6 +366,10 @@ namespace Unicorn.ViewManager
             this._showingAsModal = false;
         }
 
+        bool IPopupItemContainer.Close()
+        {
+            return this._childPopupStackControl.Close();
+        }
         protected internal abstract PopupItemContainer GetContainer();
     }
 }

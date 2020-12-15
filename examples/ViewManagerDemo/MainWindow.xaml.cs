@@ -70,6 +70,17 @@ namespace ViewManagerDemo
             };
         }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Key == Key.Escape)
+            {
+                ViewManager.Instance.Close();
+                e.Handled = true;
+            }
+
+        }
+
         public void RefreshCmdWindowLocation()
         {
             this._cmdListWindow.Owner = this;

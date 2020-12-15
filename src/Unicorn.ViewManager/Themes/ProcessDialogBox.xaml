@@ -45,7 +45,7 @@
                                 VerticalAlignment="Top"
                                 BorderThickness="0"
                                 IsIndeterminate="{TemplateBinding IsIndeterminate}"
-                                Maximum="100"
+                                Maximum="{TemplateBinding MaxProcess}"
                                 Value="{TemplateBinding ProcessValue}" />
 
                             <Border Grid.Row="3" Background="#FFF0F0F0">

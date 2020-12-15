@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -149,6 +150,32 @@ namespace System.Windows
         }
         public static readonly DependencyProperty ProcessValueProperty = DependencyProperty.Register("ProcessValue", typeof(double), typeof(ProcessDialogBox), new PropertyMetadata(0d));
 
+
+        public double MaxProcess
+        {
+            get
+            {
+                return this.Dispatcher.Invoke(() =>
+                {
+                    return (double)GetValue(MaxProcessProperty);
+                });
+            }
+            set
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    SetValue(MaxProcessProperty, value);
+                });
+            }
+        }
+        public static readonly DependencyProperty MaxProcessProperty = DependencyProperty.Register("MaxProcess", typeof(double), typeof(ProcessDialogBox), new PropertyMetadata(100d));
+
+
+        public void ReportProcess(double maxprocess, double processvalue)
+        {
+            this.ProcessValue = processvalue;
+            this.MaxProcess = maxprocess;
+        }
 
         private ProcessDialogBox()
         {

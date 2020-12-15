@@ -5,5 +5,6 @@
         ModalResult ShowModal(PopupItem item);
         void Show(PopupItem item);
         void Close(PopupItem item);
+        bool Close();
     }
 }

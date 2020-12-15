@@ -173,5 +173,10 @@ namespace Unicorn.ViewManager
         {
             ((RichViewControl)sender).SwitchView(e.Parameter);
         }
+
+        public bool Close()
+        {
+            return this._popupStackControl.Close();
+        }
     }
 }

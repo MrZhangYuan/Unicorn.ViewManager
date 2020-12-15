@@ -21,7 +21,7 @@
                                 ContentStringFormat="{TemplateBinding ContentStringFormat}"
                                 ContentTemplate="{TemplateBinding ContentTemplate}" />
 
-                            <ContentPresenter x:Name="PART_POPUPSTACK"/>
+                            <ContentPresenter x:Name="PART_POPUPSTACK" />
                         </Grid>
                     </Border>
                 </ControlTemplate>
