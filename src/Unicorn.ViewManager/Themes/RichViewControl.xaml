@@ -14,7 +14,7 @@
                         <Grid>
                             <!--  默认内容层  -->
                             <Border>
-                                <Grid IsItemsHost="True"/>
+                                <Grid IsItemsHost="True" />
                             </Border>
 
                             <!--  Popup层  -->

@@ -54,7 +54,7 @@ namespace Unicorn.ViewManager
             CommandManager.RegisterClassCommandBinding(typeof(PopupStackControl), new CommandBinding(ViewCommands.ClosePopupItem, new ExecutedRoutedEventHandler(PopupStackControl.OnClosePopupItem), new CanExecuteRoutedEventHandler(PopupStackControl.OnCanClosePopupItem)));
         }
 
-        public PopupStackControl()
+        internal PopupStackControl()
         {
             this._popupStack = new PopupStack(this);
         }

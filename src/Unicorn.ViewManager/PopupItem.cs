@@ -45,7 +45,7 @@ namespace Unicorn.ViewManager
             }
         }
 
-        internal PopupStackControl PopupStackControl
+        internal PopupStackControl ChildPopupStackControl
         {
             get
             {

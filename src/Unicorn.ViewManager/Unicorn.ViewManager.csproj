@@ -7,13 +7,13 @@
     <Platforms>AnyCPU;x86</Platforms>
     <Authors>Mr.Zhang</Authors>
     <Product>Unicorn</Product>
-    <Version>3.1.0</Version>
+    <Version>3.1.1</Version>
     <Description>WPF的一个强大的视图管理库，基于视图栈的形式管理WPF项目中的各种视图。</Description>
     <PackageProjectUrl>https://github.com/MrZhangYuan/Unicorn.ViewManager</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MrZhangYuan/Unicorn.ViewManager.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>WPF;C#;.NET;.NET Core;WPF View Manager</PackageTags>
-    <AssemblyVersion>3.1.0.0</AssemblyVersion>
+    <AssemblyVersion>3.1.1.0</AssemblyVersion>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
