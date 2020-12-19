@@ -4,7 +4,7 @@
     A powerful WPF view management library
   </p>
   <p>
-    Supporting .NET Core (3.0 and 3.1)
+    Supporting .NET Core (3.1)
   </p>
 </div>
 
