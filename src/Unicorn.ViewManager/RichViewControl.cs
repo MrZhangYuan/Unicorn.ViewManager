@@ -29,6 +29,14 @@ namespace Unicorn.ViewManager
 
         private readonly PopupStackControl _popupStackControl = null;
 
+        public PopupStackControl PopupStackControl
+        {
+            get
+            {
+                return this._popupStackControl;
+            }
+        }
+
         public bool IsAnimationActive
         {
             get
