@@ -1,4 +1,4 @@
-﻿<UserControl
+﻿<vm:Dialog
     x:Class="ViewManagerDemo.Views.DialogsDemoView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:ViewManagerDemo.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ucmd="clr-namespace:Unicorn.Utilities.Commands;assembly=Unicorn.Utilities"
+    xmlns:vm="clr-namespace:Unicorn.ViewManager;assembly=Unicorn.ViewManager"
     d:DesignHeight="800"
     d:DesignWidth="1200"
     Background="{StaticResource DefaultBackgroundBrush}"
@@ -77,4 +78,4 @@
             </StackPanel>
         </Border>
     </Grid>
-</UserControl>
+</vm:Dialog>

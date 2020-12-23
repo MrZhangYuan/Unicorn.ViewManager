@@ -32,6 +32,24 @@ namespace Unicorn.ViewManager
         private IPopupItemContainer _parentHostContainer = null;
         private PopupStackControl _parentHostStack = null;
 
+        IPopupItemContainer IPopupItemContainer.Parent => this.ParentHostStack;
+
+        public PopupItem TopItem
+        {
+            get
+            {
+                PopupItem topitem = this.ChildPopupStackControl.TopItem;
+                if (topitem == null)
+                {
+                    topitem = this;
+                }
+                return topitem;
+            }
+        }
+
+        public IEnumerable<PopupItem> Children => this.ChildPopupStackControl.Items;
+
+
         public IPopupItemContainer ParentHostContainer
         {
             get
@@ -79,14 +97,6 @@ namespace Unicorn.ViewManager
                     this._events = new EventHandlerList();
                 }
                 return this._events;
-            }
-        }
-
-        public IEnumerable<PopupItem> Children
-        {
-            get
-            {
-                return this._childPopupStackControl.Items;
             }
         }
 
@@ -220,7 +230,7 @@ namespace Unicorn.ViewManager
         {
             e = new EventArgs();
 
-            this.CloseChildren();
+            //this.CloseChildren();
 
             this.OnClosed(e);
         }
@@ -260,7 +270,7 @@ namespace Unicorn.ViewManager
 
         public void Show()
         {
-            ViewManager.Instance.MainRichView.Show(this);
+            ViewManager.Instance.ActiveContainer.Show(this);
         }
 
         public void Show(IPopupItemContainer container)
@@ -285,7 +295,7 @@ namespace Unicorn.ViewManager
 
         public ModalResult ShowAsModal()
         {
-            return ViewManager.Instance.MainRichView.ShowModal(this);
+            return ViewManager.Instance.ActiveContainer.ShowModal(this);
         }
         public ModalResult ShowAsModal(IPopupItemContainer container)
         {
@@ -294,7 +304,7 @@ namespace Unicorn.ViewManager
                 throw new ArgumentNullException(nameof(container));
             }
 
-            var oldcontainer = this._parentHostContainer;           
+            var oldcontainer = this._parentHostContainer;
             this._parentHostContainer = container;
             try
             {
@@ -312,10 +322,6 @@ namespace Unicorn.ViewManager
             if (this.ParentHostStack != null)
             {
                 this.ParentHostStack.Close(this);
-            }
-            else
-            {
-                ViewManager.Instance.MainRichView.Close(this);
             }
         }
 

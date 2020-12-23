@@ -28,6 +28,8 @@ namespace Unicorn.ViewManager
 
         private readonly PopupStack _popupStack = null;
 
+        private readonly PopupItem _parentPopupItem = null;
+
         public IEnumerable<PopupItem> Items
         {
             get
@@ -36,15 +38,10 @@ namespace Unicorn.ViewManager
             }
         }
 
-        public PopupItem TopItem
-        {
-            get
-            {
-                return this.PopupItemFromIndex(this._popupStack.Items.Count - 1);
-            }
-        }
+        public PopupItem TopItem => this.PopupItemFromIndex(this._popupStack.Items.Count - 1);
+        IPopupItemContainer IPopupItemContainer.Parent => this._parentPopupItem;
+        public IEnumerable<PopupItem> Children => this.Items;
 
-        private readonly PopupItem _parentPopupItem = null;
 
         static PopupStackControl()
         {
@@ -506,15 +503,15 @@ namespace Unicorn.ViewManager
 
             void CloseAndDisposeItem(PopupItem popupItem)
             {
-                this.RemoveItem(popupItem);
-                popupItem._isClosing = false;
                 try
                 {
-                    popupItem.InternalClosed(out EventArgs e);
+                    this.RemoveItem(popupItem);
+                    popupItem.InternalDiapose();
+                    popupItem._isClosing = false;
                 }
                 finally
                 {
-                    popupItem.InternalDiapose();
+                    popupItem.InternalClosed(out EventArgs e);
                 }
             }
 
@@ -561,7 +558,7 @@ namespace Unicorn.ViewManager
                 }
                 else
                 {
-                        return ((IPopupItemContainer)topitem).Close();
+                    return ((IPopupItemContainer)topitem).Close();
                 }
             }
             else

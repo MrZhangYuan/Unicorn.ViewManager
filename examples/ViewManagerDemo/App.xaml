@@ -32,7 +32,7 @@
             <Setter Property="FontSize" Value="20" />
             <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
-        
+
         <Style x:Key="DefaultButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -94,7 +94,7 @@
         <BitmapImage x:Key="Box_Error" UriSource="/Unicorn.ViewManager;component/Resource/Images/box_error.png" />
 
 
-        <!--如果有需要，可以重写MessageDialogBox的样式，就像这样（但要保证模板必须的组件）：-->
+        <!--  如果有需要，可以重写MessageDialogBox的样式，就像这样（但要保证模板必须的组件）：  -->
         <Style TargetType="{x:Type usystem:MessageDialogBox}">
             <Setter Property="Background" Value="White" />
             <Setter Property="HorizontalAlignment" Value="Center" />

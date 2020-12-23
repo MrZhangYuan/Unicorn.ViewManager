@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Unicorn.ViewManager.Preferences;
 
 namespace Unicorn.ViewManager
 {
-    public class ViewManager : IRichViewContainer, IPopupItemContainer
+    public class ViewManager
     {
         public static ViewManager Instance
         {
@@ -89,5 +90,52 @@ namespace Unicorn.ViewManager
         {
             return this.MainRichView.Close();
         }
+
+
+        public IPopupItemContainer ActiveContainer
+        {
+            get
+            {
+                IPopupItemContainer activecontainer = null;
+
+                UIElement element = Keyboard.FocusedElement as UIElement;
+                if (element != null
+                    && Window.GetWindow(element) is Window topwindow
+                    && topwindow is IPopupItemContainer topcontainer)
+                {
+                    activecontainer = topcontainer;
+                }
+
+                if (activecontainer == null)
+                {
+                    foreach (Window window in Application.Current.Windows)
+                    {
+                        if (window.IsActive)
+                        {
+                            if (window is IPopupItemContainer container)
+                            {
+                                activecontainer = container;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (activecontainer == null)
+                {
+                    if (Application.Current.MainWindow is IPopupItemContainer main)
+                    {
+                        activecontainer = main;
+                    }
+                }
+
+                if (activecontainer == null)
+                {
+                    activecontainer = this.MainRichView;
+                }
+                return activecontainer;
+            }
+        }
+
     }
 }

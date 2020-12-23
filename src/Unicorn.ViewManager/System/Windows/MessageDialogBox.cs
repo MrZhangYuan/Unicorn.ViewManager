@@ -371,7 +371,7 @@ namespace System.Windows
             {
                 if (owner == null)
                 {
-                    owner = ViewManager.Instance.MainRichView;
+                    owner = ViewManager.Instance.ActiveContainer;
                 }
 
                 MessageDialogBox messageDialogBox = new MessageDialogBox

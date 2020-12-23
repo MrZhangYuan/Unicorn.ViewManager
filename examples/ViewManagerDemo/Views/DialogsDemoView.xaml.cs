@@ -44,18 +44,18 @@ namespace ViewManagerDemo.Views
             switch (((Button)e.OriginalSource).Name)
             {
                 case "_showFullScreen":
-                   ViewManager.Instance.Show(new FullScreenDialog());
+                   this.Show(new FullScreenDialog());
                     break;
 
                 case "_showNormal":
-                    ViewManager.Instance.Show(new NormalDialog());
+                    this.Show(new NormalDialog());
                     break;
                 case "_showEventBt":
-                    ViewManager.Instance.Show(new DialogWithEvent());
+                    this.Show(new DialogWithEvent());
                     break;
 
                 case "_showDialogAsModalBt":
-                    var modalresult = ViewManager.Instance.ShowModal(new NormalDialog() { SetModalResultBtVisibility = Visibility.Visible });
+                    var modalresult = this.ShowModal(new NormalDialog() { SetModalResultBtVisibility = Visibility.Visible });
                     if (modalresult != null)
                     {
                         MessageDialogBox.Show(modalresult.Result + "");

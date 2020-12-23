@@ -79,6 +79,16 @@ namespace ViewManagerDemo
                 e.Handled = true;
             }
 
+            if (e.KeyboardDevice.Modifiers== ModifierKeys.Control)
+            {
+                switch (e.Key)
+                {
+                    case Key.W:
+                        var topitem = ViewManager.Instance.ActiveContainer.TopItem;
+                        StandardWindow.ShowStandard(topitem);
+                        break;
+                }
+            }
         }
 
         public void RefreshCmdWindowLocation()
@@ -99,7 +109,7 @@ namespace ViewManagerDemo
             switch (cmdkey)
             {
                 case "DialogsDemoView":
-                    ViewManager.Instance.MainRichView.SwitchView(DialogsDemoView.Instance);
+                    ViewManager.Instance.MainRichView.Show(DialogsDemoView.Instance);
                     break;
 
                 case "FlyoutsDemoView":
@@ -130,7 +140,7 @@ namespace ViewManagerDemo
 
                 case "ShowProcessDialogBox":
                     {
-                        using (ProcessDialogBox box = ProcessDialogBox.Show(ViewManager.Instance, "测试信息", "标题", false, ProcessBoxButton.Cancel | ProcessBoxButton.PauseContinue | ProcessBoxButton.Stop))
+                        using (ProcessDialogBox box = ProcessDialogBox.Show("测试信息", "标题", false, ProcessBoxButton.Cancel | ProcessBoxButton.PauseContinue | ProcessBoxButton.Stop))
                         using (CancellationTokenSource cancellationTokenSource = new CancellationTokenSource())
                         {
                             bool ispause = false;
