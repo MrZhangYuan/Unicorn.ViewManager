@@ -31,8 +31,8 @@ namespace Unicorn.ViewManager
         private EventHandlerList _events;
         private readonly PopupStackControl _childPopupStackControl = null;
 
-        private IPopupItemContainer _parentHostContainer = null;
-        private PopupStackControl _parentHostStack = null;
+        private WeakReference<IPopupItemContainer> _parentHostContainer = null;
+        private WeakReference<PopupStackControl> _parentHostStack = null;
 
         IPopupItemContainer IPopupItemContainer.Parent => this.ParentHostStack;
 
@@ -61,7 +61,9 @@ namespace Unicorn.ViewManager
                     return this.ParentHostStack;
                 }
 
-                return _parentHostContainer;
+                this._parentHostContainer.TryGetTarget(out var container);
+
+                return container;
             }
         }
 
@@ -262,12 +264,13 @@ namespace Unicorn.ViewManager
         {
             get
             {
-                return this._parentHostStack;
+                this._parentHostStack.TryGetTarget(out var parenthost);
+                return parenthost;
             }
             set
             {
-                this._parentHostStack = value;
-                this._parentHostContainer = value;
+                this._parentHostStack = new WeakReference<PopupStackControl>(value);
+                this._parentHostContainer = new WeakReference<IPopupItemContainer>(value);
             }
         }
 
@@ -288,7 +291,7 @@ namespace Unicorn.ViewManager
             }
 
             var oldcontainer = this._parentHostContainer;
-            this._parentHostContainer = container;
+            this._parentHostContainer = new WeakReference<IPopupItemContainer>(container);
             try
             {
                 container.Show(this);
@@ -312,7 +315,7 @@ namespace Unicorn.ViewManager
             }
 
             var oldcontainer = this._parentHostContainer;
-            this._parentHostContainer = container;
+            this._parentHostContainer = new WeakReference<IPopupItemContainer>(container);
             try
             {
                 return container.ShowModal(this);

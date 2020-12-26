@@ -42,9 +42,9 @@ namespace Unicorn.ViewManager
         }
 
         public PopupItem TopItem => this.PopupItemFromIndex(this._popupStack.Items.Count - 1);
-     
+
         IPopupItemContainer IPopupItemContainer.Parent => this._parentPopupItem;
-     
+
         public IEnumerable<PopupItem> Children => this.Items;
 
         public event ViewStackChangedEventHandler ViewStackChanged
@@ -61,7 +61,7 @@ namespace Unicorn.ViewManager
 
         protected internal virtual void OnViewStackChanged(ViewStackChangedEventArgs args)
         {
-            ViewStackChangedEventHandler  stackChangedEventHandler = (ViewStackChangedEventHandler)this._events["OnViewStackChanged"];
+            ViewStackChangedEventHandler stackChangedEventHandler = (ViewStackChangedEventHandler)this._events["OnViewStackChanged"];
             if (stackChangedEventHandler == null)
                 return;
             stackChangedEventHandler((object)this, args);
@@ -207,10 +207,6 @@ namespace Unicorn.ViewManager
                 throw new ArgumentNullException(nameof(item));
             }
 
-            var dsds = item.FindParentHost();
-
-
-
             //当前是独立作为视图栈
             if (this._parentPopupItem == null)
             {
@@ -229,10 +225,10 @@ namespace Unicorn.ViewManager
                     throw new InvalidOperationException("该项当前不可显示，因为它当前正在以模态显示");
                 }
 
-                if (item._isHostAtViewStack)
-                {
-                    throw new InvalidOperationException("该项当前不可显示，因为它当前正在其它视图堆栈中显示");
-                }
+                //if (item._isHostAtViewStack)
+                //{
+                //    throw new InvalidOperationException("该项当前不可显示，因为它当前正在其它视图堆栈中显示");
+                //}
             }
             else
             {
@@ -264,8 +260,25 @@ namespace Unicorn.ViewManager
             }
         }
 
+
+        private bool CheckAtSwitch(PopupItem item)
+        {
+            //目前在其它视图栈，检查是否处在从其它视图栈移动视图模式
+            return item._isHostAtViewStack
+                && item.ParentHostStack != null
+                && !object.ReferenceEquals(this, item.ParentHostStack);
+        }
+
         private void ShowCore(PopupItem item)
         {
+            bool atswitch = CheckAtSwitch(item);
+
+            //目前在其它视图栈，需要移除
+            if (atswitch)
+            {
+                item.ParentHostStack.RemoveItem(item);
+            }
+
             item.ParentHostStack = this;
             try
             {
@@ -284,14 +297,20 @@ namespace Unicorn.ViewManager
                     //若不使用InvokeAsync调度，某些情况可能会出现页面不绘制问题
                     this.Dispatcher.InvokeAsync(() =>
                     {
-                        item.InternalShown(out EventArgs e);
+                        if (!atswitch)
+                        {
+                            item.InternalShown(out EventArgs e);
+                        }
 
                     }, DispatcherPriority.Send);
                 });
             }
             else
             {
-                item.InternalShown(out EventArgs e);
+                if (!atswitch)
+                {
+                    item.InternalShown(out EventArgs e);
+                }
             }
         }
 
@@ -479,19 +498,28 @@ namespace Unicorn.ViewManager
             {
                 this.VerifyCanShow(item);
 
-                item._isShowing = true;
-                CancelEventArgs ce = null;
-                try
-                {
-                    item.InternalShowing(out ce);
-                }
-                catch (Exception)
-                {
-                    item._isShowing = false;
-                    throw;
-                }
+                bool asswitch = CheckAtSwitch(item);
 
-                if (!ce.Cancel)
+                if (!asswitch)
+                {
+                    item._isShowing = true;
+                    CancelEventArgs ce = null;
+                    try
+                    {
+                        item.InternalShowing(out ce);
+                    }
+                    catch (Exception)
+                    {
+                        item._isShowing = false;
+                        throw;
+                    }
+
+                    if (!ce.Cancel)
+                    {
+                        this.ShowCore(item);
+                    }
+                }
+                else
                 {
                     this.ShowCore(item);
                 }

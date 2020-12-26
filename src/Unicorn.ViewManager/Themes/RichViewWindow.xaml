@@ -5,6 +5,7 @@
 
 
     <Style TargetType="{x:Type vm:RichViewWindow}">
+        <Setter Property="Background" Value="#FFFFFFFF" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type vm:RichViewWindow}">

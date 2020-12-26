@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,7 +22,17 @@ namespace ViewManagerDemo
         public StandardWindow()
         {
             InitializeComponent();
+            this.ViewStackChanged += StandardWindow_ViewStackChanged;
         }
+
+        private void StandardWindow_ViewStackChanged(object sender, ViewStackChangedEventArgs e)
+        {
+            if (!this.Children.Any())
+            {
+                this.Close();
+            }
+        }
+
         public static void ShowStandard(PopupItem topitem)
         {
             topitem.Closed += StandardView_Closed;
