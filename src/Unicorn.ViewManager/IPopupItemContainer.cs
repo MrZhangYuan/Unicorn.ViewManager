@@ -5,6 +5,8 @@ namespace Unicorn.ViewManager
 {
     public interface IPopupItemContainer
     {
+        event ViewStackChangedEventHandler ViewStackChanged;
+
         IPopupItemContainer Parent
         {
             get;

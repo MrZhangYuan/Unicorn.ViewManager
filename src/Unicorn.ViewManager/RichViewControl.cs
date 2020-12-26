@@ -38,9 +38,22 @@ namespace Unicorn.ViewManager
         }
 
         public PopupItem TopItem => this.PopupStackControl.TopItem;
+
         IPopupItemContainer IPopupItemContainer.Parent => ((IPopupItemContainer)this.PopupStackControl).Parent;
+      
         public IEnumerable<PopupItem> Children => this.PopupStackControl.Children;
 
+        public event ViewStackChangedEventHandler ViewStackChanged
+        {
+            add
+            {
+                this.PopupStackControl.ViewStackChanged += value;
+            }
+            remove
+            {
+                this.PopupStackControl.ViewStackChanged -= value;
+            }
+        }
 
         public bool IsAnimationActive
         {

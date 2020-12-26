@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -18,7 +22,7 @@ namespace Unicorn.ViewManager
 
         public PopupStack(PopupStackControl popupStackControl)
         {
-            if (popupStackControl==null)
+            if (popupStackControl == null)
             {
                 throw new ArgumentNullException(nameof(popupStackControl));
             }
@@ -29,6 +33,20 @@ namespace Unicorn.ViewManager
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
             return item is PopupItemContainer;
+        }
+
+        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
+        {
+            base.OnItemsChanged(e);
+
+            this._parentPopupStackControl.OnViewStackChanged(
+                new ViewStackChangedEventArgs(
+                    (ViewStackAction)(int)(e.Action),
+                    e.NewItems?.OfType<PopupItem>()?.ToList(),
+                    e.NewStartingIndex,
+                    e.OldItems?.OfType<PopupItem>()?.ToList(),
+                    e.OldStartingIndex
+                ));
         }
     }
 }

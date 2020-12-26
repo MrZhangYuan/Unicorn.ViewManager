@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace Unicorn.ViewManager
@@ -29,6 +30,7 @@ namespace Unicorn.ViewManager
         internal ModalResult _modalResult;
         private EventHandlerList _events;
         private readonly PopupStackControl _childPopupStackControl = null;
+
         private IPopupItemContainer _parentHostContainer = null;
         private PopupStackControl _parentHostStack = null;
 
@@ -68,6 +70,18 @@ namespace Unicorn.ViewManager
             get
             {
                 return this._childPopupStackControl;
+            }
+        }
+
+        public event ViewStackChangedEventHandler ViewStackChanged
+        {
+            add
+            {
+                this.ChildPopupStackControl.ViewStackChanged += value;
+            }
+            remove
+            {
+                this.ChildPopupStackControl.ViewStackChanged -= value;
             }
         }
 
@@ -184,6 +198,8 @@ namespace Unicorn.ViewManager
             }
         }
 
+        #region Events
+
         internal void InternalShowing(out CancelEventArgs e)
         {
             e = new CancelEventArgs(false);
@@ -229,18 +245,7 @@ namespace Unicorn.ViewManager
         internal void InternalClosed(out EventArgs e)
         {
             e = new EventArgs();
-
-            //this.CloseChildren();
-
             this.OnClosed(e);
-        }
-
-        private void CloseChildren()
-        {
-            foreach (var item in this.Children)
-            {
-                item.Close();
-            }
         }
 
         protected virtual void OnClosed(EventArgs e)
@@ -250,6 +255,8 @@ namespace Unicorn.ViewManager
                 return;
             eventHandler((object)this, e);
         }
+
+        #endregion
 
         internal PopupStackControl ParentHostStack
         {
@@ -376,6 +383,49 @@ namespace Unicorn.ViewManager
         {
             return this._childPopupStackControl.Close();
         }
+
         protected internal abstract PopupItemContainer GetContainer();
+
+
+
+
+        public IPopupItemContainer FindParentHost()
+        {
+            return ViewTreeHelper.FindParent<IPopupItemContainer>(this);
+        }
+    }
+
+
+    internal static class ViewTreeHelper
+    {
+        public static T FindParent<T>(FrameworkElement element) where T : class
+        {
+            if (element == null)
+            {
+                return null;
+            }
+
+            FrameworkElement parent = VisualTreeHelper.GetParent(element) as FrameworkElement;
+            if (parent == null)
+            {
+                parent = LogicalTreeHelper.GetParent(element) as FrameworkElement;
+            }
+
+            while (parent != null
+                && !(parent is T)
+                && !(parent is Window))
+            {
+                var temp = VisualTreeHelper.GetParent(parent) as FrameworkElement;
+
+                if (temp == null)
+                {
+                    temp = LogicalTreeHelper.GetParent(parent) as FrameworkElement;
+                }
+
+                parent = temp;
+            }
+
+            return parent as T;
+        }
     }
 }

@@ -15,5 +15,6 @@
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/Flyout.xaml" />
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/RichViewItem.xaml" />
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/RichViewControl.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/RichViewWindow.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

@@ -21,10 +21,13 @@ using System.Diagnostics;
 
 namespace Unicorn.ViewManager
 {
+
     [TemplatePart(Name = PART_POPUPSTACKPRESENTER, Type = typeof(ContentPresenter))]
     public class PopupStackControl : Control, IPopupItemContainer
     {
         const string PART_POPUPSTACKPRESENTER = "PART_POPUPSTACKPRESENTER";
+
+        private readonly EventHandlerList _events = new EventHandlerList();
 
         private readonly PopupStack _popupStack = null;
 
@@ -39,9 +42,30 @@ namespace Unicorn.ViewManager
         }
 
         public PopupItem TopItem => this.PopupItemFromIndex(this._popupStack.Items.Count - 1);
+     
         IPopupItemContainer IPopupItemContainer.Parent => this._parentPopupItem;
+     
         public IEnumerable<PopupItem> Children => this.Items;
 
+        public event ViewStackChangedEventHandler ViewStackChanged
+        {
+            add
+            {
+                this._events.AddHandler("OnViewStackChanged", value);
+            }
+            remove
+            {
+                this._events.RemoveHandler("OnViewStackChanged", value);
+            }
+        }
+
+        protected internal virtual void OnViewStackChanged(ViewStackChangedEventArgs args)
+        {
+            ViewStackChangedEventHandler  stackChangedEventHandler = (ViewStackChangedEventHandler)this._events["OnViewStackChanged"];
+            if (stackChangedEventHandler == null)
+                return;
+            stackChangedEventHandler((object)this, args);
+        }
 
         static PopupStackControl()
         {
@@ -54,6 +78,7 @@ namespace Unicorn.ViewManager
         internal PopupStackControl()
         {
             this._popupStack = new PopupStack(this);
+
         }
 
         internal PopupStackControl(PopupItem popupItem)
@@ -181,6 +206,10 @@ namespace Unicorn.ViewManager
             {
                 throw new ArgumentNullException(nameof(item));
             }
+
+            var dsds = item.FindParentHost();
+
+
 
             //当前是独立作为视图栈
             if (this._parentPopupItem == null)
