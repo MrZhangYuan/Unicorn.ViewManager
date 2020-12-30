@@ -30,7 +30,6 @@ namespace Unicorn.ViewManager
         }
         public static readonly DependencyProperty IsDrugMoveProperty = DependencyProperty.Register("IsDrugMove", typeof(bool), typeof(Dialog), new PropertyMetadata(true));
 
-
         static Dialog()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Dialog), new FrameworkPropertyMetadata(typeof(Dialog)));

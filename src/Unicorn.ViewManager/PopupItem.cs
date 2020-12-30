@@ -6,8 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace Unicorn.ViewManager
@@ -49,7 +49,7 @@ namespace Unicorn.ViewManager
             }
         }
 
-        public IEnumerable<PopupItem> Children => this.ChildPopupStackControl.Items;
+        public IEnumerable<PopupItem> Children => this.ChildPopupStackControl.Children;
 
 
         public IPopupItemContainer ParentHostContainer
@@ -388,47 +388,5 @@ namespace Unicorn.ViewManager
         }
 
         protected internal abstract PopupItemContainer GetContainer();
-
-
-
-
-        public IPopupItemContainer FindParentHost()
-        {
-            return ViewTreeHelper.FindParent<IPopupItemContainer>(this);
-        }
-    }
-
-
-    internal static class ViewTreeHelper
-    {
-        public static T FindParent<T>(FrameworkElement element) where T : class
-        {
-            if (element == null)
-            {
-                return null;
-            }
-
-            FrameworkElement parent = VisualTreeHelper.GetParent(element) as FrameworkElement;
-            if (parent == null)
-            {
-                parent = LogicalTreeHelper.GetParent(element) as FrameworkElement;
-            }
-
-            while (parent != null
-                && !(parent is T)
-                && !(parent is Window))
-            {
-                var temp = VisualTreeHelper.GetParent(parent) as FrameworkElement;
-
-                if (temp == null)
-                {
-                    temp = LogicalTreeHelper.GetParent(parent) as FrameworkElement;
-                }
-
-                parent = temp;
-            }
-
-            return parent as T;
-        }
     }
 }

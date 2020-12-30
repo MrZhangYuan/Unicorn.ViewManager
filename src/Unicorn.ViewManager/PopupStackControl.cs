@@ -28,24 +28,12 @@ namespace Unicorn.ViewManager
         const string PART_POPUPSTACKPRESENTER = "PART_POPUPSTACKPRESENTER";
 
         private readonly EventHandlerList _events = new EventHandlerList();
-
         private readonly PopupStack _popupStack = null;
-
         private readonly PopupItem _parentPopupItem = null;
 
-        public IEnumerable<PopupItem> Items
-        {
-            get
-            {
-                return this._popupStack.Items.Cast<PopupItemContainer>().Select(_p => _p.PopupItem);
-            }
-        }
-
         public PopupItem TopItem => this.PopupItemFromIndex(this._popupStack.Items.Count - 1);
-
         IPopupItemContainer IPopupItemContainer.Parent => this._parentPopupItem;
-
-        public IEnumerable<PopupItem> Children => this.Items;
+        public IEnumerable<PopupItem> Children => this._popupStack.Items.Cast<PopupItemContainer>().Reverse().Select(_p => _p.PopupItem);
 
         public event ViewStackChangedEventHandler ViewStackChanged
         {
@@ -70,7 +58,6 @@ namespace Unicorn.ViewManager
         static PopupStackControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PopupStackControl), new FrameworkPropertyMetadata(typeof(PopupStackControl)));
-
             CommandManager.RegisterClassCommandBinding(typeof(PopupStackControl), new CommandBinding(ViewCommands.ShowPopupItem, new ExecutedRoutedEventHandler(PopupStackControl.OnShowPopupItem), new CanExecuteRoutedEventHandler(PopupStackControl.OnCanShowPopupItem)));
             CommandManager.RegisterClassCommandBinding(typeof(PopupStackControl), new CommandBinding(ViewCommands.ClosePopupItem, new ExecutedRoutedEventHandler(PopupStackControl.OnClosePopupItem), new CanExecuteRoutedEventHandler(PopupStackControl.OnCanClosePopupItem)));
         }
@@ -78,7 +65,6 @@ namespace Unicorn.ViewManager
         internal PopupStackControl()
         {
             this._popupStack = new PopupStack(this);
-
         }
 
         internal PopupStackControl(PopupItem popupItem)
@@ -327,7 +313,7 @@ namespace Unicorn.ViewManager
             item.ParentPopup = this._parentPopupItem;
         }
 
-        private void RemoveItem(PopupItem item)
+        internal void RemoveItem(PopupItem item)
         {
             var container = this.PopupContainerFromItem(item);
             this._popupStack.Items.Remove(container);

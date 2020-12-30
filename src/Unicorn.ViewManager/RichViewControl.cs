@@ -55,6 +55,7 @@ namespace Unicorn.ViewManager
             }
         }
 
+        [Obsolete("废弃")]
         public bool IsAnimationActive
         {
             get
