@@ -79,7 +79,7 @@ namespace ViewManagerDemo
                 e.Handled = true;
             }
 
-            if (e.KeyboardDevice.Modifiers== ModifierKeys.Control)
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
                 switch (e.Key)
                 {
@@ -95,7 +95,7 @@ namespace ViewManagerDemo
         {
             this._cmdListWindow.Owner = this;
             this._cmdListWindow.Height = this.ActualHeight;
-            this._cmdListWindow.Left = this.Left + this.ActualWidth;
+            this._cmdListWindow.Left = this.Left + this.ActualWidth + 1;
             this._cmdListWindow.Top = this.Top;
         }
 

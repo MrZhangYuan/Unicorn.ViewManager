@@ -8,7 +8,7 @@
     <Authors>Mr.Zhang</Authors>
     <Product>Unicorn</Product>
     <Version>3.1.5</Version>
-    <Description>WPF的一个强大的视图管理库，基于视图栈的形式管理WPF项目中的各种视图。</Description>
+    <Description>WPF的一个强大的视图管理库，基于无限堆叠视图栈的形式管理WPF项目中的各种主视图（RichViewItem）和各种弹出视图（PopupItem）。</Description>
     <PackageProjectUrl>https://github.com/MrZhangYuan/Unicorn.ViewManager</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MrZhangYuan/Unicorn.ViewManager.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>

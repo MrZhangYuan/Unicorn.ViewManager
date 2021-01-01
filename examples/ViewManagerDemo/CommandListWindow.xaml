@@ -9,7 +9,10 @@
     Title="CommandListWindow"
     Width="200"
     Height="800"
+    Focusable="False"
     ResizeMode="NoResize"
+    ShowActivated="False"
+    ShowInTaskbar="False"
     mc:Ignorable="d">
     <WindowChrome.WindowChrome>
         <WindowChrome

@@ -35,7 +35,7 @@
                     <Run>Dialog是最通用的视图项，它在程序中作为功能性弹出窗，甚至可作为一个功能模块的主页，该类继承自 Unicorn.ViewManager.PopupItem 该类是视图栈的项基类。</Run>
                     <LineBreak />
                     <LineBreak />
-                    <Run>在名称空间System（该名称空间位于Unicorn.ViewManager.dll）下有两个集成的特殊的Dialog：MessageDialogBox、ProcessDialogBox</Run>
+                    <Run>在名称空间System（该名称空间位于Unicorn.ViewManager.dll）下有两个集成的特殊的Dialog：MessageDialogBox、ProcessDialogBox，这两个预设的Dialog均支持等待而不阻塞UI线程，就像默认的MessageBox一样。</Run>
                     <LineBreak />
                     <LineBreak />
                     <Hyperlink Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[ShowMessageDialogBox]}">

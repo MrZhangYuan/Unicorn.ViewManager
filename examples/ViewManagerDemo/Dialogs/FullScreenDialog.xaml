@@ -32,7 +32,7 @@
             VerticalAlignment="Top">
             <TextBlock
                 FontSize="16"
-                Text="全屏式Dialog并不是在屏幕级别做到全屏幕，而是在当前的软件界面全覆盖，设置很简单不用设置Dialog的Height、Width属性，同时设置 HorizontalAlignment=&quot;Stretch&quot; VerticalAlignment=&quot;Stretch&quot;，这两个值也是默认值。"
+                Text="全屏式Dialog并不是在屏幕级别做到全屏幕，而是在当前的视图栈全屏，设置很简单不用设置Dialog的Height、Width属性，同时设置 HorizontalAlignment=&quot;Stretch&quot; VerticalAlignment=&quot;Stretch&quot;，这两个值也是默认值。"
                 TextWrapping="Wrap" />
         </StackPanel>
 

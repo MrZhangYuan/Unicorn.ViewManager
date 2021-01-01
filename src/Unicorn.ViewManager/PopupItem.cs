@@ -21,6 +21,10 @@ namespace Unicorn.ViewManager
         private static readonly object EVENT_CLOSED = new object();
         private static readonly object EVENT_SHOWING = new object();
         private static readonly object EVENT_SHOWN = new object();
+        private static readonly object EVENT_STATUSCHANGED = new object();
+
+        private readonly EventHandlerList _events = new EventHandlerList();
+        private readonly PopupStackControl _childPopupStackControl = null;
 
         internal bool _isHostAtViewStack = false;
         internal bool _isClosing = false;
@@ -28,8 +32,6 @@ namespace Unicorn.ViewManager
         internal bool _showingAsModal = false;
         internal DispatcherFrame _dispatcherFrame = null;
         internal ModalResult _modalResult;
-        private EventHandlerList _events;
-        private readonly PopupStackControl _childPopupStackControl = null;
 
         private WeakReference<IPopupItemContainer> _parentHostContainer = null;
         private WeakReference<PopupStackControl> _parentHostStack = null;
@@ -67,14 +69,6 @@ namespace Unicorn.ViewManager
             }
         }
 
-        internal PopupStackControl ChildPopupStackControl
-        {
-            get
-            {
-                return this._childPopupStackControl;
-            }
-        }
-
         public event ViewStackChangedEventHandler ViewStackChanged
         {
             add
@@ -84,6 +78,14 @@ namespace Unicorn.ViewManager
             remove
             {
                 this.ChildPopupStackControl.ViewStackChanged -= value;
+            }
+        }
+
+        internal PopupStackControl ChildPopupStackControl
+        {
+            get
+            {
+                return this._childPopupStackControl;
             }
         }
 
@@ -101,18 +103,6 @@ namespace Unicorn.ViewManager
                 }
                 _modalResult = value;
                 this.Close();
-            }
-        }
-
-        private EventHandlerList Events
-        {
-            get
-            {
-                if (this._events == null)
-                {
-                    this._events = new EventHandlerList();
-                }
-                return this._events;
             }
         }
 
@@ -136,26 +126,53 @@ namespace Unicorn.ViewManager
         public static readonly DependencyProperty IsEasyCloseProperty = DependencyProperty.Register("IsEasyClose", typeof(bool), typeof(PopupItem), new PropertyMetadata(false));
 
 
+        public PopupItemStatus PopupItemStatus
+        {
+            get
+            {
+                return (PopupItemStatus)GetValue(PopupItemStatusProperty);
+            }
+            set
+            {
+                SetValue(PopupItemStatusProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty PopupItemStatusProperty = DependencyProperty.Register("PopupItemStatus", typeof(PopupItemStatus), typeof(PopupItem), new PropertyMetadata(PopupItemStatus.Created));
+
+
+        public event PopupItemStatusChangedEventHandler PopupItemStatusChanged
+        {
+            add
+            {
+                this._events.AddHandler(PopupItem.EVENT_STATUSCHANGED, (Delegate)value);
+            }
+            remove
+            {
+                this._events.RemoveHandler(PopupItem.EVENT_STATUSCHANGED, (Delegate)value);
+            }
+        }
+
         public event CancelEventHandler Showing
         {
             add
             {
-                this.Events.AddHandler(PopupItem.EVENT_SHOWING, (Delegate)value);
+                this._events.AddHandler(PopupItem.EVENT_SHOWING, (Delegate)value);
             }
             remove
             {
-                this.Events.RemoveHandler(PopupItem.EVENT_SHOWING, (Delegate)value);
+                this._events.RemoveHandler(PopupItem.EVENT_SHOWING, (Delegate)value);
             }
         }
         public event EventHandler Shown
         {
             add
             {
-                this.Events.AddHandler(PopupItem.EVENT_SHOWN, (Delegate)value);
+                this._events.AddHandler(PopupItem.EVENT_SHOWN, (Delegate)value);
             }
             remove
             {
-                this.Events.RemoveHandler(PopupItem.EVENT_SHOWN, (Delegate)value);
+                this._events.RemoveHandler(PopupItem.EVENT_SHOWN, (Delegate)value);
             }
         }
 
@@ -163,11 +180,11 @@ namespace Unicorn.ViewManager
         {
             add
             {
-                this.Events.AddHandler(PopupItem.EVENT_CLOSING, (Delegate)value);
+                this._events.AddHandler(PopupItem.EVENT_CLOSING, (Delegate)value);
             }
             remove
             {
-                this.Events.RemoveHandler(PopupItem.EVENT_CLOSING, (Delegate)value);
+                this._events.RemoveHandler(PopupItem.EVENT_CLOSING, (Delegate)value);
             }
         }
 
@@ -175,17 +192,18 @@ namespace Unicorn.ViewManager
         {
             add
             {
-                this.Events.AddHandler(PopupItem.EVENT_CLOSED, (Delegate)value);
+                this._events.AddHandler(PopupItem.EVENT_CLOSED, (Delegate)value);
             }
             remove
             {
-                this.Events.RemoveHandler(PopupItem.EVENT_CLOSED, (Delegate)value);
+                this._events.RemoveHandler(PopupItem.EVENT_CLOSED, (Delegate)value);
             }
         }
 
         public PopupItem()
         {
             this._childPopupStackControl = new PopupStackControl(this);
+            this.PopupItemStatus = PopupItemStatus.Created;
         }
 
         public override void OnApplyTemplate()
@@ -202,15 +220,29 @@ namespace Unicorn.ViewManager
 
         #region Events
 
+        protected virtual void OnPopupItemStatusChanged(PopupItemStatusChangedEventArgs args)
+        {
+            ((PopupItemStatusChangedEventHandler)this._events[PopupItem.EVENT_STATUSCHANGED])?.Invoke(this, args);
+        }
+
         internal void InternalShowing(out CancelEventArgs e)
         {
+            var oldstatus = this.PopupItemStatus;
+            this.PopupItemStatus = PopupItemStatus.Showing;
+            this.OnPopupItemStatusChanged(new PopupItemStatusChangedEventArgs(this, oldstatus, this.PopupItemStatus));
+
             e = new CancelEventArgs(false);
             this.OnShowing(e);
+
+            if (e.Cancel)
+            {
+                this.PopupItemStatus = oldstatus;
+            }
         }
 
         protected virtual void OnShowing(CancelEventArgs e)
         {
-            CancelEventHandler cancelEventHandler = (CancelEventHandler)this.Events[PopupItem.EVENT_SHOWING];
+            CancelEventHandler cancelEventHandler = (CancelEventHandler)this._events[PopupItem.EVENT_SHOWING];
             if (cancelEventHandler == null)
                 return;
             cancelEventHandler((object)this, e);
@@ -218,13 +250,17 @@ namespace Unicorn.ViewManager
 
         internal void InternalShown(out EventArgs e)
         {
+            var oldstatus = this.PopupItemStatus;
+            this.PopupItemStatus = PopupItemStatus.Shown;
+            this.OnPopupItemStatusChanged(new PopupItemStatusChangedEventArgs(this, oldstatus, this.PopupItemStatus));
+
             e = new EventArgs();
             this.OnShown(e);
         }
 
         protected virtual void OnShown(EventArgs e)
         {
-            EventHandler eventHandler = (EventHandler)this.Events[PopupItem.EVENT_SHOWN];
+            EventHandler eventHandler = (EventHandler)this._events[PopupItem.EVENT_SHOWN];
             if (eventHandler == null)
                 return;
             eventHandler((object)this, e);
@@ -232,13 +268,22 @@ namespace Unicorn.ViewManager
 
         internal void InternalClosing(out CancelEventArgs e)
         {
+            var oldstatus = this.PopupItemStatus;
+            this.PopupItemStatus = PopupItemStatus.Closing;
+            this.OnPopupItemStatusChanged(new PopupItemStatusChangedEventArgs(this, oldstatus, this.PopupItemStatus));
+
             e = new CancelEventArgs(false);
             this.OnClosing(e);
+
+            if (e.Cancel)
+            {
+                this.PopupItemStatus = oldstatus;
+            }
         }
 
         protected virtual void OnClosing(CancelEventArgs e)
         {
-            CancelEventHandler cancelEventHandler = (CancelEventHandler)this.Events[PopupItem.EVENT_CLOSING];
+            CancelEventHandler cancelEventHandler = (CancelEventHandler)this._events[PopupItem.EVENT_CLOSING];
             if (cancelEventHandler == null)
                 return;
             cancelEventHandler((object)this, e);
@@ -246,13 +291,17 @@ namespace Unicorn.ViewManager
 
         internal void InternalClosed(out EventArgs e)
         {
+            var oldstatus = this.PopupItemStatus;
+            this.PopupItemStatus = PopupItemStatus.Closed;
+            this.OnPopupItemStatusChanged(new PopupItemStatusChangedEventArgs(this, oldstatus, this.PopupItemStatus));
+
             e = new EventArgs();
             this.OnClosed(e);
         }
 
         protected virtual void OnClosed(EventArgs e)
         {
-            EventHandler eventHandler = (EventHandler)this.Events[PopupItem.EVENT_CLOSED];
+            EventHandler eventHandler = (EventHandler)this._events[PopupItem.EVENT_CLOSED];
             if (eventHandler == null)
                 return;
             eventHandler((object)this, e);

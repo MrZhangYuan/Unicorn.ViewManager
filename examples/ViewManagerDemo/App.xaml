@@ -11,10 +11,12 @@
             x:Key="DefaultLogoBrush"
             ImageSource="/Resources/Images/Logo.ico"
             Stretch="Uniform" />
-        <ImageBrush
+        <!--<ImageBrush
             x:Key="DefaultBackgroundBrush"
             ImageSource="/Resources/Images/Background.jpg"
-            Stretch="UniformToFill" />
+            Stretch="UniformToFill" />-->
+
+        <SolidColorBrush x:Key="DefaultBackgroundBrush" Color="White" />
 
         <Color x:Key="MainBackgroundColor">#FF338ECD</Color>
         <Color x:Key="MainBackgroundLightColor">#FF338CC7</Color>
