@@ -31,6 +31,7 @@
                 <Setter Property="Margin" Value="0,10" />
             </Style>
         </StackPanel.Resources>
+        <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[DockDemoView]}" Content="Dock Demos" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[DialogsDemoView]}" Content="Dialog Demos" />
         <Button Command="{Binding Source={x:Static ucmd:DefaultUICommandManager.Instance}, Path=[FlyoutsDemoView]}" Content="Flyout Demos" />
 

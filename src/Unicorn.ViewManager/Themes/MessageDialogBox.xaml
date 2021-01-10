@@ -52,21 +52,21 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Image
-                                        x:Name="_boxImage"
-                                        Width="60"
-                                        Height="60"
-                                        Margin="30,30,0,30"
-                                        SnapsToDevicePixels="True"
-                                        Stretch="Uniform"
-                                        UseLayoutRounding="True" />
+                                    x:Name="_boxImage"
+                                    Width="60"
+                                    Height="60"
+                                    Margin="30,30,0,30"
+                                    SnapsToDevicePixels="True"
+                                    Stretch="Uniform"
+                                    UseLayoutRounding="True" />
 
                                 <TextBlock
-                                        Grid.Column="1"
-                                        Margin="30"
-                                        VerticalAlignment="Center"
-                                        FontSize="15"
-                                        Text="{TemplateBinding MessageText}"
-                                        TextWrapping="Wrap" />
+                                    Grid.Column="1"
+                                    Margin="30"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Text="{TemplateBinding MessageText}"
+                                    TextWrapping="Wrap" />
                             </Grid>
 
 
@@ -112,7 +112,7 @@
                             <Setter TargetName="_boxImage" Property="Source" Value="{x:Null}" />
                             <Setter TargetName="_boxImage" Property="Visibility" Value="Collapsed" />
                         </Trigger>
-                        
+
                         <Trigger Property="MessageBoxImage" Value="Error">
                             <Setter TargetName="_boxImage" Property="Source" Value="{StaticResource Box_Error}" />
                         </Trigger>

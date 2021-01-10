@@ -25,7 +25,7 @@ namespace Unicorn.ViewManager
 
         private ViewManager()
         {
-
+            DockManager.Instance.Init();
         }
 
 

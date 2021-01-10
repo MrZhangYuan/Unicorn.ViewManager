@@ -21,7 +21,7 @@
                                 <RowDefinition Height="42" />
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="30" />
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Border Background="#FFF0F0F0">
                                 <TextBlock

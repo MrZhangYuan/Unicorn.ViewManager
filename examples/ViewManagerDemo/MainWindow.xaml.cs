@@ -43,6 +43,7 @@ namespace ViewManagerDemo
         public MainWindow()
         {
             Instance = this;
+            Application.Current.MainWindow = this;
 
             InitializeComponent();
             ViewManager.Instance.InitializeRichView(this);
@@ -68,6 +69,12 @@ namespace ViewManagerDemo
             {
                 this.RefreshCmdWindowLocation();
             };
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            this.UpdateClipRegion();
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -108,6 +115,10 @@ namespace ViewManagerDemo
         {
             switch (cmdkey)
             {
+                case "DockDemoView":
+                    ViewManager.Instance.MainRichView.Show(DockViewDemo.Instance);
+                    break;
+
                 case "DialogsDemoView":
                     ViewManager.Instance.MainRichView.Show(DialogsDemoView.Instance);
                     break;
@@ -192,11 +203,11 @@ namespace ViewManagerDemo
         {
             base.OnClosing(e);
 
-            var msresult = MessageDialogBox.Show($"是否确认关闭？", "提示", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (msresult == MessageBoxResult.No)
-            {
-                e.Cancel = true;
-            }
+            //var msresult = MessageDialogBox.Show($"是否确认关闭？", "提示", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            //if (msresult == MessageBoxResult.No)
+            //{
+            //    e.Cancel = true;
+            //}
         }
     }
 }

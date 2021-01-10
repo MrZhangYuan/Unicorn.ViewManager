@@ -24,8 +24,8 @@
         <TextBlock
             Grid.Row="1"
             Margin="50"
-            Hyperlink.Click="TextBlock_Click"
             FontSize="16"
+            Hyperlink.Click="TextBlock_Click"
             TextWrapping="Wrap">
             <TextBlock.Inlines>
                 <Hyperlink NavigateUri="https://github.com/MrZhangYuan/Unicorn.ViewManager">

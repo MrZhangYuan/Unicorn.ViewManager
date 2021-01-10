@@ -1,0 +1,338 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="MainWindow_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="MainWindow_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="MainWindow_ActiveBorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="MainWindow_InactiveBorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="MainWindowActive_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="MainWindowActive_ForegroundBrush" Color="#FF525252" />
+    <SolidColorBrush x:Key="MainWindowInactive_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="MainWindowInactive_ForegroundBrush" Color="#99525252" />
+    <SolidColorBrush x:Key="ToolbarDocking_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="Workspace_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="FloatingWindow_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="FloatingWindow_ForegroundBrush" Color="#FF525252" />
+    <SolidColorBrush x:Key="FloatingWindow_ActiveBorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="FloatingWindow_InactiveBorderBrush" Color="#FFCCCEDB" />
+
+    <!--<SolidColorBrush x:Key="ToolWindow_BackgroundBrush" Color="#FFF5F5F5" />-->
+    <SolidColorBrush x:Key="ToolWindow_BackgroundBrush" Color="White" />
+
+    <SolidColorBrush x:Key="DockTarget_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="DockTarget_BackgroundBrush" Color="#FFE7E8EC" />
+    <SolidColorBrush x:Key="DockTargetButton_BorderBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="DockTargetButton_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="DockTargetGlyph_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="DockTargetGlyph_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="DockTargetArrow_BackgroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="TreeList_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="TreeList_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="TreeListDisabled_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="TreeListSelectedItemActive_BackgroundBrush" Color="#FF3399FF" />
+    <SolidColorBrush x:Key="TreeListSelectedItemActive_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="TreeListSelectedItemInactive_BackgroundBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="TreeListSelectedItemInactive_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="TreeListGlyph_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="TreeListSelectedItemActiveGlyph_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="TreeListSelectedItemInactiveGlyph_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="TreeListDisabledItem_ForegroundBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="TreeListSelectedDisabledItemActive_ForegroundBrush" Color="#FFE9ECEE" />
+    <SolidColorBrush x:Key="TreeListSelectedDisabledItemInactive_ForegroundBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="TreeListHyperlinkItem_ForegroundBrush" Color="#FF0E70C0" />
+    <SolidColorBrush x:Key="TreeListHyperlinkSelectedItemActive_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="TreeListHyperlinkItemHover_ForegroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="TreeListHyperlinkSelectedItemInactive_ForegroundBrush" Color="#FF000000" />
+    <SolidColorBrush x:Key="Hyperlink_ForegroundBrush" Color="#FF0E70C0" />
+    <SolidColorBrush x:Key="HyperlinkHover_ForegroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="HyperlinkDisabled_ForegroundBrush" Color="#FFA2A4A5" />
+    <SolidColorBrush x:Key="Expander_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="Expander_ForegroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="Expander_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="ExpanderExpanded_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ExpanderExpanded_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="ExpanderHover_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ExpanderHover_ForegroundBrush" Color="#FF319AFF" />
+    <SolidColorBrush x:Key="Menu_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="Menu_BackgroundBrush" Color="#FFF6F6F6" />
+    <SolidColorBrush x:Key="MenuItem_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="MenuItemDisabled_ForegroundBrush" Color="#FFA2A4A5" />
+    <SolidColorBrush x:Key="MenuItemHover_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="MenuItemHover_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="MenuItemCheck_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="MenuItemCheck_ForegroundBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="MenuItemCheckHover_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="MenuItemCheckHover_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="MenuItemArrow_BackgroundBrush" Color="#FF1B293E" />
+    <SolidColorBrush x:Key="MenuItemArrowHover_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="MenuScrollButton_ForegroundBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="MenuScrollButton_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="MenuScrollButtonPress_BorderBrush" Color="#FFF6F6F6" />
+    <SolidColorBrush x:Key="MenuSeparator_BackgroundBrush" Color="#FFE0E3E6" />
+    <SolidColorBrush x:Key="TextFinderTopBorderActive_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="TextFinderTopBorderInactive_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="TextFinderBottomBorderActive_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="TextFinderBottomBorderInactive_BackgroundBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="DocWell_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="DocWellBorderActive_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="DocWellBorderInactive_BackgroundBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="ContentBrowser_BackgroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ContentHeader_BackgroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ContentHeader_ForegroundBrush" Color="#FF000000" />
+    <SolidColorBrush x:Key="ContentManager_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ContentManager_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="ContentList_BackgroundBrush" Color="#FFFEFEFE" />
+    <SolidColorBrush x:Key="ContentList_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="ContentListItem_BackgroundBrush" Color="#FFFEFEFE" />
+    <SolidColorBrush x:Key="ContentListItem_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="ContentListItem_BorderBrush" Color="#FFE3E3E3" />
+    <SolidColorBrush x:Key="ContentListAction_ForegroundBrush" Color="#FF0E70C0" />
+    <SolidColorBrush x:Key="ContentListStatus_ForegroundBrush" Color="#FFA2A4A5" />
+    <SolidColorBrush x:Key="ContentButton_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="ContentButton_BackgroundBrush" Color="#FFECECF0" />
+    <SolidColorBrush x:Key="ContentButton_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="ContentButtonFocus_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="ContentButtonFocus_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="ContentButtonFocus_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="ContentButtonHover_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="ContentButtonHover_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="ContentButtonHover_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="ContentButtonPress_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ContentButtonPress_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="ContentButtonPress_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="ContentButtonDisabled_ForegroundBrush" Color="#FFA2A4A5" />
+    <SolidColorBrush x:Key="ContentButtonDisabled_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ContentButtonDisabled_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="ContentRadioButton_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="ContentStorePath_ForegroundBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="ContentStorePath_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ContentStorePath_BorderBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="PendingActions_BackgroundBrush" Color="#FFFEFEFE" />
+    <SolidColorBrush x:Key="PendingActions_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="PendingActionsHeadingText_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="PendingActionsItem_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="PendingActionsCancelButton_ForegroundBrush" Color="#FF0E70C0" />
+    <SolidColorBrush x:Key="PendingActionsCancelButtonDisabled_ForegroundBrush" Color="#FF6D6D70" />
+    <SolidColorBrush x:Key="StatusBar_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="StatusBar_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="StatusBarButton_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="StatusBarButton_BackgroundBrush" Color="#00000000" />
+    <SolidColorBrush x:Key="StatusBarButton_BorderBrush" Color="#00000000" />
+    <SolidColorBrush x:Key="StatusBarButtonHover_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="StatusBarButtonHover_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="StatusBarButtonHover_BorderBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="StatusBarButtonPress_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="StatusBarButtonPress_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="StatusBarButtonPress_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="Input_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="Input_BackgroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="Input_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="InactiveInput_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="InactiveInput_BackgroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="InactiveInput_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="InputHover_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="InputHover_BackgroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="InputHover_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="InputDisabled_ForegroundBrush" Color="#FFA2A4A5" />
+    <SolidColorBrush x:Key="InputDisabled_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="InputDisabled_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="InputWatermark_ForegroundBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="SearchControlButton_StartSearchBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="SearchControlButton_ClearSearchBrush" Color="#FF0E70C0" />
+    <SolidColorBrush x:Key="SearchControlButtonHover_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="SearchControlButtonHover_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="SearchControlButtonHover_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="SearchControlButtonPress_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="SearchControlButtonPress_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="SearchControlButtonPress_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="FileTabButtonHoverInactive_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="FileTabButtonHoverInactive_BackgroundBrush" Color="#FF52B0EF" />
+    <SolidColorBrush x:Key="FileTabButtonHoverInactive_BorderBrush" Color="#FF52B0EF" />
+    <SolidColorBrush x:Key="FileTabButtonDownInactive_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="FileTabButtonDownInactive_BackgroundBrush" Color="#FF0E6198" />
+    <SolidColorBrush x:Key="FileTabButtonDownInactive_BorderBrush" Color="#FF0E6198" />
+    <SolidColorBrush x:Key="FileTabButtonSelectedInactive_ForegroundBrush" Color="#FF6D6D70" />
+    <SolidColorBrush x:Key="FileTabButtonHoverSelectedInactive_ForegroundBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="FileTabButtonHoverSelectedInactive_BackgroundBrush" Color="#FFE6E7ED" />
+    <SolidColorBrush x:Key="FileTabButtonHoverSelectedInactive_BorderBrush" Color="#FFE6E7ED" />
+    <SolidColorBrush x:Key="FileTabButtonDownSelectedInactive_ForegroundBrush" Color="#FF2D2D2D" />
+    <SolidColorBrush x:Key="FileTabButtonDownSelectedInactive_BackgroundBrush" Color="#FFB7B9C5" />
+    <SolidColorBrush x:Key="FileTabButtonDownSelectedInactive_BorderBrush" Color="#FFB7B9C5" />
+    <SolidColorBrush x:Key="FileTabButtonSelectedActive_ForegroundBrush" Color="#FFD0E6F5" />
+    <SolidColorBrush x:Key="FileTabButtonHoverSelectedActive_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="FileTabButtonHoverSelectedActive_BackgroundBrush" Color="#FF1C97EA" />
+    <SolidColorBrush x:Key="FileTabButtonHoverSelectedActive_BorderBrush" Color="#FF1C97EA" />
+    <SolidColorBrush x:Key="FileTabButtonDownSelectedActive_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="FileTabButtonDownSelectedActive_BackgroundBrush" Color="#FF0E6198" />
+    <SolidColorBrush x:Key="FileTabButtonDownSelectedActive_BorderBrush" Color="#FF0E6198" />
+    <SolidColorBrush x:Key="FileTabButtonUnselectedHoveredTab_ForegroundBrush" Color="#FFD0E6F5" />
+    <SolidColorBrush x:Key="ToolTitle_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="ToolTitle_ForegroundBrush" Color="#FF444444" />
+    <SolidColorBrush x:Key="ToolTitleActive_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="ToolTitleActive_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToolTitleInactiveButton_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="ToolTitleInactiveButton_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="ToolTitleInactiveButton_BorderBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ToolTitleInactiveButtonHover_ForegroundBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="ToolTitleInactiveButtonHover_BackgroundBrush" Color="#FFF7F7F9" />
+    <SolidColorBrush x:Key="ToolTitleInactiveButtonHover_BorderBrush" Color="#FFF7F7F9" />
+    <SolidColorBrush x:Key="ToolTitleInactiveButtonPress_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToolTitleInactiveButtonPress_BackgroundBrush" Color="#FF0E6198" />
+    <SolidColorBrush x:Key="ToolTitleInactiveButtonPress_BorderBrush" Color="#FF0E6198" />
+    <SolidColorBrush x:Key="ToolTitleActiveButton_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToolTitleActiveButton_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="ToolTitleActiveButton_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="ToolTitleActiveButtonHover_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToolTitleActiveButtonHover_BackgroundBrush" Color="#FF52B0EF" />
+    <SolidColorBrush x:Key="ToolTitleActiveButtonHover_BorderBrush" Color="#FF52B0EF" />
+    <SolidColorBrush x:Key="ToolTitleActiveButtonPress_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToolTitleActiveButtonPress_BackgroundBrush" Color="#FF0E6198" />
+    <SolidColorBrush x:Key="ToolTitleActiveButtonPress_BorderBrush" Color="#FF0E6198" />
+    <SolidColorBrush x:Key="DocWellButton_ForegroundBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="DocWellButton_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="DocWellButton_BorderBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="DocWellButtonHover_ForegroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="DocWellButtonHover_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="DocWellButtonHover_BorderBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="DocWellButtonPress_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="DocWellButtonPress_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="DocWellButtonPress_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="ToolBar_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="ToolBar_BorderBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="ToolBarButton_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="ToolBarButton_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="ToolBarButton_BorderBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="ToolBarButtonHover_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="ToolBarButtonHover_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="ToolBarButtonHover_BorderBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="ToolBarButtonPress_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToolBarButtonPress_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="ToolBarButtonPress_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="ToolBarButtonChecked_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="ToolBarButtonChecked_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="ToolBarButtonCheckedHover_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="ToolBarButtonCheckedHover_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="TitleBarButton_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="TitleBarButton_BackgroundBrush" Color="#00000000" />
+    <SolidColorBrush x:Key="TitleBarButton_BorderBrush" Color="#00000000" />
+    <SolidColorBrush x:Key="TitleBarButtonHover_ForegroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="TitleBarButtonHover_BackgroundBrush" Color="#D8FFFFFF" />
+    <SolidColorBrush x:Key="TitleBarButtonHover_BorderBrush" Color="#D8FFFFFF" />
+    <SolidColorBrush x:Key="TitleBarButtonPress_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="TitleBarButtonPress_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="TitleBarButtonPress_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="TitleBarInactiveButton_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="TitleBarInactiveButton_BackgroundBrush" Color="#00000000" />
+    <SolidColorBrush x:Key="TitleBarInactiveButton_BorderBrush" Color="#00000000" />
+    <SolidColorBrush x:Key="TitleBarInactiveButtonHover_ForegroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="TitleBarInactiveButtonHover_BackgroundBrush" Color="#D8FFFFFF" />
+    <SolidColorBrush x:Key="TitleBarInactiveButtonHover_BorderBrush" Color="#D8FFFFFF" />
+    <SolidColorBrush x:Key="Popup_BackgroundBrush" Color="#FFF6F6F6" />
+    <SolidColorBrush x:Key="Popup_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="Popup_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="PopupHover_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="PopupHover_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="PopupSectionHeaderSeparator_BorderBrush" Color="#FFE0E3E6" />
+    <SolidColorBrush x:Key="PopupSectionHeaderText_ForegroundBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="PopupButton_BackgroundBrush" Color="#FFF6F6F6" />
+    <SolidColorBrush x:Key="PopupButton_ForegroundBrush" Color="#FF0E70C0" />
+    <SolidColorBrush x:Key="PopupButtonHover_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="PopupButtonHover_ForegroundBrush" Color="#FF0E70C0" />
+    <SolidColorBrush x:Key="PopupButtonPress_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="PopupButtonPress_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ProgressBar_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ProgressBarIndicator_ForegroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="Header_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="Header_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="HeaderHover_BackgroundBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="HeaderHover_ForegroundBrush" Color="#FF1E1E1E" />
+    <SolidColorBrush x:Key="HeaderPress_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="HeaderPress_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="HeaderSeparator_BackgroundBrush" Color="#FFCCCEDB" />
+    <DrawingBrush
+        x:Key="ToolGrip_BackgroundBrush"
+        TileMode="Tile"
+        Viewbox="0,0,4,5"
+        ViewboxUnits="Absolute"
+        Viewport="0,0,4,5"
+        ViewportUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing Brush="#FF999999">
+                <GeometryDrawing.Geometry>
+                    <GeometryGroup>
+                        <RectangleGeometry Rect="0,0,1,1" />
+                        <RectangleGeometry Rect="0,4,1,1" />
+                        <RectangleGeometry Rect="2,2,1,1" />
+                    </GeometryGroup>
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    <DrawingBrush
+        x:Key="ToolGripActive_BackgroundBrush"
+        TileMode="Tile"
+        Viewbox="0,0,4,5"
+        ViewboxUnits="Absolute"
+        Viewport="0,0,4,5"
+        ViewportUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing Brush="#FF59A8DE">
+                <GeometryDrawing.Geometry>
+                    <GeometryGroup>
+                        <RectangleGeometry Rect="0,0,1,1" />
+                        <RectangleGeometry Rect="0,4,1,1" />
+                        <RectangleGeometry Rect="2,2,1,1" />
+                    </GeometryGroup>
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    <SolidColorBrush x:Key="AutoHideTab_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="AutoHideTab_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="AutoHideTab_ForegroundBrush" Color="#FF444444" />
+    <SolidColorBrush x:Key="AutoHideTabHover_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="AutoHideTabHover_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="AutoHideTabHover_ForegroundBrush" Color="#FF0E70C0" />
+    <SolidColorBrush x:Key="AutoHideWindow_BorderBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="ScrollBar_BorderBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ScrollBar_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ScrollBarIcon_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ScrollBarIcon_ForegroundBrush" Color="#FF868999" />
+    <SolidColorBrush x:Key="ScrollBarIconHover_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ScrollBarIconHover_ForegroundBrush" Color="#FF1C97EA" />
+    <SolidColorBrush x:Key="ScrollBarIconPress_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ScrollBarIconPress_ForegroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="ScrollBarIconDisabled_BackgroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ScrollBarIconDisabled_ForegroundBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ScrollBarThumb_BackgroundBrush" Color="#FFDEDFE7" />
+    <SolidColorBrush x:Key="ScrollBarThumbHover_BackgroundBrush" Color="#FF888888" />
+    <SolidColorBrush x:Key="ScrollBarThumbPress_BackgroundBrush" Color="#FF6A6A6A" />
+    <SolidColorBrush x:Key="ScrollBarGrip_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="FileTabSelectedInactive_BackgroundBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="FileTabSelectedInactive_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="FileTabSelectedInactive_ForegroundBrush" Color="#FF717171" />
+    <SolidColorBrush x:Key="FileTabSelectedActive_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="FileTabSelectedActive_BorderBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="FileTabSelectedActive_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="FileTabUnselectedHover_BackgroundBrush" Color="#FF1C97EA" />
+    <SolidColorBrush x:Key="FileTabUnselectedHover_BorderBrush" Color="#FF1C97EA" />
+    <SolidColorBrush x:Key="FileTabUnselectedHover_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="FileTabUnselected_BackgroundBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="FileTabUnselected_BorderBrush" Color="#FFEEEEF2" />
+    <SolidColorBrush x:Key="FileTabUnselected_ForegroundBrush" Color="#FF000000" />
+    <SolidColorBrush x:Key="ToolTab_BackgroundBrush" Color="#FFEFEFF2" />
+    <SolidColorBrush x:Key="ToolTab_BorderBrush" Color="#FFEFEFF2" />
+    <SolidColorBrush x:Key="ToolTab_ForegroundBrush" Color="#FF444444" />
+    <SolidColorBrush x:Key="ToolTabHover_BackgroundBrush" Color="#FF1C97EA" />
+    <SolidColorBrush x:Key="ToolTabHover_BorderBrush" Color="#FFC9DEF5" />
+    <SolidColorBrush x:Key="ToolTabHover_ForegroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ToolTabSelectedActive_BackgroundBrush" Color="#FF007ACC" />
+    <SolidColorBrush x:Key="ToolTabSelectedActive_BorderBrush" Color="#FFF5F5F5" />
+    <SolidColorBrush x:Key="ToolTabSelectedActive_ForegroundBrush" Color="#FFFFFFFF" />
+
+    <SolidColorBrush x:Key="ToolTabSelectedInactive_BackgroundBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="ToolTabSelectedInactive_BorderBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="ToolTabSelectedInactive_ForegroundBrush" Color="#FF717171" />
+
+    <SolidColorBrush x:Key="ToolTabSeparator_BackgroundBrush" Color="#FFCCCEDB" />
+    <SolidColorBrush x:Key="ToolTip_BackgroundBrush" Color="#FFF6F6F6" />
+    <SolidColorBrush x:Key="ToolTip_ForegroundBrush" Color="#FF1E1E1E" />
+</ResourceDictionary>

@@ -3,14 +3,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:Unicorn.ViewManager">
 
-
-    <Style TargetType="{x:Type vm:RichViewWindow}">
+    <Style TargetType="{x:Type vm:FloatingWindow}">
         <Setter Property="ActiveGlowColor" Value="#FF007ACC" />
         <Setter Property="InactiveGlowColor" Value="#FF1C97EA" />
         <Setter Property="Background" Value="#FFFFFFFF" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type vm:RichViewWindow}">
+                <ControlTemplate TargetType="{x:Type vm:FloatingWindow}">
                     <Border
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"

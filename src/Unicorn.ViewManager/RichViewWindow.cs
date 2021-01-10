@@ -65,6 +65,25 @@ namespace Unicorn.ViewManager
             DefaultStyleKeyProperty.OverrideMetadata(typeof(RichViewWindow), new FrameworkPropertyMetadata(typeof(RichViewWindow)));
         }
 
+        public RichViewWindow()
+        {
+            this.IsVisibleChanged += RichViewWindow_IsVisibleChanged;
+            WindowManager.RegisterWindow(this);
+        }
+
+        private void RichViewWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (this.IsVisible)
+            {
+                DockManager.Instance.RegisterDockSite(this);
+            }
+            else
+            {
+                DockManager.Instance.UnregisterDockSite(this);
+            }
+        }
+
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
