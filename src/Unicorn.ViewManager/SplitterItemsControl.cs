@@ -63,9 +63,6 @@ namespace Unicorn.ViewManager
             splitterItemsControl.OnOrientationChanged();
         }
 
-        /// <summary>
-        /// Called when the Orientation property changes.
-        /// </summary>
         protected virtual void OnOrientationChanged()
         {
         }

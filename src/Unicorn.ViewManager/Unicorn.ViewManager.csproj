@@ -36,4 +36,8 @@
     <Resource Include="Resource\Images\box_warning.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Shell\" />
+  </ItemGroup>
+
 </Project>

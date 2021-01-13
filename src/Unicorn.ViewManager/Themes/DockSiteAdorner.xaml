@@ -1,0 +1,124 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:Unicorn.ViewManager">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Brushs.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="{x:Type vm:DockSiteAdorner}">
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Width" Value="30" />
+        <Setter Property="IsHighlighted" Value="False" />
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type vm:DockSiteAdorner}">
+                    <Border
+                        x:Name="Outline"
+                        Background="Transparent"
+                        BorderBrush="{StaticResource DockTarget_BackgroundBrush}"
+                        BorderThickness="0"
+                        Opacity="0.8">
+                        <Grid x:Name="Grid">
+                            <Border
+                                x:Name="Background"
+                                Background="{StaticResource DockTargetButton_BackgroundBrush}"
+                                BorderBrush="{StaticResource DockTargetButton_BorderBrush}"
+                                BorderThickness="1" />
+                            <Grid
+                                x:Name="WindowGlyph"
+                                Width="24"
+                                Height="24"
+                                Margin="2"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <Border
+                                    x:Name="Border"
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource DockTargetGlyph_BorderBrush}"
+                                    BorderThickness="1,3,1,1" />
+                                <Line
+                                    x:Name="DocumentSplitLine"
+                                    Stroke="{StaticResource DockTargetGlyph_BorderBrush}"
+                                    StrokeDashArray="1 1"
+                                    StrokeThickness="1"
+                                    Visibility="Collapsed" />
+                            </Grid>
+                            <Path
+                                x:Name="ArrowGlyph"
+                                Width="4"
+                                Height="8"
+                                Margin="6"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="M 4,0 L 4,8 0,4 Z"
+                                Fill="{StaticResource DockTargetArrow_BackgroundBrush}"
+                                Visibility="Collapsed" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="vm:DockAdorner.DockDirection" Value="Left" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ArrowGlyph" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="ArrowGlyph" Property="HorizontalAlignment" Value="Right" />
+                            <Setter TargetName="WindowGlyph" Property="Width" Value="12" />
+                            <Setter TargetName="WindowGlyph" Property="HorizontalAlignment" Value="Left" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="vm:DockAdorner.DockDirection" Value="Right" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ArrowGlyph" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="ArrowGlyph" Property="HorizontalAlignment" Value="Left" />
+                            <Setter TargetName="ArrowGlyph" Property="Data" Value="M 0,0 L 0,8 4,4 Z" />
+                            <Setter TargetName="WindowGlyph" Property="Width" Value="12" />
+                            <Setter TargetName="WindowGlyph" Property="HorizontalAlignment" Value="Right" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="vm:DockAdorner.DockDirection" Value="Top" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ArrowGlyph" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="ArrowGlyph" Property="VerticalAlignment" Value="Bottom" />
+                            <Setter TargetName="ArrowGlyph" Property="Data" Value="M 0,4 L 4,0 8,4 Z" />
+                            <Setter TargetName="ArrowGlyph" Property="Width" Value="8" />
+                            <Setter TargetName="ArrowGlyph" Property="Height" Value="4" />
+                            <Setter TargetName="WindowGlyph" Property="Height" Value="12" />
+                            <Setter TargetName="WindowGlyph" Property="VerticalAlignment" Value="Top" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="vm:DockAdorner.DockDirection" Value="Bottom" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ArrowGlyph" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="ArrowGlyph" Property="VerticalAlignment" Value="Top" />
+                            <Setter TargetName="ArrowGlyph" Property="Data" Value="M 0,0 L 4,4 8,0 Z" />
+                            <Setter TargetName="ArrowGlyph" Property="Width" Value="8" />
+                            <Setter TargetName="ArrowGlyph" Property="Height" Value="4" />
+                            <Setter TargetName="WindowGlyph" Property="Height" Value="12" />
+                            <Setter TargetName="WindowGlyph" Property="VerticalAlignment" Value="Bottom" />
+                        </MultiTrigger>
+                        <DataTrigger Value="Outside">
+                            <DataTrigger.Binding>
+                                <Binding Path="AdornedElement.DockTargetType" RelativeSource="{RelativeSource Self}" />
+                            </DataTrigger.Binding>
+                            <Setter TargetName="Outline" Property="Background" Value="{StaticResource DockTarget_BackgroundBrush}" />
+                            <Setter TargetName="Outline" Property="BorderThickness" Value="1" />
+                            <Setter TargetName="Outline" Property="Padding" Value="3" />
+                            <Setter Property="Width" Value="40" />
+                            <Setter Property="Height" Value="40" />
+                        </DataTrigger>
+                        <Trigger Property="IsHighlighted" Value="true">
+                            <Setter TargetName="Outline" Property="Opacity" Value="1" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="OrangeRed" />
+                            <Setter TargetName="DocumentSplitLine" Property="Stroke" Value="OrangeRed" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

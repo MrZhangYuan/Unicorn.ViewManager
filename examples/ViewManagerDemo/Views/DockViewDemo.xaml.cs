@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Unicorn.ViewManager;
 
 namespace ViewManagerDemo.Views
 {
@@ -35,6 +36,16 @@ namespace ViewManagerDemo.Views
         public DockViewDemo()
         {
             InitializeComponent();
+
+            this.Shown += DockViewDemo_Shown;
+        }
+
+        private void DockViewDemo_Shown(object sender, EventArgs e)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                this._DockItem.Dock(new DockItem());
+            }
         }
     }
 }

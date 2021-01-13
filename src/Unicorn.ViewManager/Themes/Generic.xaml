@@ -24,26 +24,58 @@
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/SplitterGrip.xaml" />
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/SplitterResizePreviewWindow.xaml" />
 
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/DockSiteAdorner.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/DockGroupAdorner.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/DockPreviewWindow.xaml" />
+
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/Brushs.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 
-
-
-
     <Style TargetType="{x:Type local:DockRootControl}">
+        <Setter Property="vm:DockTarget.Orientation" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:DockRootControl}">
-                    <vm:DockTarget Background="Transparent" DockTargetType="Outside">
-                        <vm:DockTarget Background="Transparent" DockTargetType="CenterOnly">
-                            <Grid Background="Transparent" IsItemsHost="true" />
-                        </vm:DockTarget>
+                    <vm:DockTarget
+                        vm:DockTarget.Orientation="{TemplateBinding vm:DockTarget.Orientation}"
+                        Background="Transparent"
+                        DockTargetType="Outside"
+                        FindMode="Always">
+                        <ContentPresenter ContentSource="{TemplateBinding Content}" />
                     </vm:DockTarget>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
+
+    <Style TargetType="{x:Type local:DockGroupControl}">
+        <Setter Property="vm:SplitterItemsControl.Orientation" Value="Horizontal" />
+        <Setter Property="vm:DockTarget.Orientation" Value="Horizontal" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:DockGroupControl}">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <vm:DockTarget
+                            vm:DockTarget.Orientation="{TemplateBinding vm:DockTarget.Orientation}"
+                            Background="Transparent"
+                            DockTargetType="Center">
+                            <vm:SplitterPanel
+                                Orientation="{TemplateBinding vm:SplitterItemsControl.Orientation}"
+                                Panel.IsItemsHost="true"
+                                SnapsToDevicePixels="True"
+                                UseLayoutRounding="True" />
+                        </vm:DockTarget>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 
     <Style TargetType="{x:Type local:DockItem}">
         <Setter Property="Template">
@@ -54,25 +86,29 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
-                            <DockPanel LastChildFill="True">
-                                <vm:SplitterGrip
-                                    x:Name="Splitter"
-                                    Width="{TemplateBinding vm:SplitterItemsControl.SplitterGripSize}"
-                                    Height="{TemplateBinding vm:SplitterItemsControl.SplitterGripSize}"
-                                    Orientation="{Binding Path=Orientation, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vm:SplitterPanel}}}" />
-                                <vm:DockTarget Background="Transparent" DockTargetType="CenterOnly">
-                                    <ContentPresenter ContentSource="{TemplateBinding Content}" />
-                                </vm:DockTarget>
-                            </DockPanel>
                             <vm:DockDragGrip
                                 x:Name="PART_DragGrip"
                                 Width="100"
                                 Height="20"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Top"
+                                Panel.ZIndex="2"
                                 Background="Black"
                                 Opacity="0.3"
                                 WindowChrome.IsHitTestVisibleInChrome="True" />
+                            <DockPanel LastChildFill="True">
+                                <vm:SplitterGrip
+                                    x:Name="Splitter"
+                                    Width="{TemplateBinding vm:SplitterItemsControl.SplitterGripSize}"
+                                    Height="{TemplateBinding vm:SplitterItemsControl.SplitterGripSize}"
+                                    Orientation="{Binding Path=Orientation, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type vm:SplitterPanel}}}" />
+                                <vm:DockTarget
+                                    vm:DockTarget.Orientation="{x:Null}"
+                                    Background="Transparent"
+                                    DockTargetType="Center">
+                                    <ContentPresenter x:Name="PART_CONTAINER" />
+                                </vm:DockTarget>
+                            </DockPanel>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -93,27 +129,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type local:DockGroupControl}">
-        <Setter Property="vm:SplitterItemsControl.Orientation" Value="Horizontal" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:DockGroupControl}">
-                    <Border
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
-                        <vm:DockTarget Background="Transparent" DockTargetType="CenterOnly">
-                            <vm:SplitterPanel
-                                Orientation="{TemplateBinding vm:SplitterItemsControl.Orientation}"
-                                Panel.IsItemsHost="true"
-                                SnapsToDevicePixels="True"
-                                UseLayoutRounding="True" />
-                        </vm:DockTarget>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+
 
 
     <Style TargetType="{x:Type vm:DockDragGrip}">
@@ -126,456 +142,6 @@
                         BorderThickness="{TemplateBinding BorderThickness}">
                         <Border Background="Transparent" />
                     </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="{x:Type vm:DockSiteAdorner}">
-        <Setter Property="Height" Value="30" />
-        <Setter Property="Width" Value="30" />
-        <Setter Property="IsHighlighted" Value="True" />
-        <Setter Property="Control.Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type vm:DockSiteAdorner}">
-                    <Border
-                        x:Name="Outline"
-                        Background="Transparent"
-                        BorderBrush="{StaticResource DockTarget_BackgroundBrush}"
-                        BorderThickness="0"
-                        Opacity="0.7">
-                        <Grid x:Name="Grid">
-                            <Border
-                                x:Name="Background"
-                                Background="{StaticResource DockTargetButton_BackgroundBrush}"
-                                BorderBrush="{StaticResource DockTargetButton_BorderBrush}"
-                                BorderThickness="1" />
-                            <Grid
-                                x:Name="WindowGlyph"
-                                Width="24"
-                                Height="24"
-                                Margin="2"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center">
-                                <Border
-                                    Background="Transparent"
-                                    BorderBrush="{StaticResource DockTargetGlyph_BorderBrush}"
-                                    BorderThickness="1,3,1,1" />
-                                <Border
-                                    x:Name="WindowGlyphFill"
-                                    Background="{StaticResource DockTargetGlyph_BackgroundBrush}"
-                                    BorderBrush="Transparent"
-                                    BorderThickness="1,3,1,1" />
-                                <Line
-                                    x:Name="DocumentSplitLine"
-                                    Stroke="{StaticResource DockTargetGlyph_BorderBrush}"
-                                    StrokeDashArray="1 1"
-                                    StrokeThickness="1"
-                                    Visibility="Collapsed" />
-                            </Grid>
-                            <Path
-                                x:Name="ArrowGlyph"
-                                Width="4"
-                                Height="8"
-                                Margin="6"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Data="M 4,0 L 4,8 0,4 Z"
-                                Fill="{StaticResource DockTargetArrow_BackgroundBrush}"
-                                Visibility="Collapsed" />
-                        </Grid>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.DockDirection" Value="Left" />
-                                <Condition Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="ArrowGlyph" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="ArrowGlyph" Property="HorizontalAlignment" Value="Right" />
-                            <Setter TargetName="WindowGlyph" Property="Width" Value="12" />
-                            <Setter TargetName="WindowGlyph" Property="HorizontalAlignment" Value="Left" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.DockDirection" Value="Right" />
-                                <Condition Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="ArrowGlyph" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="ArrowGlyph" Property="HorizontalAlignment" Value="Left" />
-                            <Setter TargetName="ArrowGlyph" Property="Data" Value="M 0,0 L 0,8 4,4 Z" />
-                            <Setter TargetName="WindowGlyph" Property="Width" Value="12" />
-                            <Setter TargetName="WindowGlyph" Property="HorizontalAlignment" Value="Right" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.DockDirection" Value="Top" />
-                                <Condition Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="ArrowGlyph" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="ArrowGlyph" Property="VerticalAlignment" Value="Bottom" />
-                            <Setter TargetName="ArrowGlyph" Property="Data" Value="M 0,4 L 4,0 8,4 Z" />
-                            <Setter TargetName="ArrowGlyph" Property="Width" Value="8" />
-                            <Setter TargetName="ArrowGlyph" Property="Height" Value="4" />
-                            <Setter TargetName="WindowGlyph" Property="Height" Value="12" />
-                            <Setter TargetName="WindowGlyph" Property="VerticalAlignment" Value="Top" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.DockDirection" Value="Bottom" />
-                                <Condition Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="ArrowGlyph" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="ArrowGlyph" Property="VerticalAlignment" Value="Top" />
-                            <Setter TargetName="ArrowGlyph" Property="Data" Value="M 0,0 L 4,4 8,0 Z" />
-                            <Setter TargetName="ArrowGlyph" Property="Width" Value="8" />
-                            <Setter TargetName="ArrowGlyph" Property="Height" Value="4" />
-                            <Setter TargetName="WindowGlyph" Property="Height" Value="12" />
-                            <Setter TargetName="WindowGlyph" Property="VerticalAlignment" Value="Bottom" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.DockDirection" Value="Left" />
-                                <Condition Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="WindowGlyphFill" Property="HorizontalAlignment" Value="Left" />
-                            <Setter TargetName="WindowGlyphFill" Property="BorderThickness" Value="1,3,1,1" />
-                            <Setter TargetName="WindowGlyphFill" Property="Width" Value="12" />
-                            <Setter TargetName="DocumentSplitLine" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="DocumentSplitLine" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="DocumentSplitLine" Property="X1" Value="11.5" />
-                            <Setter TargetName="DocumentSplitLine" Property="Y1" Value="0" />
-                            <Setter TargetName="DocumentSplitLine" Property="X2" Value="11.5" />
-                            <Setter TargetName="DocumentSplitLine" Property="Y2" Value="24" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.DockDirection" Value="Right" />
-                                <Condition Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="WindowGlyphFill" Property="HorizontalAlignment" Value="Right" />
-                            <Setter TargetName="WindowGlyphFill" Property="BorderThickness" Value="1,3,1,1" />
-                            <Setter TargetName="WindowGlyphFill" Property="Width" Value="12" />
-                            <Setter TargetName="DocumentSplitLine" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="DocumentSplitLine" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="DocumentSplitLine" Property="X1" Value="12.5" />
-                            <Setter TargetName="DocumentSplitLine" Property="Y1" Value="0" />
-                            <Setter TargetName="DocumentSplitLine" Property="X2" Value="12.5" />
-                            <Setter TargetName="DocumentSplitLine" Property="Y2" Value="24" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.DockDirection" Value="Top" />
-                                <Condition Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="WindowGlyphFill" Property="FrameworkElement.VerticalAlignment" Value="Top" />
-                            <Setter TargetName="WindowGlyphFill" Property="Border.BorderThickness" Value="1,3,1,1" />
-                            <Setter TargetName="WindowGlyphFill" Property="FrameworkElement.Height" Value="12" />
-                            <Setter TargetName="DocumentSplitLine" Property="UIElement.Visibility" Value="Visible" />
-                            <Setter TargetName="DocumentSplitLine" Property="Line.X1" Value="0" />
-                            <Setter TargetName="DocumentSplitLine" Property="Line.Y1" Value="11.5" />
-                            <Setter TargetName="DocumentSplitLine" Property="Line.X2" Value="24" />
-                            <Setter TargetName="DocumentSplitLine" Property="Line.Y2" Value="11.5" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.DockDirection" Value="Bottom" />
-                                <Condition Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="WindowGlyphFill" Property="FrameworkElement.VerticalAlignment" Value="Bottom" />
-                            <Setter TargetName="WindowGlyphFill" Property="Border.BorderThickness" Value="1,1,1,1" />
-                            <Setter TargetName="WindowGlyphFill" Property="FrameworkElement.Height" Value="12" />
-                            <Setter TargetName="DocumentSplitLine" Property="UIElement.Visibility" Value="Visible" />
-                            <Setter TargetName="DocumentSplitLine" Property="Line.X1" Value="0" />
-                            <Setter TargetName="DocumentSplitLine" Property="Line.Y1" Value="12.5" />
-                            <Setter TargetName="DocumentSplitLine" Property="Line.X2" Value="24" />
-                            <Setter TargetName="DocumentSplitLine" Property="Line.Y2" Value="12.5" />
-                        </MultiTrigger>
-                        <DataTrigger Value="Outside">
-                            <DataTrigger.Binding>
-                                <Binding Path="AdornedElement.DockTargetType" RelativeSource="{RelativeSource Self}" />
-                            </DataTrigger.Binding>
-                            <Setter TargetName="Outline" Property="Panel.Background" Value="{StaticResource DockTarget_BackgroundBrush}" />
-                            <Setter TargetName="Outline" Property="Border.BorderThickness" Value="1" />
-                            <Setter TargetName="Outline" Property="Border.Padding" Value="3" />
-                            <Setter Property="FrameworkElement.Width" Value="40" />
-                            <Setter Property="FrameworkElement.Height" Value="40" />
-                        </DataTrigger>
-                        <Trigger Property="vm:DockSiteAdorner.IsHighlighted" Value="true">
-                            <Setter TargetName="Outline" Property="UIElement.Opacity" Value="1" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-
-    <Style TargetType="{x:Type vm:DockGroupAdorner}">
-        <Setter Property="FrameworkElement.Margin" Value="0" />
-        <Setter Property="Control.Padding" Value="0" />
-        <Setter Property="Control.Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type vm:DockGroupAdorner}">
-                    <Grid
-                        Margin="0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        SnapsToDevicePixels="true">
-                        <Grid.RowDefinitions>
-                            <RowDefinition x:Name="TopRow" Height="36" />
-                            <RowDefinition Height="36" />
-                            <RowDefinition Height="40" />
-                            <RowDefinition Height="36" />
-                            <RowDefinition x:Name="BottomRow" Height="36" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition x:Name="LeftColumn" Width="36" />
-                            <ColumnDefinition Width="36" />
-                            <ColumnDefinition Width="40" />
-                            <ColumnDefinition Width="36" />
-                            <ColumnDefinition x:Name="RightColumn" Width="36" />
-                        </Grid.ColumnDefinitions>
-                        <Path
-                            x:Name="Outline"
-                            Grid.RowSpan="5"
-                            Grid.ColumnSpan="5"
-                            Data="M 0,72 L 62,72 72,62 72,0 111,0 111,62 122,72 183,72 183,111 122,111 111,122 111,183 72,183 72,122 62,111 0,111 Z"
-                            Opacity="1"
-                            SnapsToDevicePixels="false"
-                            Stretch="None"
-                            Stroke="{StaticResource DockTarget_BorderBrush}">
-                            <UIElement.RenderTransform>
-                                <TranslateTransform X="0.5" Y="0.5" />
-                            </UIElement.RenderTransform>
-                            <Shape.Fill>
-                                <SolidColorBrush Opacity="0.6">
-                                    <SolidColorBrush.Color>
-                                        <Binding Path="Color" Source="{StaticResource DockTarget_BackgroundBrush}" />
-                                    </SolidColorBrush.Color>
-                                </SolidColorBrush>
-                            </Shape.Fill>
-                        </Path>
-                        <vm:DockSiteAdorner
-                            x:Name="Left"
-                            Grid.Row="2"
-                            Grid.Column="1"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            DockDirection="Left" />
-                        <vm:DockSiteAdorner
-                            x:Name="Right"
-                            Grid.Row="2"
-                            Grid.Column="3"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            DockDirection="Right" />
-                        <vm:DockSiteAdorner
-                            x:Name="Top"
-                            Grid.Row="1"
-                            Grid.Column="2"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Bottom"
-                            DockDirection="Top" />
-                        <vm:DockSiteAdorner
-                            x:Name="Bottom"
-                            Grid.Row="3"
-                            Grid.Column="2"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            DockDirection="Bottom" />
-                        <vm:DockSiteAdorner
-                            x:Name="Fill"
-                            Grid.Row="2"
-                            Grid.Column="2"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            DockDirection="Fill" />
-                        <vm:DockSiteAdorner
-                            x:Name="OuterLeft"
-                            Grid.Row="2"
-                            Grid.Column="0"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            DockDirection="Left" />
-                        <vm:DockSiteAdorner
-                            x:Name="OuterRight"
-                            Grid.Row="2"
-                            Grid.Column="4"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            DockDirection="Right" />
-                        <vm:DockSiteAdorner
-                            x:Name="OuterTop"
-                            Grid.Row="0"
-                            Grid.Column="2"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Bottom"
-                            DockDirection="Top" />
-                        <vm:DockSiteAdorner
-                            x:Name="OuterBottom"
-                            Grid.Row="4"
-                            Grid.Column="2"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            DockDirection="Bottom" />
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="vm:DockGroupAdorner.DockSiteType" Value="NonDraggable">
-                            <Setter TargetName="Left" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="true" />
-                            <Setter TargetName="Right" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="true" />
-                            <Setter TargetName="Top" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="true" />
-                            <Setter TargetName="Bottom" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="true" />
-                            <Setter TargetName="OuterLeft" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                            <Setter TargetName="OuterRight" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                            <Setter TargetName="OuterTop" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                            <Setter TargetName="OuterBottom" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                        </Trigger>
-                        <Trigger Property="vm:DockGroupAdorner.DockSiteType" Value="Default">
-                            <Setter TargetName="OuterLeft" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="OuterRight" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="OuterTop" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="OuterBottom" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="LeftColumn" Property="ColumnDefinition.Width" Value="0" />
-                            <Setter TargetName="RightColumn" Property="ColumnDefinition.Width" Value="0" />
-                            <Setter TargetName="TopRow" Property="RowDefinition.Height" Value="0" />
-                            <Setter TargetName="BottomRow" Property="RowDefinition.Height" Value="0" />
-                            <Setter TargetName="Outline" Property="Path.Data" Value="M 0,36 L 25,36 36,25 36,0 75,0 75,25 86,36 111,36 111,75 86,75 75,86 75,111 36,111 36,86 25,75 0,75 Z" />
-                            <Setter TargetName="Left" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                            <Setter TargetName="Right" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                            <Setter TargetName="Top" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                            <Setter TargetName="Bottom" Property="vm:DockSiteAdorner.CreatesDocumentGroup" Value="false" />
-                        </Trigger>
-                        <Trigger Property="vm:DockAdorner.AreOuterTargetsEnabled" Value="false">
-                            <Setter TargetName="OuterLeft" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="OuterRight" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="OuterTop" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="OuterBottom" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="LeftColumn" Property="ColumnDefinition.Width" Value="0" />
-                            <Setter TargetName="RightColumn" Property="ColumnDefinition.Width" Value="0" />
-                            <Setter TargetName="TopRow" Property="RowDefinition.Height" Value="0" />
-                            <Setter TargetName="BottomRow" Property="RowDefinition.Height" Value="0" />
-                            <Setter TargetName="Outline" Property="Path.Data" Value="M 0,36 L 25,36 36,25 36,0 75,0 75,25 86,36 111,36 111,75 86,75 75,86 75,111 36,111 36,86 25,75 0,75 Z" />
-                        </Trigger>
-                        <Trigger Property="vm:DockAdorner.AreInnerTargetsEnabled" Value="false">
-                            <Setter TargetName="Left" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="Right" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="Top" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="Bottom" Property="UIElement.Visibility" Value="Collapsed" />
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.Orientation">
-                                    <Condition.Value>
-                                        <x:NullExtension />
-                                    </Condition.Value>
-                                </Condition>
-                                <Condition Property="vm:DockGroupAdorner.DockSiteType" Value="NonDraggable" />
-                                <Condition Property="vm:DockAdorner.AreInnerTargetsEnabled" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="Left" Property="UIElement.Visibility" Value="Visible" />
-                            <Setter TargetName="Right" Property="UIElement.Visibility" Value="Visible" />
-                            <Setter TargetName="Top" Property="UIElement.Visibility" Value="Visible" />
-                            <Setter TargetName="Bottom" Property="UIElement.Visibility" Value="Visible" />
-                        </MultiTrigger>
-
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.Orientation" Value="Horizontal" />
-                                <Condition Property="vm:DockGroupAdorner.DockSiteType" Value="NonDraggable" />
-                                <Condition Property="vm:DockAdorner.AreInnerTargetsEnabled" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="Left" Property="UIElement.Visibility" Value="Visible" />
-                            <Setter TargetName="Right" Property="UIElement.Visibility" Value="Visible" />
-                            <Setter TargetName="Top" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="Bottom" Property="UIElement.Visibility" Value="Collapsed" />
-                        </MultiTrigger>
-
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.Orientation" Value="Vertical" />
-                                <Condition Property="vm:DockGroupAdorner.DockSiteType" Value="NonDraggable" />
-                                <Condition Property="vm:DockAdorner.AreInnerTargetsEnabled" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="Left" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="Right" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="Top" Property="UIElement.Visibility" Value="Visible" />
-                            <Setter TargetName="Bottom" Property="UIElement.Visibility" Value="Visible" />
-                        </MultiTrigger>
-
-                        <Trigger Property="vm:DockAdorner.IsInnerCenterTargetEnabled" Value="false">
-                            <Setter TargetName="Fill" Property="UIElement.Visibility" Value="Collapsed" />
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.Orientation" Value="Horizontal" />
-                                <Condition Property="vm:DockGroupAdorner.IsFirst" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="OuterRight" Property="UIElement.Visibility" Value="Collapsed" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.Orientation" Value="Horizontal" />
-                                <Condition Property="vm:DockGroupAdorner.IsLast" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="OuterLeft" Property="UIElement.Visibility" Value="Collapsed" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.Orientation" Value="Vertical" />
-                                <Condition Property="vm:DockGroupAdorner.IsFirst" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="OuterBottom" Property="UIElement.Visibility" Value="Collapsed" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.Orientation" Value="Vertical" />
-                                <Condition Property="vm:DockGroupAdorner.IsLast" Value="true" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="OuterTop" Property="UIElement.Visibility" Value="Collapsed" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.Orientation" Value="Horizontal" />
-                                <Condition Property="vm:DockGroupAdorner.IsFirst" Value="false" />
-                                <Condition Property="vm:DockGroupAdorner.IsLast" Value="false" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="OuterLeft" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="OuterRight" Property="UIElement.Visibility" Value="Collapsed" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="vm:DockAdorner.Orientation" Value="Vertical" />
-                                <Condition Property="vm:DockGroupAdorner.IsFirst" Value="false" />
-                                <Condition Property="vm:DockGroupAdorner.IsLast" Value="false" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="OuterTop" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter TargetName="OuterBottom" Property="UIElement.Visibility" Value="Collapsed" />
-                        </MultiTrigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-
-    <Style TargetType="{x:Type vm:DockPreviewWindow}">
-        <Setter Property="Control.Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type vm:DockPreviewWindow}">
-                    <Canvas>
-                        <Grid
-                            x:Name="DockPreviewGrid"
-                            Width="{TemplateBinding FrameworkElement.Width}"
-                            Height="{TemplateBinding FrameworkElement.Height}"
-                            Opacity="0.3"
-                            ZIndex="1">
-                            <Border
-                                Background="{StaticResource {x:Static SystemColors.HotTrackBrushKey}}"
-                                BorderBrush="{StaticResource {x:Static SystemColors.GrayTextBrushKey}}"
-                                BorderThickness="5" />
-                        </Grid>
-                    </Canvas>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

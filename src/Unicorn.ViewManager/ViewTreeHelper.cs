@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 
@@ -17,7 +18,7 @@ namespace Unicorn.ViewManager
         private static HitTestFilterBehavior ExcludeNonVisualElements(DependencyObject potentialHitTestTarget)
         {
             return !(potentialHitTestTarget is Visual)
-                || potentialHitTestTarget is UIElement uiElement 
+                || potentialHitTestTarget is UIElement uiElement
                 && (!uiElement.IsVisible || !uiElement.IsEnabled)
                 ?
                 HitTestFilterBehavior.ContinueSkipSelfAndChildren : HitTestFilterBehavior.Continue;
@@ -38,7 +39,7 @@ namespace Unicorn.ViewManager
             return obj.FindAncestor<TAncestorType, DependencyObject>(GetVisualOrLogicalParent);
         }
 
-        
+
 
         public static TAncestorType FindAncestor<TAncestorType, TElementType>(this TElementType obj, Func<TElementType, TElementType> parentEvaluator) where TAncestorType : class
         {
@@ -69,6 +70,18 @@ namespace Unicorn.ViewManager
                 }
             }
             return null;
+        }
+
+        public static IEnumerable<TAncestorType> FindAncestorAll<TAncestorType>(this Visual obj, Func<TAncestorType, bool> ancestorSelector) where TAncestorType : DependencyObject
+        {
+            for (DependencyObject val = GetVisualOrLogicalParent(obj); val != null; val = GetVisualOrLogicalParent(val))
+            {
+                if (val is TAncestorType ancestor
+                    && ancestorSelector(ancestor))
+                {
+                    yield return ancestor;
+                }
+            }
         }
 
 

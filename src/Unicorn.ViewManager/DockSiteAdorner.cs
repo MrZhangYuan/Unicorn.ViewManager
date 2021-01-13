@@ -12,7 +12,6 @@ namespace Unicorn.ViewManager
 {
     public class DockSiteAdorner : DockAdorner
     {
-        public static readonly DependencyProperty CreatesDocumentGroupProperty = DependencyProperty.Register(nameof(CreatesDocumentGroup), typeof(bool), typeof(DockSiteAdorner), (PropertyMetadata)new FrameworkPropertyMetadata(false));
         public static readonly DependencyProperty IsHighlightedProperty = DependencyProperty.Register(nameof(IsHighlighted), typeof(bool), typeof(DockSiteAdorner), (PropertyMetadata)new FrameworkPropertyMetadata(false));
 
         static DockSiteAdorner() => FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(typeof(DockSiteAdorner), (PropertyMetadata)new FrameworkPropertyMetadata((object)typeof(DockSiteAdorner)));
@@ -24,14 +23,8 @@ namespace Unicorn.ViewManager
                 DockAdornerWindow ancestor = this.FindAncestor<DockAdornerWindow>();
                 if (ancestor == null)
                     return (DockTarget)null;
-                return ancestor.AdornedElement == null ? (DockTarget)null : ancestor.AdornedElement as DockTarget;
+                return ancestor.AdornedElement == null ? null : ancestor.AdornedElement;
             }
-        }
-
-        public bool CreatesDocumentGroup
-        {
-            get => (bool)this.GetValue(DockSiteAdorner.CreatesDocumentGroupProperty);
-            set => this.SetValue(DockSiteAdorner.CreatesDocumentGroupProperty, value);
         }
 
         public bool IsHighlighted

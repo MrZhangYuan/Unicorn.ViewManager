@@ -20,13 +20,7 @@
         </Border>
 
         <vm:DockRootControl Grid.Row="1">
-            <vm:DockGroupControl>
-                <Border Background="LightGray"/>
-                <Border Background="LightGray"/>
-                <Border Background="LightGray"/>
-                <Border Background="LightGray"/>
-                <Border Background="LightGray"/>
-            </vm:DockGroupControl>
+            <vm:DockItem  x:Name="_DockItem"/>
         </vm:DockRootControl>
     </Grid>
 </vm:Dialog>

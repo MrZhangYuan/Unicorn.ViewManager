@@ -8,6 +8,8 @@ namespace Unicorn.ViewManager
 {
     public interface IDockPreviewWindow
     {
+        IntPtr Handle { get; }
+
         void Show(IntPtr owner);
 
         void Hide();
@@ -31,25 +33,23 @@ namespace Unicorn.ViewManager
     public sealed class DockPreviewWindow : ContentControl, IDockPreviewWindow
     {
         internal const double DefaultTabHeight = 25.0;
-
         internal const double DefaultTabWidth = 100.0;
 
+        private Point _screenPoint;
+        private DockTargetType _dockTargetType;
+        private int _floatingViewCount;
+
+
         public static readonly DependencyProperty DeviceLeftProperty;
-
         public static readonly DependencyProperty DeviceTopProperty;
-
         public static readonly DependencyProperty DeviceWidthProperty;
-
         public static readonly DependencyProperty DeviceHeightProperty;
 
 
-
-        private Point screenPoint;
-
-        private DockTargetType dockTargetType;
-
-
-        private int floatingViewCount;
+        public IntPtr Handle
+        {
+            get => hwndWrapper == null ? IntPtr.Zero : hwndWrapper.Handle;
+        }
 
         private HwndSource hwndWrapper;
 
@@ -198,8 +198,8 @@ namespace Unicorn.ViewManager
             DeviceTop = args.previewRect.Top;
             DeviceWidth = args.previewRect.Width;
             DeviceHeight = args.previewRect.Height;
-            screenPoint = args.screenPoint;
-            dockTargetType = args.dockTargetType;
+            _screenPoint = args.screenPoint;
+            _dockTargetType = args.dockTargetType;
 
             //if (DockTargetType.InsertTabPreview == dockTargetType && tabInfo != null)
             //{

@@ -13,7 +13,7 @@ using System.Windows.Shapes;
 
 namespace Unicorn.ViewManager
 {
-    public class DockRootControl : ItemsControl
+    public class DockRootControl : ContentControl
     {
         static DockRootControl()
         {

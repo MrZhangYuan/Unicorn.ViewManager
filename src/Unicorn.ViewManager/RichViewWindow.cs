@@ -75,11 +75,11 @@ namespace Unicorn.ViewManager
         {
             if (this.IsVisible)
             {
-                DockManager.Instance.RegisterDockSite(this);
+                DockManager.RegisterDockSite(this);
             }
             else
             {
-                DockManager.Instance.UnregisterDockSite(this);
+                DockManager.UnregisterDockSite(this);
             }
         }
 

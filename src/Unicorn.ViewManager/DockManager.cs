@@ -8,165 +8,116 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Threading;
 using Unicorn.Utilities;
 using Unicorn.ViewManager.Internal;
 
 namespace Unicorn.ViewManager
 {
-    class WindowInfo
+
+    class DragContext : IDisposable
     {
-        public Window Window { get; }
-        public WindowInfo(Window window)
+        public Dictionary<DockTarget, List<DockAdornerWindow>> Adorners
         {
-            Window = window ?? throw new ArgumentNullException(nameof(window));
+            get;
         }
-    }
-    static class WindowManager
-    {
-        internal static readonly Dictionary<IntPtr, WindowInfo> _allWindowInfos = new Dictionary<IntPtr, WindowInfo>();
-
-        public static void RegisterWindow(Window window)
+        public DockDragGrip DockDragGrip
         {
-            if (window != null)
-            {
-                window.Closed += Window_Closed;
-
-                var handle = new WindowInteropHelper(window).Handle;
-                if (handle != IntPtr.Zero)
-                {
-                    if (!_allWindowInfos.ContainsKey(handle))
-                    {
-                        _allWindowInfos.Add(handle, new WindowInfo(window));
-                    }
-                }
-                else
-                {
-                    window.SourceInitialized += Window_SourceInitialized;
-                }
-            }
+            get;
+            set;
+        }
+        public Window DraggedWindow
+        {
+            get;
+            set;
         }
 
-        private static void Window_SourceInitialized(object sender, EventArgs e)
+        private Window _dragOverWindow;
+        public Window DragOverWindow
         {
-            Window win = (Window)sender;
-            win.SourceInitialized -= Window_SourceInitialized;
-            var handle = new WindowInteropHelper(win).Handle;
-            if (handle != IntPtr.Zero)
-            {
-                if (!_allWindowInfos.ContainsKey(handle))
-                {
-                    _allWindowInfos.Add(handle, new WindowInfo(win));
-                }
-            }
-        }
-        private static void Window_Closed(object sender, EventArgs e)
-        {
-            Window win = (Window)sender;
-            win.Closed -= Window_Closed;
-            var handle = new WindowInteropHelper(win).Handle;
-            _allWindowInfos.Remove(handle);
-        }
-    }
-    static class AutoZOrderManager
-    {
-        private static DispatcherTimer autoZOrderTimer;
-        private static Window currentDragOverWindow;
-
-        public static Window CurrentDragOverWindow
-        {
-            get => AutoZOrderManager.currentDragOverWindow;
+            get => _dragOverWindow;
             set
             {
-                if (AutoZOrderManager.currentDragOverWindow == value)
-                    return;
-                AutoZOrderManager.StopTimer();
-                AutoZOrderManager.currentDragOverWindow = value;
-                if (AutoZOrderManager.currentDragOverWindow == null)
-                    return;
-                AutoZOrderManager.autoZOrderTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, new EventHandler(AutoZOrderManager.OnAutoZOrderTimer), AutoZOrderManager.currentDragOverWindow.Dispatcher);
-                AutoZOrderManager.autoZOrderTimer.Start();
+                _dragOverWindow = value;
+                AutoZOrderManager.CurrentDragOverWindow = _dragOverWindow;
             }
         }
 
-        public static void AdornersCleared(Window window)
+        public DockSiteAdorner HitDockSiteAdorner
         {
-            if (AutoZOrderManager.CurrentDragOverWindow != window)
-                return;
-            AutoZOrderManager.CurrentDragOverWindow = (Window)null;
+            get;
+            set;
+        }
+        public DockTarget HitDockTarget
+        {
+            get;
+            set;
         }
 
-        private static void OnAutoZOrderTimer(object obj, EventArgs args)
+        private IDockPreviewWindow _dockPreviewWindow;
+        public IDockPreviewWindow DockPreviewWindow
         {
-            AutoZOrderManager.StopTimer();
-            if (AutoZOrderManager.CurrentDragOverWindow == null)
-                return;
-            int num = 1;
-            IntPtr draggedWindowHandle = DockManager.Instance.CurrentDraggedWindowHandle;
-            IntPtr handle = new WindowInteropHelper(AutoZOrderManager.CurrentDragOverWindow).Handle;
-            foreach (Window floatingWindow in WindowManager._allWindowInfos.Values.Select(_p => _p.Window))
+            get => _dockPreviewWindow ?? (_dockPreviewWindow = new DockPreviewWindow());
+        }
+
+        public DragContext()
+        {
+            this.Adorners = new Dictionary<DockTarget, List<DockAdornerWindow>>();
+        }
+
+        public void ReSet()
+        {
+
+        }
+
+        public void CleanupAdorners(List<DockTarget> targets)
+        {
+            var removedlist = new List<DockTarget>();
+
+            foreach (var item in this.Adorners)
             {
-                WindowInteropHelper windowInteropHelper = new WindowInteropHelper(floatingWindow);
-                if (windowInteropHelper.Handle != draggedWindowHandle && windowInteropHelper.Owner == handle)
-                    ++num;
+                if (targets != null && targets.Contains(item.Key))
+                {
+                    continue;
+                }
+
+                removedlist.Add(item.Key);
+
+                foreach (var awin in item.Value)
+                {
+                    awin.PrepareAndHide();
+                }
             }
 
-            var older = GetWindowZOrder(AutoZOrderManager.CurrentDragOverWindow);
-            if (older == num)
-                return;
-
-            NativeMethods.SetWindowPos(handle, draggedWindowHandle, 0, 0, 0, 0, 16403);
-
-            if (DockManager.Instance.CurrentDockDragGrip == null)
-                return;
-
-            DockManager.Instance.CleanupAdorners();
-            DockManager.Instance.CurrentDockDragGrip.RaiseDragAbsolute(NativeMethods.GetCursorPos());
-        }
-
-        private static void StopTimer()
-        {
-            if (AutoZOrderManager.autoZOrderTimer == null)
-                return;
-            AutoZOrderManager.autoZOrderTimer.Stop();
-            AutoZOrderManager.autoZOrderTimer = (DispatcherTimer)null;
-        }
-
-
-        internal static int GetWindowZOrder(Window window) => GetWindowZOrder(window, true);
-
-        private static int GetWindowZOrder(Window window, bool includeMainWindow)
-        {
-            var handles = WindowManager._allWindowInfos.Keys;
-
-            IntPtr hwnd = new WindowInteropHelper(window).Handle;
-            int num1 = 0;
-            IntPtr num2 = !includeMainWindow ? new IntPtr(-1) : new WindowInteropHelper(Application.Current.MainWindow).Handle;
-            while (hwnd != IntPtr.Zero)
+            foreach (var item in removedlist)
             {
-                hwnd = NativeMethods.GetWindow(hwnd, 3);
-                if (hwnd != IntPtr.Zero && (num2 == hwnd || handles.Contains(hwnd)))
-                    ++num1;
+                this.Adorners.Remove(item);
             }
-            return num1;
         }
 
+        public void HideDockPreview()
+        {
+            if (_dockPreviewWindow != null)
+            {
+                _dockPreviewWindow.Hide();
+            }
+        }
+
+        public void Dispose()
+        {
+            this.DockDragGrip = null;
+            this.DraggedWindow = null;
+            this.DragOverWindow = null;
+            this.HitDockSiteAdorner = null;
+
+            this.CleanupAdorners(null);
+            this.HideDockPreview();
+        }
     }
 
-    class DragContext
-    {
-        public DockDragGrip CurrentDockDragGrip { get; set; }
-        public Window CurrentDraggedWindow { get; set; }
-        public Window CurrentDragOverWindow { get; set; }
-
-    }
-
-    class DockManager
+    static class DockManager
     {
         protected class DockSite
         {
-            private Dictionary<DockDirection, DockAdornerWindow> adorners = new Dictionary<DockDirection, DockAdornerWindow>();
-
             public IntPtr Handle
             {
                 get;
@@ -178,18 +129,7 @@ namespace Unicorn.ViewManager
                 get;
                 set;
             }
-
-            public DockAdornerWindow GetAdornerLayer(DockDirection type)
-            {
-                if (!adorners.TryGetValue(type, out DockAdornerWindow value))
-                {
-                    value = new DockAdornerWindow(Handle);
-                    adorners[type] = value;
-                }
-                return value;
-            }
         }
-
         protected class DockSiteHitTestResult
         {
             public DockSite DockSite
@@ -211,33 +151,13 @@ namespace Unicorn.ViewManager
             }
         }
 
-        private static DockManager _instance = null;
-        public static DockManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new DockManager();
-                }
-                return _instance;
-            }
-        }
+        private static Dictionary<Visual, DockSite> _visualToSite = new Dictionary<Visual, DockSite>();
 
+        private static Dictionary<IntPtr, DockSite> _hwndToSite = new Dictionary<IntPtr, DockSite>();
 
-        public IntPtr CurrentDraggedWindowHandle { get; set; }
-        public DockDragGrip CurrentDockDragGrip { get; set; }
+        public static DragContext CurrentDraggedContext { get; } = new DragContext();
 
-
-        private Dictionary<Visual, DockSite> visualToSite = new Dictionary<Visual, DockSite>();
-
-        private Dictionary<IntPtr, DockSite> hwndToSite = new Dictionary<IntPtr, DockSite>();
-        private DockManager()
-        {
-
-        }
-
-        public void Init()
+        static DockManager()
         {
             EventManager.RegisterClassHandler(typeof(DockDragGrip), DockDragGrip.DragStartedEvent, new EventHandler<DragAbsoluteEventArgs>(OnDockViewDragGripDragStarted));
             EventManager.RegisterClassHandler(typeof(DockDragGrip), DockDragGrip.DragAbsoluteEvent, new EventHandler<DragAbsoluteEventArgs>(OnDockViewDragGripDragAbsolute));
@@ -247,7 +167,7 @@ namespace Unicorn.ViewManager
 
         private static void OnDockViewDragGripDragStarted(object sender, DragAbsoluteEventArgs e)
         {
-            DockManager.Instance.CurrentDockDragGrip = sender as DockDragGrip;
+            DockManager.CurrentDraggedContext.DockDragGrip = sender as DockDragGrip;
         }
 
         private static void OnDockViewDragGripDragDelta(object sender, DragDeltaEventArgs e)
@@ -263,20 +183,24 @@ namespace Unicorn.ViewManager
             {
                 DockItem dockView = dragGrip.FindAncestor<DockItem>();
 
-                DockGroupControl dockGroupControl = dockView.FindAncestor<DockGroupControl>();
-                if (dockGroupControl != null
-                    && (dockGroupControl.Items.Contains(dockView) || dockGroupControl.Items.Contains(dockView.Content)))
+                var currenthost = (IDockHost)dockView.FindAncestor<DependencyObject>(_p => _p is IDockHost);
+
+
+                if (currenthost != null)
                 {
                     var undockedPosition = new Rect(dockView.PointToScreen(new Point(0.0, 0.0)), DpiHelper.LogicalToDeviceUnits(dockView.RenderSize));
 
-                    if (dockGroupControl.Items.Contains(dockView))
-                    {
-                        dockGroupControl.Items.Remove(dockView);
-                    }
-                    else
-                    {
-                        dockGroupControl.Items.Remove(dockView.Content);
-                    }
+
+                    currenthost.UnDock(dockView);
+
+                    //if (dockGroupControl.Items.Contains(dockView))
+                    //{
+                    //    dockGroupControl.Items.Remove(dockView);
+                    //}
+                    //else
+                    //{
+                    //    dockGroupControl.Items.Remove(dockView.Content);
+                    //}
 
                     dragGrip.CancelDrag();
 
@@ -287,160 +211,28 @@ namespace Unicorn.ViewManager
                         Top = undockedPosition.Y,
                         Left = undockedPosition.X,
                         Height = undockedPosition.Height,
-                        Width = undockedPosition.Width,
-                        //Owner = old
+                        Width = undockedPosition.Width
                     };
-                    DockGroupControl group = new DockGroupControl();
-                    group.Items.Add(dockView);
-                    floatwindow.Content = group;
+                    //DockGroupControl group = new DockGroupControl();
+                    //group.Items.Add(dockView);
+                    floatwindow.Content = dockView;
                     floatwindow.Show();
 
-                    DockManager.Instance.CurrentDraggedWindowHandle = new WindowInteropHelper(floatwindow).Handle;
+                    DockManager.CurrentDraggedContext.DraggedWindow = floatwindow;
 
                     floatwindow.DragMove();
                 }
             }
             else
             {
-                FloatingWindow win = FloatingWindow.GetWindow(dragGrip) as FloatingWindow;
+                Window draggedwindow = Window.GetWindow(dragGrip);
+                DockManager.CurrentDraggedContext.DraggedWindow = draggedwindow;
 
-                if (win != null)
+                if (draggedwindow != null)
                 {
-                    //停靠位置标志处理
-
-                    //非当前拖动窗体和非DockAdornerWindow窗体并且某个上级类型为DockTarget
-                    DockSiteHitTestResult hitresult = DockManager.Instance.FindValidHitElement<DockTarget>(
-                        e.ScreenPoint,
-                        _ds=> _ds.Visual != win 
-                                && !(_ds.Visual is DockAdornerWindow),
-                        out DockTarget dockTarget
-                    );
-
-
-                    if (hitresult != null)
-                    {
-                        AutoZOrderManager.CurrentDragOverWindow = Window.GetWindow(hitresult.VisualHit);// hitresult.VisualHit.FindAncestorOrSelf<Window>();
-
-                        if (dockTarget != null)
-                        {
-                            DockTarget outsidedockTarget = dockTarget.FindAncestor<DockTarget>(_p => _p.DockTargetType == DockTargetType.Outside);
-
-                            if (outsidedockTarget != null)
-                            {
-                                DockManager.Instance.CleanupAdorners(dockTarget, outsidedockTarget);
-                            }
-                            else
-                            {
-                                DockManager.Instance.CleanupAdorners(dockTarget);
-                            }
-
-                            if (!DockManager.Instance._adorners.ContainsKey(dockTarget))
-                            {
-                                if (outsidedockTarget != null
-                                    && !DockManager.Instance._adorners.ContainsKey(outsidedockTarget))
-                                {
-                                    List<DockAdornerWindow> adolist = new List<DockAdornerWindow>();
-
-                                    var handle = hitresult.DockSite.Handle;
-
-                                    adolist.Add(new DockAdornerWindow(handle)
-                                    {
-                                        AdornedElement = outsidedockTarget,
-                                        DockDirection = DockDirection.Top
-                                    });
-                                    adolist.Add(new DockAdornerWindow(handle)
-                                    {
-                                        AdornedElement = outsidedockTarget,
-                                        DockDirection = DockDirection.Right
-                                    });
-                                    adolist.Add(new DockAdornerWindow(handle)
-                                    {
-                                        AdornedElement = outsidedockTarget,
-                                        DockDirection = DockDirection.Bottom
-                                    });
-                                    adolist.Add(new DockAdornerWindow(handle)
-                                    {
-                                        AdornedElement = outsidedockTarget,
-                                        DockDirection = DockDirection.Left
-                                    });
-                                    foreach (var item in adolist)
-                                    {
-                                        item.PrepareAndShow();
-                                    }
-                                    DockManager.Instance._adorners.Add(outsidedockTarget, adolist);
-                                }
-
-                                List<DockAdornerWindow> selfadolist = new List<DockAdornerWindow>();
-                                selfadolist.Add(new DockAdornerWindow(hitresult.DockSite.Handle)
-                                {
-                                    AdornedElement = dockTarget,
-                                    DockDirection = DockDirection.Fill,
-                                    Orientation = Orientation.Vertical,
-                                    ////AreInnerSideTargetsEnabled = true,
-                                    AreInnerTargetsEnabled = true,
-                                    IsInnerCenterTargetEnabled = true,
-                                    ////AreOuterTargetsEnabled = true
-                                });
-                                foreach (var item in selfadolist)
-                                {
-                                    item.PrepareAndShow();
-                                }
-
-                                DockManager.Instance._adorners.Add(dockTarget, selfadolist);
-                            }
-                        }
-                        else
-                        {
-                            DockManager.Instance.CleanupAdorners();
-                        }
-                    }
-                    else
-                    {
-                        DockManager.Instance.CleanupAdorners();
-                    }
-
-
-
-                    //停靠预览处理
-                    DockSiteHitTestResult dockSiteHitTestResult = DockManager.Instance.FindHitElements(e.ScreenPoint, (DockSite s) => s.Visual != win).FirstOrDefault();
-                    if (dockSiteHitTestResult != null)
-                    {
-                        DockSiteAdorner dockSiteAdorner = dockSiteHitTestResult.VisualHit.FindAncestorOrSelf<DockSiteAdorner>();
-                        DockAdornerWindow dockAdornerWindow = dockSiteHitTestResult.VisualHit.FindAncestorOrSelf<DockAdornerWindow>();
-
-                        if (dockSiteAdorner != null
-                            && dockAdornerWindow != null)
-                        {
-                            var frameworkElement = dockAdornerWindow.AdornedElement;
-
-                            if (frameworkElement != null)
-                            {
-                                var dockDirection = dockSiteAdorner.DockDirection;
-
-                                SetupDockPreviewArgs setupDockPreviewArgs = default(SetupDockPreviewArgs);
-                                setupDockPreviewArgs.previewRect = DockManager.Instance.GetDockPreviewRect(dockDirection, frameworkElement, dragGrip.FindAncestor<DockItem>());
-                                setupDockPreviewArgs.dockTargetType = DockTargetType.Outside;
-                                setupDockPreviewArgs.screenPoint = e.ScreenPoint;
-                                setupDockPreviewArgs.dockDirection = dockDirection;
-                                setupDockPreviewArgs.adornedElement = frameworkElement;
-                                SetupDockPreviewArgs args2 = setupDockPreviewArgs;
-                                DockManager.Instance.DockPreviewWindow.SetupDockPreview(args2);
-                                DockManager.Instance.DockPreviewWindow.Show(dockSiteHitTestResult.DockSite.Handle);
-                            }
-                            else
-                            {
-                                DockManager.Instance.HideDockPreview();
-                            }
-                        }
-                        else
-                        {
-                            DockManager.Instance.HideDockPreview();
-                        }
-                    }
-                    else
-                    {
-                        DockManager.Instance.HideDockPreview();
-                    }
+                    DockManager.UpdateAdorners(dragGrip, e, draggedwindow);
+                    DockManager.UpdatePreviewWindow(dragGrip, e, draggedwindow);
+                    DockManager.UpdateIsFloatingWindowDragWithin(e, draggedwindow);
                 }
             }
         }
@@ -448,44 +240,226 @@ namespace Unicorn.ViewManager
 
         private static void OnDockViewDragGripDragCompletedAbsolute(object sender, DragAbsoluteCompletedEventArgs e)
         {
-            foreach (var item in DockManager.Instance._adorners)
+            using (var currentcontext = DockManager.CurrentDraggedContext)
             {
-                foreach (var awin in item.Value)
+                if (currentcontext.HitDockSiteAdorner == null)
                 {
-                    awin.PrepareAndHide();
+                    return;
+                }
+
+                var currentitem = currentcontext.DockDragGrip.FindAncestor<DockItem>();
+                var olditem = currentcontext.HitDockTarget.FindAncestor<DockItem>();
+                var host = (IDockHost)currentcontext.HitDockTarget.FindAncestor<DependencyObject>(_p => _p is IDockHost);
+                var direction = currentcontext.HitDockSiteAdorner.DockDirection;
+
+
+                host.Dock(direction, olditem, currentitem);
+                //TODO 停靠完成处理
+            }
+        }
+
+
+
+
+
+
+
+        public static void UpdateAdorners(DockDragGrip draggrip, DragAbsoluteEventArgs e, Window draggedwindow)
+        {
+            //非当前拖动窗体和非DockAdornerWindow窗体并且某个上级类型为DockTarget
+            DockSiteHitTestResult hitresult = DockManager.FindValidHitElement<DockTarget>(
+                e.ScreenPoint,
+                _ds => _ds.Visual != draggedwindow
+                        && !(_ds.Visual is DockAdornerWindow),
+                out DockTarget dockTarget
+            );
+
+            DockManager.CurrentDraggedContext.HitDockTarget = dockTarget;
+            DockManager.CurrentDraggedContext.DragOverWindow = hitresult == null ? null : Window.GetWindow(hitresult.VisualHit);
+
+            if (dockTarget != null)
+            {
+                List<DockTarget> ancestortargets = dockTarget?.FindAncestorAll<DockTarget>(_p => _p.FindMode == FindMode.Always).ToList();
+
+                ancestortargets.Insert(0, dockTarget);
+
+                DockManager.CurrentDraggedContext.CleanupAdorners(ancestortargets);
+
+                foreach (var target in ancestortargets)
+                {
+                    if (!DockManager.CurrentDraggedContext.Adorners.ContainsKey(target))
+                    {
+                        List<DockAdornerWindow> group = new List<DockAdornerWindow>();
+
+                        bool typebouth = false;
+
+                        switch (target.DockTargetType)
+                        {
+                            case DockTargetType.Outside:
+                                {
+                                    bool oriboth = false;
+                                    switch ((Orientation?)target.GetValue(DockTarget.OrientationProperty))
+                                    {
+                                        case Orientation.Horizontal:
+                                            {
+                                                group.Add(
+                                                    new DockAdornerWindow(hitresult.DockSite.Handle)
+                                                    {
+                                                        AdornedElement = target,
+                                                        DockDirection = DockDirection.Right
+                                                    });
+
+                                                group.Add(
+                                                    new DockAdornerWindow(hitresult.DockSite.Handle)
+                                                    {
+                                                        AdornedElement = target,
+                                                        DockDirection = DockDirection.Left
+                                                    });
+
+                                                if (oriboth)
+                                                {
+                                                    goto case Orientation.Vertical;
+                                                }
+                                            }
+                                            break;
+
+                                        case Orientation.Vertical:
+                                            {
+                                                group.Add(
+                                                    new DockAdornerWindow(hitresult.DockSite.Handle)
+                                                    {
+                                                        AdornedElement = target,
+                                                        DockDirection = DockDirection.Top
+                                                    });
+
+                                                group.Add(
+                                                    new DockAdornerWindow(hitresult.DockSite.Handle)
+                                                    {
+                                                        AdornedElement = target,
+                                                        DockDirection = DockDirection.Bottom
+                                                    });
+                                            }
+                                            break;
+
+                                        default:
+                                            {
+                                                oriboth = true;
+                                                goto case Orientation.Horizontal;
+                                            }
+                                    }
+
+                                    if (typebouth)
+                                    {
+                                        goto case DockTargetType.Center;
+                                    }
+                                }
+                                break;
+
+                            case DockTargetType.Center:
+                                {
+                                    group.Add(
+                                        new DockAdornerWindow(hitresult.DockSite.Handle)
+                                        {
+                                            AdornedElement = target,
+                                            DockDirection = DockDirection.Fill,
+                                            Orientation = (Orientation?)target.GetValue(DockTarget.OrientationProperty),
+                                            AreInnerTargetsEnabled = true,
+                                            IsInnerCenterTargetEnabled = true,
+                                        });
+                                }
+                                break;
+
+                            case DockTargetType.Both:
+                                {
+                                    typebouth = true;
+                                    goto case DockTargetType.Outside;
+                                }
+                        }
+
+                        foreach (var item in group)
+                        {
+                            item.PrepareAndShow();
+                        }
+
+                        DockManager.CurrentDraggedContext.Adorners.Add(target, group);
+                    }
                 }
             }
-
-            DockManager.Instance._adorners.Clear();
-
-            AutoZOrderManager.CurrentDragOverWindow = null;
-            DockManager.Instance.CurrentDockDragGrip = sender as DockDragGrip;
+            else
+            {
+                DockManager.CurrentDraggedContext.CleanupAdorners(null);
+            }
         }
 
-
-
-        private IDockPreviewWindow dockPreviewWindow;
-        private IDockPreviewWindow DockPreviewWindow
+        public static void UpdatePreviewWindow(DockDragGrip draggrip, DragAbsoluteEventArgs e, Window draggedwindow)
         {
-            get
+            DockSiteHitTestResult hitresult = DockManager.FindValidHitElement<DockSiteAdorner>(
+                e.ScreenPoint,
+                _ds => _ds.Visual != draggedwindow,
+                out DockSiteAdorner docksiteadorner
+            );
+
+            DockAdornerWindow adornerwindow = docksiteadorner?.FindAncestorOrSelf<DockAdornerWindow>();
+
+            if (docksiteadorner != null
+                && adornerwindow != null
+                && adornerwindow.AdornedElement != null)
             {
-                if (dockPreviewWindow == null)
+                SetupDockPreviewArgs previewargs = new SetupDockPreviewArgs
                 {
-                    dockPreviewWindow = new DockPreviewWindow();
-                }
-                return dockPreviewWindow;
-            }
-        }
+                    previewRect = DockManager.GetDockPreviewRect(
+                                                    docksiteadorner.DockDirection,
+                                                    adornerwindow.AdornedElement,
+                                                    draggrip.FindAncestor<DockItem>()
+                                                ),
+                    dockTargetType = DockTargetType.Outside,
+                    screenPoint = e.ScreenPoint,
+                    dockDirection = docksiteadorner.DockDirection,
+                    adornedElement = adornerwindow.AdornedElement
+                };
 
-        private void HideDockPreview()
-        {
-            if (dockPreviewWindow != null)
+                DockManager.CurrentDraggedContext.DockPreviewWindow.SetupDockPreview(previewargs);
+                DockManager.CurrentDraggedContext.DockPreviewWindow.Show(hitresult.DockSite.Handle);
+
+                //Site窗口置于预览窗口之上
+                NativeMethods.SetWindowPos(
+                    DockManager.CurrentDraggedContext.DockPreviewWindow.Handle,
+                    adornerwindow.Handle,
+                    0,
+                    0,
+                    0,
+                    0,
+                    16403);
+            }
+            else
             {
-                dockPreviewWindow.Hide();
+                DockManager.CurrentDraggedContext.HideDockPreview();
             }
         }
 
-        private Rect GetDockPreviewRect(DockDirection dockDirection, FrameworkElement docktarget, DockItem drageddockItem)
+        private static void UpdateIsFloatingWindowDragWithin(DragAbsoluteEventArgs e, Window draggedwindow)
+        {
+            DockSiteHitTestResult hitresult = DockManager.FindValidHitElement<DockSiteAdorner>(
+                e.ScreenPoint,
+                _ds => _ds.Visual != draggedwindow,
+                out DockSiteAdorner hitdocksite
+            );
+
+            var oldadorner = DockManager.CurrentDraggedContext.HitDockSiteAdorner;
+            if (oldadorner != null
+                && oldadorner != hitdocksite)
+            {
+                oldadorner.IsHighlighted = false;
+            }
+
+            DockManager.CurrentDraggedContext.HitDockSiteAdorner = hitdocksite;
+            if (hitresult != null)
+            {
+                hitdocksite.IsHighlighted = true;
+            }
+        }
+
+        private static Rect GetDockPreviewRect(DockDirection dockDirection, FrameworkElement docktarget, DockItem drageddockItem)
         {
             Orientation orientation = Orientation.Horizontal;
             switch (dockDirection)
@@ -503,25 +477,28 @@ namespace Unicorn.ViewManager
             if (dockDirection != DockDirection.Fill)
             {
                 SplitterPanel panel = docktarget.FindAncestor<SplitterPanel>();
-                if (panel != null
-                    && orientation == panel.Orientation)
-                {
-                    return PreviewDockSameOrientation(dockDirection, docktarget, drageddockItem, orientation);
-                }
 
+                if (panel != null)
+                {
+                    if (orientation == panel.Orientation)
+                    {
+                        return PreviewDockSameOrientation(dockDirection, panel, docktarget, drageddockItem, orientation);
+                    }
+                }
+                //非Fill情况下 分半屏
                 return PreviewDockCounterOrientation(dockDirection, docktarget, orientation);
             }
 
             return PreviewDockFill(docktarget);
         }
 
-        private Rect PreviewDockSameOrientation(DockDirection dockDirection,
+        private static Rect PreviewDockSameOrientation(DockDirection dockDirection,
+            SplitterPanel targetpanel,
             FrameworkElement docktarget,
             DockItem drageddockItem,
             Orientation orientation)
         {
             //找到父SplitterPanel 和 停靠目标 SplitterItem 的索引位置
-            SplitterPanel targetpanel = docktarget.FindAncestor<SplitterPanel>();
             int originalIndex = -1;
             if (targetpanel != null)
             {
@@ -569,7 +546,7 @@ namespace Unicorn.ViewManager
             return result;
         }
 
-        private Rect PreviewDockCounterOrientation(DockDirection dockDirection,
+        private static Rect PreviewDockCounterOrientation(DockDirection dockDirection,
             FrameworkElement docktarget,
             Orientation orientation)
         {
@@ -604,7 +581,7 @@ namespace Unicorn.ViewManager
             return result;
         }
 
-        private Rect PreviewDockFill(FrameworkElement adornedElement)
+        private static Rect PreviewDockFill(FrameworkElement adornedElement)
         {
             Point location = adornedElement.PointToScreen(new Point(0.0, 0.0));
             Size size = default(Size);
@@ -626,38 +603,8 @@ namespace Unicorn.ViewManager
 
 
 
-        public void CleanupAdorners(params DockTarget[] targets)
-        {
-            var removedlist = new List<DockTarget>();
 
-            foreach (var item in DockManager.Instance._adorners)
-            {
-                if (targets != null && targets.Contains(item.Key))
-                {
-                    continue;
-                }
-
-                removedlist.Add(item.Key);
-
-                foreach (var awin in item.Value)
-                {
-                    awin.PrepareAndHide();
-                }
-            }
-
-            foreach (var item in removedlist)
-            {
-                DockManager.Instance._adorners.Remove(item);
-            }
-        }
-
-        private Dictionary<DockTarget, List<DockAdornerWindow>> _adorners = new Dictionary<DockTarget, List<DockAdornerWindow>>();
-
-
-
-
-
-        public void RegisterDockSite(Window window)
+        public static void RegisterDockSite(Window window)
         {
             HwndSource hwndSource = PresentationSource.FromDependencyObject(window) as HwndSource;
             if (hwndSource == null)
@@ -670,11 +617,11 @@ namespace Unicorn.ViewManager
             }
         }
 
-        public void RegisterDockSite(Visual visual, IntPtr hWnd)
+        public static void RegisterDockSite(Visual visual, IntPtr hWnd)
         {
-            if (visualToSite.ContainsKey(visual))
+            if (_visualToSite.ContainsKey(visual))
             {
-                if (visualToSite[visual].Handle != hWnd)
+                if (_visualToSite[visual].Handle != hWnd)
                 {
                     throw new InvalidOperationException("Visual cannot be used in RegisterSite with two different window handles");
                 }
@@ -686,30 +633,29 @@ namespace Unicorn.ViewManager
                     Handle = hWnd,
                     Visual = visual
                 };
-                visualToSite[visual] = value;
-                hwndToSite[hWnd] = value;
+                _visualToSite[visual] = value;
+                _hwndToSite[hWnd] = value;
             }
         }
 
-        private void OnSourceInitialized(object sender, EventArgs args)
+        private static void OnSourceInitialized(object sender, EventArgs args)
         {
             Window window = (Window)sender;
             window.SourceInitialized -= OnSourceInitialized;
             RegisterDockSite(window);
         }
 
-        public void UnregisterDockSite(Visual visual)
+        public static void UnregisterDockSite(Visual visual)
         {
-            if (visualToSite.TryGetValue(visual, out DockSite value))
+            if (_visualToSite.TryGetValue(visual, out DockSite value))
             {
-                visualToSite.Remove(visual);
-                hwndToSite.Remove(value.Handle);
+                _visualToSite.Remove(visual);
+                _hwndToSite.Remove(value.Handle);
             }
         }
 
 
-
-        private DockSiteHitTestResult FindValidHitElement<T>(Point point, Predicate<DockSite> predicate, out T target) where T : DependencyObject
+        private static DockSiteHitTestResult FindValidHitElement<T>(Point point, Predicate<DockSite> predicate, out T target) where T : DependencyObject
         {
             target = null;
 
@@ -728,8 +674,7 @@ namespace Unicorn.ViewManager
             return null;
         }
 
-
-        private List<DockSiteHitTestResult> FindHitElements(Point point, Predicate<DockSite> predicate)
+        private static List<DockSiteHitTestResult> FindHitElements(Point point, Predicate<DockSite> predicate)
         {
             List<DockSite> sortedDockSites = GetSortedDockSites();
             List<DockSiteHitTestResult> results = new List<DockSiteHitTestResult>();
@@ -754,11 +699,11 @@ namespace Unicorn.ViewManager
             return results;
         }
 
-        private List<DockSite> GetSortedDockSites()
+        private static List<DockSite> GetSortedDockSites()
         {
             void AddDockSiteFromHwnd(List<DockSite> sortedSites, IntPtr hWnd)
             {
-                if (hwndToSite.TryGetValue(hWnd, out DockSite value))
+                if (_hwndToSite.TryGetValue(hWnd, out DockSite value))
                 {
                     sortedSites.Add(value);
                 }
