@@ -13,6 +13,7 @@ namespace Unicorn.ViewManager
     public enum FindMode
     {
         First,
+        Ignore,
         Always
     }
 

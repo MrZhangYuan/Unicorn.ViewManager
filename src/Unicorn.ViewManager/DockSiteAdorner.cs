@@ -20,6 +20,11 @@ namespace Unicorn.ViewManager
         {
             get
             {
+                if (this.AdornedElement != null)
+                {
+                    return this.AdornedElement;
+                }
+
                 DockAdornerWindow ancestor = this.FindAncestor<DockAdornerWindow>();
                 if (ancestor == null)
                     return (DockTarget)null;

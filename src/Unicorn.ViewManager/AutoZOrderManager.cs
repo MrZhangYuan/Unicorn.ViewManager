@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Interop;
@@ -17,23 +18,31 @@ namespace Unicorn.ViewManager
             get => _currentDragOverWindow;
             set
             {
+                Debug.WriteLine("--------------------3");
+
                 if (_currentDragOverWindow == value)
                     return;
+
+                Debug.WriteLine("--------------------4");
+
                 StopTimer();
                 _currentDragOverWindow = value;
                 if (_currentDragOverWindow == null)
                     return;
+
+                Debug.WriteLine("--------------------5");
+
                 _autoZOrderTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, new EventHandler(AutoZOrderManager.OnAutoZOrderTimer), AutoZOrderManager._currentDragOverWindow.Dispatcher);
                 _autoZOrderTimer.Start();
             }
         }
 
-        public static void AdornersCleared(Window window)
-        {
-            if (CurrentDragOverWindow != window)
-                return;
-            CurrentDragOverWindow = (Window)null;
-        }
+        //public static void AdornersCleared(Window window)
+        //{
+        //    if (CurrentDragOverWindow != window)
+        //        return;
+        //    CurrentDragOverWindow = (Window)null;
+        //}
 
         private static void OnAutoZOrderTimer(object obj, EventArgs args)
         {
@@ -58,10 +67,14 @@ namespace Unicorn.ViewManager
             if (older == num)
                 return;
 
+            //Debug.WriteLine("--------------------1");
+
             NativeMethods.SetWindowPos(handle, draggedWindowHandle, 0, 0, 0, 0, 16403);
 
             if (DockManager.CurrentDraggedContext.DockDragGrip == null)
                 return;
+
+            //Debug.WriteLine("--------------------2");
 
             DockManager.CurrentDraggedContext.CleanupAdorners(null);
             DockManager.CurrentDraggedContext.DockDragGrip.RaiseDragAbsolute(NativeMethods.GetCursorPos());

@@ -42,10 +42,19 @@ namespace ViewManagerDemo.Views
 
         private void DockViewDemo_Shown(object sender, EventArgs e)
         {
-            for (int i = 0; i < 5; i++)
-            {
-                this._DockItem.Dock(new DockItem());
-            }
+            //for (int i = 0; i < 7; i++)
+            //{
+            //    this._DockGroup.Dock(new DockItem()
+            //    {
+            //        Content = new Button
+            //        {
+            //            Width = 50,
+            //            Height = 50,
+            //            Content = i
+            //        },
+            //        Tag = $"{i}"
+            //    });
+            //}
         }
     }
 }

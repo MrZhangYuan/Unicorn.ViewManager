@@ -19,159 +19,238 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Unicorn.ViewManager.Internal;
 using System.Collections.ObjectModel;
+using System.Windows.Markup;
 
 namespace Unicorn.ViewManager
 {
-    public class DockGroupControl : SplitterItemsControl, IDockHost
+    public class TabGroupControl : TabControl
     {
-        public virtual IDockHost DockParent
+        static TabGroupControl()
         {
-            get
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(TabGroupControl), new FrameworkPropertyMetadata(typeof(TabGroupControl)));
+        }
+
+        public TabGroupControl()
+        {
+
+        }
+
+        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
+        {
+            base.OnItemsChanged(e);
+
+            if (e.OldItems != null)
             {
-                return (IDockHost)GetValue(DockParentProperty);
+                foreach (TabGroupTabItem item in e.OldItems)
+                {
+                    item.ParentHost = null;
+                }
             }
-            private set
+
+            foreach (TabGroupTabItem item in this.Items)
             {
-                SetValue(DockParentProperty, value);
+                item.ParentHost = this;
+            }
+
+            if (this.Items.Count == 0
+                && this.ParentHost != null)
+            {
+                this.ParentHost.UnDock(this);
             }
         }
-        public static readonly DependencyProperty DockParentProperty = DependencyProperty.Register("DockParent", typeof(IDockHost), typeof(DockGroupControl), new PropertyMetadata(null));
 
-
-        public virtual DockHostCollection Children
+        protected override bool IsItemItsOwnContainerOverride(object item)
         {
-            get
+            return item is TabGroupTabItem;
+        }
+
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new TabGroupTabItem();
+        }
+
+
+        public DockGroupControl ParentHost
+        {
+            get;
+            internal set;
+        }
+
+        public void Dock(TabGroupTabItem tabitem)
+        {
+            if (!this.Items.Contains(tabitem))
             {
-                return (DockHostCollection)GetValue(ChildrenProperty);
-            }
-            private set
-            {
-                SetValue(ChildrenProperty, value);
+                this.Items.Add(tabitem);
             }
         }
-        public static readonly DependencyProperty ChildrenProperty = DependencyProperty.Register("Children", typeof(DockHostCollection), typeof(DockGroupControl), new PropertyMetadata(null));
+
+        public void UnDock()
+        {
+            if (this.ParentHost != null)
+            {
+                this.ParentHost.UnDock(this);
+            }
+        }
+
+        public void UnDock(DependencyObject dobj)
+        {
+            this.Items.Remove(dobj);
+        }
+    }
 
 
+    public class TabGroupTabItem : TabItem
+    {
+        static TabGroupTabItem()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(TabGroupTabItem), new FrameworkPropertyMetadata(typeof(TabGroupTabItem)));
+        }
 
+        public TabGroupControl ParentHost
+        {
+            get;
+            internal set;
+        }
+
+        public void UnDock()
+        {
+            if (this.ParentHost != null)
+            {
+                this.ParentHost.UnDock(this);
+            }
+        }
+    }
+
+    /// <summary>
+    /// DockGroupControl 只允许停靠 TabGroupControl 和 DockGroupControl
+    /// </summary>
+    public class DockGroupControl : SplitterItemsControl
+    {
         static DockGroupControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(DockGroupControl), new FrameworkPropertyMetadata(typeof(DockGroupControl)));
         }
 
-        private readonly ObservableCollection<IDockHost> _innerChildren = new ObservableCollection<IDockHost>();
         public DockGroupControl()
         {
-            this.Children = new DockHostCollection(this._innerChildren);
 
-            this.SetBinding(ItemsSourceProperty, new Binding
-            {
-                Source = this,
-                Path = new PropertyPath(DockGroupControl.ChildrenProperty),
-                Mode = BindingMode.OneWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-            });
         }
 
-        public void Dock(DockDirection direction, IDockHost child)
+
+        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
+        {
+            base.OnItemsChanged(e);
+
+            if (e.OldItems != null)
+            {
+                foreach (var item in e.OldItems.OfType<DockGroupControl>())
+                {
+                    item.ParentHost = null;
+                }
+                foreach (var item in e.OldItems.OfType<TabGroupControl>())
+                {
+                    item.ParentHost = null;
+                }
+            }
+
+            foreach (var item in this.Items)
+            {
+                if (item is DockGroupControl dockgroup)
+                {
+                    dockgroup.ParentHost = this;
+                }
+                else if (item is TabGroupControl tabgroup)
+                {
+                    tabgroup.ParentHost = this;
+                }
+                else
+                {
+                    //TODO 不允许插入其它类型的的元素
+                }
+            }
+
+            if (this.Items.Count==0 
+                && this.ParentHost!=null)
+            {
+                this.ParentHost.UnDock(this);
+            }
+        }
+
+
+        public DockGroupControl ParentHost
+        {
+            get;
+            internal set;
+        }
+
+        public void Dock(DockDirection direction, DependencyObject dobj)
         {
             switch (direction)
             {
                 case DockDirection.Fill:
-                    break;
-
-                case DockDirection.Left:
-                case DockDirection.Right:
-                    this.SetValue(DockTarget.OrientationProperty, Orientation.Horizontal);
-                    break;
-
-                case DockDirection.Top:
-                case DockDirection.Bottom:
-                    this.SetValue(DockTarget.OrientationProperty, Orientation.Vertical);
+                    this.Items.Add(dobj);
                     break;
             }
-
-            this._innerChildren.Add(child);
         }
 
-        public void Dock(IDockHost child)
+        public void UnDock(DependencyObject dobj)
         {
-            this._innerChildren.Add(child);
+            this.Items.Remove(dobj);
+
+            //if (this.ParentHost != null)
+            //{
+            //    if (this.Items.Count == 0)
+            //    {
+            //        this.ParentHost.UnDock(this);
+            //    }
+            //    else if (this.Items.Count == 1
+            //        && this.ParentHost != null)
+            //    {
+            //        var child = this.Items[0];
+
+            //        var parentindex = this.ParentHost.Items.IndexOf(this);
+
+            //        if (parentindex >= 0)
+            //        {             
+            //            this.Items.Remove(child);
+            //            this.ParentHost.Items.Insert(parentindex, child);
+            //        }
+            //    }
+            //}
         }
 
-        public virtual void Dock(DockDirection direction, IDockHost oldchild, IDockHost newchild)
-        {
-            if (!IsDirectionAllowed(direction))
-            {
-                throw new InvalidOperationException($"当前不可停靠在 {direction} 位置");
-            }
+        //private TabControl _innerChild = null;
+        //public override void OnApplyTemplate()
+        //{
+        //    base.OnApplyTemplate();
 
-            int index = this._innerChildren.IndexOf(oldchild);
+        //    this._innerChild = this.OnCreateChildTabControl();
 
-            if (this._innerChildren.Count <= 1)
-            {
-                if (index >= 0)
-                {
-                    if (newchild.DockParent != null)
-                    {
-                        newchild.DockParent.UnDock(newchild);
-                    }
+        //    var childhost = this.GetTemplateChild("") as ContentPresenter;
+        //    if (childhost != null)
+        //    {
 
-                    index = direction == DockDirection.Right || direction == DockDirection.Bottom ? index + 1 : index;
+        //    }
+        //}
 
-                    switch (direction)
-                    {
-                        case DockDirection.Fill:
-                            break;
+        //protected virtual TabControl OnCreateChildTabControl()
+        //{
+        //    return new TabGroupControl();
+        //}
 
-                        case DockDirection.Left:
-                        case DockDirection.Right:
-                            this.SetValue(DockTarget.OrientationProperty, Orientation.Horizontal);
-                            break;
 
-                        case DockDirection.Top:
-                        case DockDirection.Bottom:
-                            this.SetValue(DockTarget.OrientationProperty, Orientation.Vertical);
-                            break;
-                    }
 
-                    this._innerChildren.Insert(index, newchild);
-                }
-            }
-        }
+        //protected sealed override bool IsItemItsOwnContainerOverride(object item)
+        //{
+        //    return item is DockItem
+        //        || item is DockGroupControl;
+        //}
 
-        public virtual void UnDock(IDockHost child)
-        {
-            if (this._innerChildren.Contains(child))
-            {
-                this._innerChildren.Remove(child);
-            }
-        }
-
-        public virtual bool IsDirectionAllowed(DockDirection direction)
-        {
-            Orientation? orientation = (Orientation?)this.GetValue(DockTarget.OrientationProperty);
-            switch (orientation)
-            {
-                case Orientation.Vertical:
-                    return direction == DockDirection.Top
-                        || direction == DockDirection.Bottom;
-
-                case Orientation.Horizontal:
-                    return direction == DockDirection.Left
-                        || direction == DockDirection.Right;
-            }
-
-            return true;
-        }
-
-        protected override bool IsItemItsOwnContainerOverride(object item)
-        {
-            return false;
-        }
-
-        protected override DependencyObject GetContainerForItemOverride()
-        {
-            return new DockItem();
-        }
+        //protected sealed override DependencyObject GetContainerForItemOverride()
+        //{
+        //    return new DockItem();
+        //}
     }
 }
+
+

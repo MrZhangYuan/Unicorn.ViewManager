@@ -17,84 +17,25 @@ using System.Windows.Controls;
 
 namespace Unicorn.ViewManager
 {
-    class DockView : DependencyObject
+    public class DockItem : TabGroupTabItem
     {
-
-    }
-
-    class ViewGroup : DockView
-    {
-
-    }
-
-    class DockRoot : DockView
-    {
-
-    }
-
-
-
-    public class DockHostCollection : ReadOnlyObservableCollection<IDockHost>
-    {
-        public DockHostCollection(ObservableCollection<IDockHost> children) :
-            base(children)
+        public object Title
         {
+            get
+            {
+                return (object)GetValue(TitleProperty);
+            }
+            set
+            {
+                SetValue(TitleProperty, value);
+            }
+        }
+        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(object), typeof(DockItem), new PropertyMetadata(null));
 
-        }
-    }
-
-    public interface IDockHost
-    {
-        IDockHost DockParent { get; }
-        DockHostCollection Children { get; }
-        void Dock(DockDirection direction, IDockHost oldchild, IDockHost newchild);
-        void Dock(DockDirection direction, IDockHost oldchild);
-        void Dock(IDockHost oldchild);
-        void UnDock(IDockHost child);
-        bool IsDirectionAllowed(DockDirection direction);
-    }
-
-    public class DockItem : SplitterItem, IDockHost
-    {
-        private DockGroupControl _dockGroupControl = null;
-        internal DockGroupControl DockGroupControl
-        {
-            get => this._dockGroupControl ?? (this._dockGroupControl = new DockGroupControl());
-        }
-        public IDockHost DockParent
-        {
-            get => this.DockGroupControl.DockParent;
-        }
-        public DockHostCollection Children
-        {
-            get => this.DockGroupControl.Children;
-        }
 
         static DockItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(DockItem), new FrameworkPropertyMetadata(typeof(DockItem)));
         }
-
-        public DockItem()
-        {
-
-        }
-
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-
-            var container = this.GetTemplateChild("PART_CONTAINER") as ContentPresenter;
-            if (container != null)
-            {
-                container.Content = this.DockGroupControl;
-            }
-        }
-
-        public void Dock(DockDirection direction, IDockHost oldchild, IDockHost newchild) => this.DockGroupControl.Dock(direction, oldchild, newchild);
-        public void Dock(DockDirection direction, IDockHost child) => this.DockGroupControl.Dock(direction, child);
-        public void Dock(IDockHost child) => this.DockGroupControl.Dock(child);
-        public void UnDock(IDockHost child) => this.DockGroupControl.UnDock(child);
-        public bool IsDirectionAllowed(DockDirection direction) => this.DockGroupControl.IsDirectionAllowed(direction);
     }
 }

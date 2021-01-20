@@ -84,7 +84,6 @@ namespace Unicorn.ViewManager
             }
         }
 
-
         public static DependencyObject GetVisualOrLogicalParent(this DependencyObject sourceElement)
         {
             if (sourceElement == null)

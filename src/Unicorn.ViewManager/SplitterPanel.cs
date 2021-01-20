@@ -91,7 +91,7 @@ namespace Unicorn.ViewManager
             return (double)element.GetValue(ActualSplitterLengthProperty);
         }
 
-        protected static void SetActualSplitterLength(UIElement element, double value)
+        internal protected static void SetActualSplitterLength(UIElement element, double value)
         {
             element.SetValue(ActualSplitterLengthPropertyKey, value);
         }
@@ -180,12 +180,6 @@ namespace Unicorn.ViewManager
             element.SetValue(MaximumLengthProperty, value);
         }
 
-        /// <summary>
-        /// This method updates the IndexProperty, IsFirstProperty, and IsLastProperty
-        /// on all of the child UIElements in this collection.  These properties
-        /// are used by the SplitterItem style to determine if the splitter should be shown
-        /// or not.
-        /// </summary>
         private void UpdateIndices()
         {
             int count = base.InternalChildren.Count;
@@ -208,16 +202,6 @@ namespace Unicorn.ViewManager
             return Measure(availableSize, Orientation, SplitterMeasureData.FromElements(base.InternalChildren), remeasureElements: true);
         }
 
-        /// <summary>
-        /// When there is an infinite size available in the stacking direction, there are no need for constraints
-        /// and we can just measure the elements with the given size.
-        /// </summary>
-        /// <param name="availableSize">The size available to the control.</param>
-        /// <param name="orientation">The control's orientation.</param>
-        /// <param name="uiElements">The enumeration of child UIElements to measure and arrange.</param>
-        /// <param name="remeasureElements">True to actually remeasure the child elements and attach
-        /// the new layout information to them.  To perform a non-invasive preview of the layout, pass false.</param>
-        /// <returns>The calculated size required for this control.</returns>
         private static Size MeasureNonreal(Size availableSize, Orientation orientation, IEnumerable<SplitterMeasureData> measureData, bool remeasureElements)
         {
             double num = 0.0;
@@ -267,17 +251,6 @@ namespace Unicorn.ViewManager
             return true;
         }
 
-        /// <summary>
-        /// This method is used to measure and arrange a set of child elements.  This method is used
-        /// both for the normal Measure/Arrange pass, and also to determine where an item would
-        /// show up if it were added to this panel.  This is used for docking previews.
-        /// </summary>
-        /// <param name="availableSize">The size available to the control.</param>
-        /// <param name="orientation">The control's orientation.</param>
-        /// <param name="measureData">The enumeration of child UIElements to measure and arrange.</param>
-        /// <param name="remeasureElements">True to actually remeasure the child elements and attach
-        /// the new layout information to them.  To perform a non-invasive preview of the layout, pass false.</param>
-        /// <returns>The calculated size required for this control.</returns>
         public static Size Measure(Size availableSize, Orientation orientation, IEnumerable<SplitterMeasureData> measureData, bool remeasureElements)
         {
             double num = 0.0;
@@ -411,10 +384,6 @@ namespace Unicorn.ViewManager
             return new Size(num6, num7);
         }
 
-        /// <summary>
-        /// Arranges the elements based on attached arrangement information
-        /// calculated in Measure.
-        /// </summary>
         protected override Size ArrangeOverride(Size finalSize)
         {
             Rect finalRect = new Rect(0.0, 0.0, finalSize.Width, finalSize.Height);
@@ -440,13 +409,6 @@ namespace Unicorn.ViewManager
             return finalSize;
         }
 
-        /// <summary>
-        /// Handles the resize of splitters for this panel.  This could
-        /// show the preview resize window for this panel, if ShowResizePreview
-        /// is true.
-        /// </summary>
-        /// <param name="sender">The sender, which may or may not be a SplitterGrip.</param>
-        /// <param name="args">The event args.</param>
         private void OnSplitterDragStarted(object sender, DragStartedEventArgs args)
         {
             SplitterGrip splitterGrip = args.OriginalSource as SplitterGrip;
@@ -463,11 +425,6 @@ namespace Unicorn.ViewManager
             }
         }
 
-        /// <summary>
-        /// Commits the resize for a splitter if a drag operation was successful.
-        /// </summary>
-        /// <param name="sender">The sender, which should be a SplitterGrip.</param>
-        /// <param name="args">The event args.</param>
         private void OnSplitterDragCompleted(object sender, DragCompletedEventArgs args)
         {
             SplitterGrip splitterGrip = sender as SplitterGrip;

@@ -26,7 +26,7 @@ namespace Unicorn.ViewManager
         {
             OrientationProperty = DependencyProperty.Register("Orientation", typeof(Orientation), typeof(SplitterItemsControl), new FrameworkPropertyMetadata(Orientation.Horizontal, FrameworkPropertyMetadataOptions.AffectsMeasure, OnOrientationChanged));
             SplitterGripSizeProperty = DependencyProperty.RegisterAttached("SplitterGripSize", typeof(double), typeof(SplitterItemsControl), new FrameworkPropertyMetadata(5.0, FrameworkPropertyMetadataOptions.Inherits));
-            FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(typeof(SplitterItemsControl), new FrameworkPropertyMetadata(typeof(SplitterItemsControl)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(SplitterItemsControl), new FrameworkPropertyMetadata(typeof(SplitterItemsControl)));
         }
 
         public static double GetSplitterGripSize(DependencyObject element)
