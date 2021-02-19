@@ -80,7 +80,7 @@
                                             DockDirection="Fill" />
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="Orientation"
+                        <Trigger Property="DockOrientation"
                                  Value="Horizontal">
                             <Setter TargetName="Top"
                                     Property="Visibility"
@@ -89,7 +89,8 @@
                                     Property="Visibility"
                                     Value="Collapsed" />
                         </Trigger>
-                        <Trigger Property="Orientation"
+
+                        <Trigger Property="DockOrientation"
                                  Value="Vertical">
                             <Setter TargetName="Left"
                                     Property="Visibility"
@@ -99,8 +100,41 @@
                                     Value="Collapsed" />
                         </Trigger>
 
-                        <Trigger Property="AreInnerTargetsEnabled"
-                                 Value="False">
+                        <Trigger Property="DockOrientation"
+                                 Value="HorizontalOutter">
+                            <Setter TargetName="Top"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                            <Setter TargetName="Bottom"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                            <Setter TargetName="Fill"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="DockOrientation"
+                                 Value="VerticalOutter">
+                            <Setter TargetName="Left"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                            <Setter TargetName="Right"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                            <Setter TargetName="Fill"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="DockOrientation"
+                                 Value="Outter">
+                            <Setter TargetName="Fill"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="DockOrientation"
+                                 Value="Center">
                             <Setter TargetName="Left"
                                     Property="Visibility"
                                     Value="Collapsed" />
@@ -115,8 +149,20 @@
                                     Value="Collapsed" />
                         </Trigger>
 
-                        <Trigger Property="IsInnerCenterTargetEnabled"
-                                 Value="False">
+                        <Trigger Property="DockOrientation"
+                                 Value="None">
+                            <Setter TargetName="Left"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                            <Setter TargetName="Right"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                            <Setter TargetName="Top"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
+                            <Setter TargetName="Bottom"
+                                    Property="Visibility"
+                                    Value="Collapsed" />
                             <Setter TargetName="Fill"
                                     Property="Visibility"
                                     Value="Collapsed" />

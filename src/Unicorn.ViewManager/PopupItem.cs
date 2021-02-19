@@ -329,7 +329,7 @@ namespace Unicorn.ViewManager
 
         public void Show()
         {
-            ViewManager.Instance.ActiveContainer.Show(this);
+            ViewManager.Instance.ActivePopupContainer.Show(this);
         }
 
         public void Show(IPopupItemContainer container)
@@ -354,7 +354,7 @@ namespace Unicorn.ViewManager
 
         public ModalResult ShowAsModal()
         {
-            return ViewManager.Instance.ActiveContainer.ShowModal(this);
+            return ViewManager.Instance.ActivePopupContainer.ShowModal(this);
         }
         public ModalResult ShowAsModal(IPopupItemContainer container)
         {

@@ -30,8 +30,66 @@ namespace Unicorn.ViewManager
             CloseView,
             SwitchView,
 
+            CloseViewTab,
+            ShowViewTab,
+
+            CloseToolTab,
+            HideToolTabToAutoHide,
+            UnHideAutoHideToToolTab,
+            ShowToolTab,
+
             Last
         }
+        public static RoutedUICommand CloseViewTab
+        {
+            get
+            {
+                return _EnsureCommand(CommandId.CloseViewTab);
+            }
+        }
+        //public static RoutedUICommand ShowViewTab
+        //{
+        //    get
+        //    {
+        //        return _EnsureCommand(CommandId.ShowViewTab);
+        //    }
+        //}
+
+        public static RoutedUICommand CloseToolTab
+        {
+            get
+            {
+                return _EnsureCommand(CommandId.CloseToolTab);
+            }
+        }
+        public static RoutedUICommand HideToolTabToAutoHide
+        {
+            get
+            {
+                return _EnsureCommand(CommandId.HideToolTabToAutoHide);
+            }
+        }
+
+        public static RoutedUICommand UnHideAutoHideToToolTab
+        {
+            get
+            {
+                return _EnsureCommand(CommandId.UnHideAutoHideToToolTab);
+            }
+        }
+
+        //public static RoutedUICommand ShowToolTab
+        //{
+        //    get
+        //    {
+        //        return _EnsureCommand(CommandId.ShowToolTab);
+        //    }
+        //}
+
+
+
+
+
 
         private static RoutedUICommand[] _internalCommands = new RoutedUICommand[(int)CommandId.Last];
 

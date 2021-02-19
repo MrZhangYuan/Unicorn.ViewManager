@@ -23,7 +23,13 @@ namespace Unicorn.ViewManager
 
         public bool IsDockGroup
         {
-            get => this.DockDirection == DockDirection.Fill;
+            get => this.DockTargetType == DockTargetType.Center;
+        }
+
+        public DockTargetType DockTargetType
+        {
+            get;
+            set;
         }
 
         public DockTarget AdornedElement
@@ -43,29 +49,8 @@ namespace Unicorn.ViewManager
 
         /// <summary>
         /// 停靠的方向
-        /// Horizontal：上下停靠禁用
-        /// Vertical：左右停靠禁用
-        /// NULL：全启用
         /// </summary>
-        public Orientation? Orientation
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// 靠近最中间的填充的外层第一层
-        /// </summary>
-        public bool AreInnerTargetsEnabled
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// 最中间的填充是否启用
-        /// </summary>
-        public bool IsInnerCenterTargetEnabled
+        public DockOrientation DockOrientation
         {
             get;
             set;
@@ -167,9 +152,7 @@ namespace Unicorn.ViewManager
             DockAdorner dockAdorner = !this.IsDockGroup ? (DockAdorner)new DockSiteAdorner() : (DockAdorner)new DockGroupAdorner();
             dockAdorner.AdornedElement = this.AdornedElement;
             dockAdorner.DockDirection = this.DockDirection;
-            dockAdorner.Orientation = this.Orientation;
-            dockAdorner.AreInnerTargetsEnabled = this.AreInnerTargetsEnabled;
-            dockAdorner.IsInnerCenterTargetEnabled = this.IsInnerCenterTargetEnabled;
+            dockAdorner.DockOrientation = this.DockOrientation;
             this.Content = (object)(this._innerContent = dockAdorner);
             this._innerContent.UpdateContent();
         }

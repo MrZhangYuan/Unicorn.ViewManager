@@ -38,6 +38,10 @@ namespace Unicorn.ViewManager.Internal
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool BringWindowToTop(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EnumThreadWindows(
         uint dwThreadId,
         NativeMethods.EnumWindowsProc lpfn,
@@ -47,15 +51,15 @@ namespace Unicorn.ViewManager.Internal
         public static extern uint GetCurrentThreadId();
 
         [DllImport("User32.dll", CallingConvention = CallingConvention.StdCall)]
-		internal static extern IntPtr GetDC(IntPtr hWnd);
+        internal static extern IntPtr GetDC(IntPtr hWnd);
 
-		[DllImport("User32.dll", CallingConvention = CallingConvention.StdCall)]
-		internal static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+        [DllImport("User32.dll", CallingConvention = CallingConvention.StdCall)]
+        internal static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
-		[DllImport("Gdi32.dll", CallingConvention = CallingConvention.StdCall)]
-		internal static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+        [DllImport("Gdi32.dll", CallingConvention = CallingConvention.StdCall)]
+        internal static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
 
-		[DllImport("User32", CharSet = CharSet.Auto)]
+        [DllImport("User32", CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetWindowPos(
            IntPtr hWnd,

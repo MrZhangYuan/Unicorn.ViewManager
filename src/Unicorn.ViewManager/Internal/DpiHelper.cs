@@ -6,7 +6,6 @@ using System.Windows.Media;
 namespace Unicorn.ViewManager.Internal
 {
 
-
     internal static class DpiHelper
 	{
 		public class InnerDpiHelper

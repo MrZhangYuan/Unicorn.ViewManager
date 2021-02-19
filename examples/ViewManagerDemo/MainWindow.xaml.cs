@@ -91,7 +91,7 @@ namespace ViewManagerDemo
                 switch (e.Key)
                 {
                     case Key.W:
-                        var topitem = ViewManager.Instance.ActiveContainer.TopItem;
+                        var topitem = ViewManager.Instance.ActivePopupContainer.TopItem;
                         StandardWindow.ShowStandard(topitem);
                         break;
                 }

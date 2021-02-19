@@ -18,19 +18,24 @@ namespace Unicorn.ViewManager
             get => _currentDragOverWindow;
             set
             {
-                Debug.WriteLine("--------------------3");
+                Debug.WriteLine($"----3----{_currentDragOverWindow}----{value}");
 
                 if (_currentDragOverWindow == value)
+                {
                     return;
+                }
 
-                Debug.WriteLine("--------------------4");
+                Debug.WriteLine($"----4----{_currentDragOverWindow}----{value}");
 
                 StopTimer();
                 _currentDragOverWindow = value;
-                if (_currentDragOverWindow == null)
-                    return;
 
-                Debug.WriteLine("--------------------5");
+                if (_currentDragOverWindow == null)
+                {
+                    return;
+                }
+
+                Debug.WriteLine($"----5----{_currentDragOverWindow}----{value}");
 
                 _autoZOrderTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, new EventHandler(AutoZOrderManager.OnAutoZOrderTimer), AutoZOrderManager._currentDragOverWindow.Dispatcher);
                 _autoZOrderTimer.Start();

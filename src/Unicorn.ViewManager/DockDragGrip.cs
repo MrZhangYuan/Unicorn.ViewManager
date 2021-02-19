@@ -17,44 +17,64 @@ using Unicorn.ViewManager.Internal;
 
 namespace Unicorn.ViewManager
 {
-    internal class DragAbsoluteEventArgs : RoutedEventArgs
+    public class DragAbsoluteEventArgs : RoutedEventArgs
     {
         public DragAbsoluteEventArgs(RoutedEvent evt, Point point)
           : base(evt)
-          => this.ScreenPoint = point;
+        {
+            this.ScreenPoint = point;
+        }
 
-        public Point ScreenPoint { get; private set; }
+        public Point ScreenPoint
+        {
+            get;
+            private set;
+        }
     }
 
-    internal class DragAbsoluteCompletedEventArgs : DragAbsoluteEventArgs
+    public class DragAbsoluteCompletedEventArgs : DragAbsoluteEventArgs
     {
         public DragAbsoluteCompletedEventArgs(RoutedEvent evt, Point point, bool isCompleted)
           : base(evt, point)
-          => this.IsCompleted = isCompleted;
+        {
+            this.IsCompleted = isCompleted;
+        }
 
-        public bool IsCompleted { get; set; }
+        public bool IsCompleted
+        {
+            get;
+            set;
+        }
     }
 
-    internal class DockDragGrip : ContentControl, INonClientArea
+    public class DockDragGrip : ContentControl, INonClientArea
     {
-        private Point originalScreenPoint;
-        private Point lastScreenPoint;
-        private bool movedDuringDrag;
-        private HwndSource currentSource;
+        private Point _originalScreenPoint;
+        private Point _lastScreenPoint;
+        private bool _movedDuringDrag;
+        private HwndSource _currentSource;
 
         private HwndSource CurrentSource
         {
-            get => this.currentSource;
+            get => this._currentSource;
             set
             {
-                if (this.currentSource == value)
+                if (this._currentSource == value)
+                {
                     return;
-                if (this.currentSource != null)
-                    this.currentSource.RemoveHook(new HwndSourceHook(this.WndProc));
-                this.currentSource = value;
-                if (this.currentSource == null)
-                    return;
-                this.currentSource.AddHook(new HwndSourceHook(this.WndProc));
+                }
+
+                if (this._currentSource != null)
+                {
+                    this._currentSource.RemoveHook(new HwndSourceHook(this.WndProc));
+                }
+
+                this._currentSource = value;
+
+                if (this._currentSource != null)
+                {
+                    this._currentSource.AddHook(new HwndSourceHook(this.WndProc));
+                }
             }
         }
 
@@ -73,15 +93,22 @@ namespace Unicorn.ViewManager
             protected set => this.SetValue(DockDragGrip.IsDraggingPropertyKey, value);
         }
 
-
-        /// <summary>
-        /// IsAtFloatingWindow
-        /// </summary>
         public bool IsWindowTitleBar
         {
             get => (bool)this.GetValue(DockDragGrip.IsWindowTitleBarProperty);
             set => this.SetValue(DockDragGrip.IsWindowTitleBarProperty, value);
         }
+
+
+        public object Element
+        {
+            get => GetValue(ElementProperty);
+            set => SetValue(ElementProperty, value);
+        }
+
+        public static readonly DependencyProperty ElementProperty = DependencyProperty.Register("Element", typeof(object), typeof(DockDragGrip), new PropertyMetadata(null));
+
+
         static DockDragGrip()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(DockDragGrip), new FrameworkPropertyMetadata(typeof(DockDragGrip)));
@@ -90,7 +117,48 @@ namespace Unicorn.ViewManager
         public DockDragGrip()
         {
             PresentationSource.AddSourceChangedHandler((IInputElement)this, new SourceChangedEventHandler(this.OnSourceChanged));
+
+            //使用此种方式会导致里面的Button不执行命令
+            //this.AddHandler(MouseLeftButtonDownEvent, new MouseButtonEventHandler(this.MouseLeftButtonDown_Handle), true);
+            //this.AddHandler(MouseMoveEvent, new MouseEventHandler(this.MouseMove_Handle), true);
+            //this.AddHandler(MouseLeftButtonUpEvent, new MouseButtonEventHandler(this.MouseLeftButtonUp_Handle), true);
         }
+
+        //private void MouseLeftButtonDown_Handle(object sender, MouseButtonEventArgs e)
+        //{
+        //    if (this.IsConnectedToPresentationSource())
+        //    {
+        //        this.BeginDragging(this.PointToScreen(e.GetPosition((IInputElement)this)));
+        //    }
+        //    base.OnMouseLeftButtonDown(e);
+        //}
+
+        //private void MouseMove_Handle(object sender, MouseEventArgs e)
+        //{
+        //    base.OnMouseMove(e);
+        //    if (!this.IsMouseCaptured || !this.IsDragging || !this.IsConnectedToPresentationSource())
+        //        return;
+        //    this._movedDuringDrag = true;
+        //    Point screen = this.PointToScreen(e.GetPosition((IInputElement)this));
+        //    this.RaiseEvent((RoutedEventArgs)new DragDeltaEventArgs(screen.X - this._lastScreenPoint.X, screen.Y - this._lastScreenPoint.Y));
+        //    this.RaiseDragAbsolute(screen);
+        //    if (this.IsOutsideSensitivity(screen))
+        //    {
+        //        this.RaiseDragStarted(this._originalScreenPoint);
+        //    }
+        //    this._lastScreenPoint = screen;
+        //}
+
+        //private void MouseLeftButtonUp_Handle(object sender, MouseButtonEventArgs e)
+        //{
+        //    if (this.IsMouseCaptured && this.IsDragging && this.IsConnectedToPresentationSource())
+        //    {
+        //        this._lastScreenPoint = this.PointToScreen(e.GetPosition((IInputElement)this));
+        //        this.CompleteDrag();
+        //    }
+        //    base.OnMouseLeftButtonUp(e);
+        //}
+
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
@@ -106,42 +174,44 @@ namespace Unicorn.ViewManager
             base.OnMouseMove(e);
             if (!this.IsMouseCaptured || !this.IsDragging || !this.IsConnectedToPresentationSource())
                 return;
-            this.movedDuringDrag = true;
+            this._movedDuringDrag = true;
             Point screen = this.PointToScreen(e.GetPosition((IInputElement)this));
-            this.RaiseEvent((RoutedEventArgs)new DragDeltaEventArgs(screen.X - this.lastScreenPoint.X, screen.Y - this.lastScreenPoint.Y));
+            this.RaiseEvent((RoutedEventArgs)new DragDeltaEventArgs(screen.X - this._lastScreenPoint.X, screen.Y - this._lastScreenPoint.Y));
             this.RaiseDragAbsolute(screen);
             if (this.IsOutsideSensitivity(screen))
             {
-                this.RaiseDragStarted(this.originalScreenPoint);
+                this.RaiseDragStarted(this._originalScreenPoint);
             }
-            this.lastScreenPoint = screen;
+            this._lastScreenPoint = screen;
         }
 
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             if (this.IsMouseCaptured && this.IsDragging && this.IsConnectedToPresentationSource())
             {
-                this.lastScreenPoint = this.PointToScreen(e.GetPosition((IInputElement)this));
+                this._lastScreenPoint = this.PointToScreen(e.GetPosition((IInputElement)this));
                 this.CompleteDrag();
             }
             base.OnMouseLeftButtonUp(e);
         }
+
 
         private void BeginDragging(Point screenPoint)
         {
             if (!this.CaptureMouse())
                 return;
             this.IsDragging = true;
-            this.originalScreenPoint = screenPoint;
-            this.lastScreenPoint = screenPoint;
-            this.movedDuringDrag = false;
+            this._originalScreenPoint = screenPoint;
+            this._lastScreenPoint = screenPoint;
+            this._movedDuringDrag = false;
         }
+
         public void CancelDrag()
         {
             if (!this.IsDragging)
                 return;
             this.ReleaseCapture();
-            this.RaiseDragCompletedAbsolute(this.lastScreenPoint, false);
+            this.RaiseDragCompletedAbsolute(this._lastScreenPoint, false);
         }
 
         private void CompleteDrag()
@@ -149,7 +219,7 @@ namespace Unicorn.ViewManager
             if (!this.IsDragging)
                 return;
             this.ReleaseCapture();
-            this.RaiseDragCompletedAbsolute(this.lastScreenPoint, this.movedDuringDrag);
+            this.RaiseDragCompletedAbsolute(this._lastScreenPoint, this._movedDuringDrag);
         }
 
         private void ReleaseCapture()
@@ -164,9 +234,10 @@ namespace Unicorn.ViewManager
 
         private bool IsOutsideSensitivity(Point point)
         {
-            point.Offset(-this.originalScreenPoint.X, -this.originalScreenPoint.Y);
+            point.Offset(-this._originalScreenPoint.X, -this._originalScreenPoint.Y);
             return Math.Abs(point.X) > SystemParameters.MinimumHorizontalDragDistance || Math.Abs(point.Y) > SystemParameters.MinimumVerticalDragDistance;
         }
+
         protected override void OnIsMouseCapturedChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnIsMouseCapturedChanged(e);
@@ -174,15 +245,26 @@ namespace Unicorn.ViewManager
                 return;
             this.CancelDrag();
         }
-        protected void RaiseDragStarted(Point point) => this.RaiseEvent((RoutedEventArgs)new DragAbsoluteEventArgs(DockDragGrip.DragStartedEvent, point));
 
-        internal void RaiseDragAbsolute(Point point) => this.RaiseEvent((RoutedEventArgs)new DragAbsoluteEventArgs(DockDragGrip.DragAbsoluteEvent, point));
+        protected void RaiseDragStarted(Point point)
+        {
+            this.RaiseEvent((RoutedEventArgs)new DragAbsoluteEventArgs(DockDragGrip.DragStartedEvent, point));
+        }
 
-        protected void RaiseDragCompletedAbsolute(Point point, bool isCompleted) => this.RaiseEvent((RoutedEventArgs)new DragAbsoluteCompletedEventArgs(DockDragGrip.DragCompletedAbsoluteEvent, point, isCompleted));
+        internal void RaiseDragAbsolute(Point point)
+        {
+            this.RaiseEvent((RoutedEventArgs)new DragAbsoluteEventArgs(DockDragGrip.DragAbsoluteEvent, point));
+        }
 
+        protected void RaiseDragCompletedAbsolute(Point point, bool isCompleted)
+        {
+            this.RaiseEvent((RoutedEventArgs)new DragAbsoluteCompletedEventArgs(DockDragGrip.DragCompletedAbsoluteEvent, point, isCompleted));
+        }
 
-
-        private void OnSourceChanged(object sender, SourceChangedEventArgs args) => this.CurrentSource = args.NewSource as HwndSource;
+        private void OnSourceChanged(object sender, SourceChangedEventArgs args)
+        {
+            this.CurrentSource = args.NewSource as HwndSource;
+        }
 
         private IntPtr WndProc(
           IntPtr hWnd,
@@ -216,7 +298,7 @@ namespace Unicorn.ViewManager
         {
             if (!this.IsWindowTitleBar)
                 return;
-            this.movedDuringDrag = false;
+            this._movedDuringDrag = false;
             this.RaiseDragStarted(DockDragGrip.GetMessagePoint());
         }
 
@@ -224,7 +306,7 @@ namespace Unicorn.ViewManager
         {
             if (!this.IsWindowTitleBar)
                 return;
-            this.RaiseDragCompletedAbsolute(DockDragGrip.GetMessagePoint(), this.movedDuringDrag);
+            this.RaiseDragCompletedAbsolute(DockDragGrip.GetMessagePoint(), this._movedDuringDrag);
             handled = this.CurrentSource == null || this.CurrentSource.IsDisposed;
         }
 
@@ -232,11 +314,14 @@ namespace Unicorn.ViewManager
         {
             if (!this.IsWindowTitleBar)
                 return;
-            this.movedDuringDrag = true;
+            this._movedDuringDrag = true;
             this.RaiseDragAbsolute(DockDragGrip.GetMessagePoint());
             handled = this.CurrentSource == null || this.CurrentSource.IsDisposed;
         }
 
-        int INonClientArea.HitTest(Point point) => this.IsWindowTitleBar ? 2 : 0;
+        int INonClientArea.HitTest(Point point)
+        {
+            return this.IsWindowTitleBar ? 2 : 0;
+        }
     }
 }

@@ -15,10 +15,8 @@ namespace Unicorn.ViewManager
     public class DockAdorner : ContentControl
     {
         public static readonly DependencyProperty AdornedElementProperty = DependencyProperty.Register(nameof(AdornedElement), typeof(DockTarget), typeof(DockAdorner), new PropertyMetadata((PropertyChangedCallback)null));
-        public static readonly DependencyProperty DockDirectionProperty = DependencyProperty.Register(nameof(DockDirection), typeof(DockDirection), typeof(DockAdorner), new PropertyMetadata((object)DockDirection.Fill));
-        public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register(nameof(Orientation), typeof(System.Windows.Controls.Orientation?), typeof(DockAdorner), new PropertyMetadata((PropertyChangedCallback)null));
-        public static readonly DependencyProperty AreInnerTargetsEnabledProperty = DependencyProperty.Register(nameof(AreInnerTargetsEnabled), typeof(bool), typeof(DockAdorner), (PropertyMetadata)new FrameworkPropertyMetadata(true));
-        public static readonly DependencyProperty IsInnerCenterTargetEnabledProperty = DependencyProperty.Register(nameof(IsInnerCenterTargetEnabled), typeof(bool), typeof(DockAdorner), (PropertyMetadata)new FrameworkPropertyMetadata(true));
+        public static readonly DependencyProperty DockDirectionProperty = DependencyProperty.Register(nameof(DockDirection), typeof(DockDirection), typeof(DockAdorner), new PropertyMetadata(DockDirection.Fill));
+        public static readonly DependencyProperty DockOrientationProperty = DependencyProperty.Register(nameof(DockOrientation), typeof(DockOrientation), typeof(DockAdorner), new PropertyMetadata(DockOrientation.All));
 
         public IntPtr OwnerHwnd { get; set; }
 
@@ -34,22 +32,10 @@ namespace Unicorn.ViewManager
             set => this.SetValue(DockAdorner.DockDirectionProperty, (object)value);
         }
 
-        public Orientation? Orientation
+        public DockOrientation DockOrientation
         {
-            get => (Orientation?)this.GetValue(DockAdorner.OrientationProperty);
-            set => this.SetValue(DockAdorner.OrientationProperty, (object)value);
-        }
-
-        public bool AreInnerTargetsEnabled
-        {
-            get => (bool)this.GetValue(DockAdorner.AreInnerTargetsEnabledProperty);
-            set => this.SetValue(DockAdorner.AreInnerTargetsEnabledProperty, value);
-        }
-
-        public bool IsInnerCenterTargetEnabled
-        {
-            get => (bool)this.GetValue(DockAdorner.IsInnerCenterTargetEnabledProperty);
-            set => this.SetValue(DockAdorner.IsInnerCenterTargetEnabledProperty, value);
+            get => (DockOrientation)this.GetValue(DockAdorner.DockOrientationProperty);
+            set => this.SetValue(DockAdorner.DockOrientationProperty, (object)value);
         }
 
         public void UpdateContent()

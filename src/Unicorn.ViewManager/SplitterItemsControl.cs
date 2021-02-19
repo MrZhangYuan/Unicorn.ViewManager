@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 namespace Unicorn.ViewManager
 {
-    public class SplitterItemsControl : ItemsControl
+    public class SplitterItemsControl : CustomItemsControl
     {
         public static readonly DependencyProperty OrientationProperty;
 

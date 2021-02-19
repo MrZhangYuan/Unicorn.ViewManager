@@ -16,6 +16,21 @@ namespace Unicorn.ViewManager
 
     class DragContext : IDisposable
     {
+        private Point _dragStartPoint = default;
+        private bool _isStartPointSetted = false;
+        public Point DragStartPoint
+        {
+            get => _dragStartPoint;
+            set
+            {
+                if (!this._isStartPointSetted)
+                {
+                    this._isStartPointSetted = true;
+                    _dragStartPoint = value;
+                }
+            }
+        }
+
         public Dictionary<DockTarget, List<DockAdornerWindow>> Adorners
         {
             get;
@@ -104,6 +119,8 @@ namespace Unicorn.ViewManager
 
         public void Dispose()
         {
+            this._isStartPointSetted = false;
+            this._dragStartPoint = default;
             this.DockDragGrip = null;
             this.DraggedWindow = null;
             this.DragOverWindow = null;
@@ -163,11 +180,14 @@ namespace Unicorn.ViewManager
             EventManager.RegisterClassHandler(typeof(DockDragGrip), DockDragGrip.DragAbsoluteEvent, new EventHandler<DragAbsoluteEventArgs>(OnDockViewDragGripDragAbsolute));
             EventManager.RegisterClassHandler(typeof(DockDragGrip), DockDragGrip.DragDeltaEvent, new DragDeltaEventHandler(OnDockViewDragGripDragDelta));
             EventManager.RegisterClassHandler(typeof(DockDragGrip), DockDragGrip.DragCompletedAbsoluteEvent, new EventHandler<DragAbsoluteCompletedEventArgs>(OnDockViewDragGripDragCompletedAbsolute));
+      
+        
+        
         }
 
         private static void OnDockViewDragGripDragStarted(object sender, DragAbsoluteEventArgs e)
         {
-            //DockManager.CurrentDraggedContext.DockDragGrip = sender as DockDragGrip;
+            //DockManager.CurrentDraggedContext.DragStartPoint = e.ScreenPoint;
         }
 
         private static void OnDockViewDragGripDragDelta(object sender, DragDeltaEventArgs e)
@@ -177,12 +197,17 @@ namespace Unicorn.ViewManager
 
         private static void OnDockViewDragGripDragAbsolute(object sender, DragAbsoluteEventArgs e)
         {
+            DockManager.CurrentDraggedContext.DragStartPoint = e.ScreenPoint;
             DockDragGrip dragGrip = sender as DockDragGrip;
             DockManager.CurrentDraggedContext.DockDragGrip = dragGrip;
 
             if (!dragGrip.IsWindowTitleBar)
             {
-                DockManager.DragFloating(dragGrip);
+                if (Math.Abs(DockManager.CurrentDraggedContext.DragStartPoint.X - e.ScreenPoint.X) >= 10
+                    || Math.Abs(DockManager.CurrentDraggedContext.DragStartPoint.Y - e.ScreenPoint.Y) >= 10)
+                {
+                    DockManager.DragFloating(dragGrip);
+                }
             }
             else
             {
@@ -207,7 +232,7 @@ namespace Unicorn.ViewManager
 
                 currentcontext.DockDragGrip.IsWindowTitleBar = false;
 
-                var draggedtab = currentcontext.DockDragGrip.FindAncestor<TabGroupTabItem>();
+                var draggedtab = (TabGroupTabItem)currentcontext.DockDragGrip.Element ?? currentcontext.DockDragGrip.FindAncestor<TabGroupTabItem>();
                 if (draggedtab?.ParentHost != null)
                 {
                     draggedtab.ParentHost.UnDock(draggedtab);
@@ -227,7 +252,7 @@ namespace Unicorn.ViewManager
                                 var targetdock = currentcontext.HitDockSiteAdorner.AdornedDockTarget.FindAncestor<DockGroupControl>();
                                 if (targetdock != null)
                                 {
-                                    TabGroupControl tab = new TabGroupControl();
+                                    TabGroupControl tab = new ViewTabGroupControl();
                                     tab.Dock(draggedtab);
                                     targetdock.Dock(DockDirection.Fill, tab);
                                 }
@@ -241,129 +266,137 @@ namespace Unicorn.ViewManager
                     case DockDirection.Right:
                     case DockDirection.Bottom:
                         {
-                            var tabtarget = currentcontext.HitDockSiteAdorner.AdornedDockTarget.FindAncestor<TabGroupControl>();
-                            var targetdock = tabtarget?.ParentHost;
-
-                            if (targetdock != null)
+                            //停靠外侧，去找相应的AutoHideChannel
+                            if (currentcontext.HitDockSiteAdorner.AdornedDockTarget.DockTargetType == DockTargetType.Outside)
                             {
-                                int index = targetdock.Items.IndexOf(tabtarget);
-
-                                var orientation = targetdock.Items.Count <= 1 ? null : (Orientation?)targetdock.GetValue(SplitterItemsControl.OrientationProperty);
-
-                                switch (orientation)
-                                {
-                                    case Orientation.Horizontal:
-                                        H:
-                                        {
-                                            index = currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Right ? index + 1 : index;
-                                            switch (currentcontext.HitDockSiteAdorner.DockDirection)
-                                            {
-                                                //如果停靠方向和 DockGroupControl 方向一致，不产生新的 DockGroupControl
-                                                case DockDirection.Left:
-                                                case DockDirection.Right:
-                                                    {
-                                                        TabGroupControl newtab = new TabGroupControl();
-                                                        newtab.Dock(draggedtab);
-                                                        targetdock.Items.Insert(index, newtab);
-                                                    }
-                                                    break;
-
-                                                //如果停靠方向和 DockGroupControl 方向不一致，产生新的 DockGroupControl
-                                                case DockDirection.Top:
-                                                case DockDirection.Bottom:
-                                                    {
-                                                        tabtarget.UnDock();
-                                                        TabGroupControl newtab = new TabGroupControl();
-                                                        newtab.Dock(draggedtab);
-                                                        DockGroupControl newgroup = new DockGroupControl();
-                                                        newgroup.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Vertical);
-
-                                                        if (currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Top)
-                                                        {
-                                                            newgroup.Items.Add(newtab);
-                                                            newgroup.Items.Add(tabtarget);
-                                                        }
-                                                        else
-                                                        {
-                                                            newgroup.Items.Add(tabtarget);
-                                                            newgroup.Items.Add(newtab);
-                                                        }
-
-                                                        targetdock.Items.Insert(index, newgroup);
-                                                    }
-                                                    break;
-                                            }
-                                        }
-                                        break;
-
-                                    case Orientation.Vertical:
-                                        V:
-                                        {
-                                            index = currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Bottom ? index + 1 : index;
-                                            switch (currentcontext.HitDockSiteAdorner.DockDirection)
-                                            {
-                                                //如果停靠方向和 DockGroupControl 方向不一致，产生新的 DockGroupControl
-                                                case DockDirection.Left:
-                                                case DockDirection.Right:
-                                                    {
-                                                        tabtarget.UnDock();
-                                                        TabGroupControl newtab = new TabGroupControl();
-                                                        newtab.Dock(draggedtab);
-                                                        DockGroupControl newgroup = new DockGroupControl();
-                                                        newgroup.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Horizontal);
-
-                                                        if (currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Left)
-                                                        {
-                                                            newgroup.Items.Add(newtab);
-                                                            newgroup.Items.Add(tabtarget);
-                                                        }
-                                                        else
-                                                        {
-                                                            newgroup.Items.Add(tabtarget);
-                                                            newgroup.Items.Add(newtab);
-                                                        }
-
-                                                        targetdock.Items.Insert(index, newgroup);
-                                                    }
-                                                    break;
-
-                                                //如果停靠方向和 DockGroupControl 方向一致，不产生新的 DockGroupControl
-                                                case DockDirection.Top:
-                                                case DockDirection.Bottom:
-                                                    {
-                                                        TabGroupControl newtab = new TabGroupControl();
-                                                        newtab.Dock(draggedtab);
-                                                        targetdock.Items.Insert(index, newtab);
-                                                    }
-                                                    break;
-                                            }
-                                        }
-                                        break;
-
-                                    default:
-                                        {
-                                            //若 DockGroupControl 未定义方向，则定义方向
-                                            switch (currentcontext.HitDockSiteAdorner.DockDirection)
-                                            {
-                                                case DockDirection.Left:
-                                                case DockDirection.Right:
-                                                    targetdock.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Horizontal);
-                                                    goto H;
-
-                                                case DockDirection.Top:
-                                                case DockDirection.Bottom:
-                                                    targetdock.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Vertical);
-                                                    goto V;
-                                            }
-                                        }
-                                        break;
-                                }
+                                AutoHideManager.Dock(currentcontext.HitDockSiteAdorner, draggedtab);
                             }
                             else
                             {
-                                if (tabtarget != null)
-                                {
+                                var tabtarget = currentcontext.HitDockSiteAdorner.AdornedDockTarget.FindAncestor<TabGroupControl>();
+                                var targetdock = tabtarget?.ParentHost;
 
+                                if (targetdock != null)
+                                {
+                                    int index = targetdock.Items.IndexOf(tabtarget);
+
+                                    var orientation = targetdock.Items.Count <= 1 ? null : (Orientation?)targetdock.Orientation;
+
+                                    switch (orientation)
+                                    {
+                                        case Orientation.Horizontal:
+                                            H:
+                                            {
+                                                index = currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Right ? index + 1 : index;
+                                                switch (currentcontext.HitDockSiteAdorner.DockDirection)
+                                                {
+                                                    //如果停靠方向和 DockGroupControl 方向一致，不产生新的 DockGroupControl
+                                                    case DockDirection.Left:
+                                                    case DockDirection.Right:
+                                                        {
+                                                            TabGroupControl newtab = tabtarget.CreateTabGroup();
+                                                            newtab.Dock(draggedtab);
+                                                            targetdock.Items.Insert(index, newtab);
+                                                        }
+                                                        break;
+
+                                                    //如果停靠方向和 DockGroupControl 方向不一致，产生新的 DockGroupControl
+                                                    case DockDirection.Top:
+                                                    case DockDirection.Bottom:
+                                                        {
+                                                            tabtarget.UnDock();
+                                                            TabGroupControl newtab = tabtarget.CreateTabGroup();
+                                                            newtab.Dock(draggedtab);
+                                                            DockGroupControl newgroup = new DockGroupControl();
+                                                            newgroup.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Vertical);
+
+                                                            if (currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Top)
+                                                            {
+                                                                newgroup.Items.Add(newtab);
+                                                                newgroup.Items.Add(tabtarget);
+                                                            }
+                                                            else
+                                                            {
+                                                                newgroup.Items.Add(tabtarget);
+                                                                newgroup.Items.Add(newtab);
+                                                            }
+
+                                                            targetdock.Items.Insert(index, newgroup);
+                                                        }
+                                                        break;
+                                                }
+                                            }
+                                            break;
+
+                                        case Orientation.Vertical:
+                                            V:
+                                            {
+                                                index = currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Bottom ? index + 1 : index;
+                                                switch (currentcontext.HitDockSiteAdorner.DockDirection)
+                                                {
+                                                    //如果停靠方向和 DockGroupControl 方向不一致，产生新的 DockGroupControl
+                                                    case DockDirection.Left:
+                                                    case DockDirection.Right:
+                                                        {
+                                                            tabtarget.UnDock();
+                                                            TabGroupControl newtab = tabtarget.CreateTabGroup();
+                                                            newtab.Dock(draggedtab);
+                                                            DockGroupControl newgroup = new DockGroupControl();
+                                                            newgroup.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Horizontal);
+
+                                                            if (currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Left)
+                                                            {
+                                                                newgroup.Items.Add(newtab);
+                                                                newgroup.Items.Add(tabtarget);
+                                                            }
+                                                            else
+                                                            {
+                                                                newgroup.Items.Add(tabtarget);
+                                                                newgroup.Items.Add(newtab);
+                                                            }
+
+                                                            targetdock.Items.Insert(index, newgroup);
+                                                        }
+                                                        break;
+
+                                                    //如果停靠方向和 DockGroupControl 方向一致，不产生新的 DockGroupControl
+                                                    case DockDirection.Top:
+                                                    case DockDirection.Bottom:
+                                                        {
+                                                            TabGroupControl newtab = tabtarget.CreateTabGroup();
+                                                            newtab.Dock(draggedtab);
+                                                            targetdock.Items.Insert(index, newtab);
+                                                        }
+                                                        break;
+                                                }
+                                            }
+                                            break;
+
+                                        default:
+                                            {
+                                                //若 DockGroupControl 未定义方向，则定义方向
+                                                switch (currentcontext.HitDockSiteAdorner.DockDirection)
+                                                {
+                                                    case DockDirection.Left:
+                                                    case DockDirection.Right:
+                                                        targetdock.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Horizontal);
+                                                        goto H;
+
+                                                    case DockDirection.Top:
+                                                    case DockDirection.Bottom:
+                                                        targetdock.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Vertical);
+                                                        goto V;
+                                                }
+                                            }
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    if (tabtarget != null)
+                                    {
+
+                                    }
                                 }
                             }
                         }
@@ -380,16 +413,21 @@ namespace Unicorn.ViewManager
 
         public static void DragFloating(DockDragGrip draggrip)
         {
-            draggrip.IsWindowTitleBar = true;
-            draggrip.CancelDrag();
+            TabGroupTabItem draggedtab = (TabGroupTabItem)draggrip.Element ?? draggrip.FindAncestor<TabGroupTabItem>();
 
-            TabGroupTabItem draggedtab = draggrip.FindAncestor<TabGroupTabItem>();
-
-            if (draggedtab.ParentHost != null)
+            if (draggedtab?.ParentHost != null)
             {
-                UIElement host = draggedtab.ParentHost as UIElement;
+                draggrip.IsWindowTitleBar = true;
+                draggrip.CancelDrag();
 
-                var undockedrect = new Rect(draggedtab.PointToScreen(new Point(0.0, 0.0)), DpiHelper.LogicalToDeviceUnits(host != null ? host.RenderSize : new Size(300, 300)));
+                TabGroupControl host = draggedtab.ParentHost;
+
+                //var undockedrect = new Rect(draggedtab.PointToScreen(new Point(0.0, 0.0)), DpiHelper.LogicalToDeviceUnits(host != null ? host.RenderSize : new Size(300, 300)));
+
+                var undockedrect = new Rect(
+                        host != null ? host.PointToScreen(new Point(0.0, 0.0)) : draggedtab.PointToScreen(new Point(0.0, 0.0)),
+                        DpiHelper.LogicalToDeviceUnits(host != null ? host.RenderSize : new Size(300, 300))
+                    );
 
                 draggedtab.UnDock();
 
@@ -402,16 +440,27 @@ namespace Unicorn.ViewManager
                 };
 
                 DockGroupControl dockgroup = new DockGroupControl();
-                TabGroupControl tabgroup = new TabGroupControl();
+                TabGroupControl tabgroup = host.CreateTabGroup();
                 dockgroup.Items.Add(tabgroup);
                 tabgroup.Dock(draggedtab);
                 floatwindow.Content = dockgroup;
                 floatwindow.Show();
+                floatwindow.Activate();
                 floatwindow.DragMove();
             }
         }
 
 
+        //----3----NULL----NULL
+        //----3----NULL----ViewManagerDemo.MainWindow
+        //----4----NULL----ViewManagerDemo.MainWindow
+        //----5----ViewManagerDemo.MainWindow----ViewManagerDemo.MainWindow
+        //----3----ViewManagerDemo.MainWindow----ViewManagerDemo.MainWindow
+        //----3----ViewManagerDemo.MainWindow----ViewManagerDemo.MainWindow
+        //----3----ViewManagerDemo.MainWindow----ViewManagerDemo.MainWindow
+        //----3----ViewManagerDemo.MainWindow----ViewManagerDemo.MainWindow
+        //----3----ViewManagerDemo.MainWindow----NULL
+        //----4----ViewManagerDemo.MainWindow----NULL
 
 
         public static void UpdateAdorners(DockDragGrip draggrip, DragAbsoluteEventArgs e, Window draggedwindow)
@@ -453,13 +502,16 @@ namespace Unicorn.ViewManager
                             case DockTargetType.Outside:
                                 {
                                     bool oriboth = false;
-                                    switch ((Orientation?)target.GetValue(DockTarget.OrientationProperty))
+                                    switch ((DockOrientation)target.GetValue(DockTarget.DockOrientationProperty))
                                     {
-                                        case Orientation.Horizontal:
+                                        case DockOrientation.HorizontalOutter:
+                                        case DockOrientation.Horizontal:
                                             {
                                                 group.Add(
                                                     new DockAdornerWindow(hitresult.DockSite.Handle)
                                                     {
+                                                        DockTargetType = DockTargetType.Outside,
+                                                        DockOrientation = DockOrientation.HorizontalOutter,
                                                         AdornedElement = target,
                                                         DockDirection = DockDirection.Right
                                                     });
@@ -467,22 +519,27 @@ namespace Unicorn.ViewManager
                                                 group.Add(
                                                     new DockAdornerWindow(hitresult.DockSite.Handle)
                                                     {
+                                                        DockTargetType = DockTargetType.Outside,
+                                                        DockOrientation = DockOrientation.HorizontalOutter,
                                                         AdornedElement = target,
                                                         DockDirection = DockDirection.Left
                                                     });
 
                                                 if (oriboth)
                                                 {
-                                                    goto case Orientation.Vertical;
+                                                    goto case DockOrientation.Vertical;
                                                 }
                                             }
                                             break;
 
-                                        case Orientation.Vertical:
+                                        case DockOrientation.VerticalOutter:
+                                        case DockOrientation.Vertical:
                                             {
                                                 group.Add(
                                                     new DockAdornerWindow(hitresult.DockSite.Handle)
                                                     {
+                                                        DockTargetType = DockTargetType.Outside,
+                                                        DockOrientation = DockOrientation.VerticalOutter,
                                                         AdornedElement = target,
                                                         DockDirection = DockDirection.Top
                                                     });
@@ -490,17 +547,34 @@ namespace Unicorn.ViewManager
                                                 group.Add(
                                                     new DockAdornerWindow(hitresult.DockSite.Handle)
                                                     {
+                                                        DockTargetType = DockTargetType.Outside,
+                                                        DockOrientation = DockOrientation.VerticalOutter,
                                                         AdornedElement = target,
                                                         DockDirection = DockDirection.Bottom
                                                     });
                                             }
                                             break;
 
-                                        default:
+                                        case DockOrientation.All:
+                                        case DockOrientation.Outter:
                                             {
                                                 oriboth = true;
-                                                goto case Orientation.Horizontal;
+                                                goto case DockOrientation.Horizontal;
                                             }
+
+                                        case DockOrientation.None:
+                                            {
+                                                //DockTargetType = Outside 时 不允许 DockOrientation = None
+                                                //throw new NotSupportedException();
+                                            }
+                                            break;
+
+                                        default:
+                                            {
+                                                //DockTargetType = Outside 时 不允许 DockOrientation = Center
+                                                //throw new NotSupportedException();
+                                            }
+                                            break;
                                     }
 
                                     if (typebouth)
@@ -516,10 +590,9 @@ namespace Unicorn.ViewManager
                                         new DockAdornerWindow(hitresult.DockSite.Handle)
                                         {
                                             AdornedElement = target,
+                                            DockTargetType = DockTargetType.Center,
                                             DockDirection = DockDirection.Fill,
-                                            Orientation = (Orientation?)target.GetValue(DockTarget.OrientationProperty),
-                                            AreInnerTargetsEnabled = true,
-                                            IsInnerCenterTargetEnabled = true,
+                                            DockOrientation = (DockOrientation)target.GetValue(DockTarget.DockOrientationProperty)
                                         });
                                 }
                                 break;

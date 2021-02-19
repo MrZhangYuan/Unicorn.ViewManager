@@ -19,20 +19,136 @@
                        Text="Dock" />
         </Border>
 
-        <vm:DockRootControl Grid.Row="1">
-            <vm:DockGroupControl x:Name="_DockGroup"
-                                 Tag="99">
-                <vm:TabGroupControl>
-                    <vm:TabGroupTabItem Header="1" />
-                    <vm:TabGroupTabItem Header="2" />
-                    <vm:TabGroupTabItem Header="3" />
-                    <vm:TabGroupTabItem Header="4" />
-                    <vm:TabGroupTabItem Header="5" />
-                    <vm:TabGroupTabItem Header="6" />
-                    <vm:TabGroupTabItem Header="7" />
-                    <vm:TabGroupTabItem Header="8" />
-                </vm:TabGroupControl>
-            </vm:DockGroupControl>
-        </vm:DockRootControl>
+
+        <!--<vm:AutoHideWindow Panel.ZIndex="2" Grid.Row="1" vm:AutoHideChannelControl.ChannelDock="Bottom">
+            <Border Background="Green" />
+        </vm:AutoHideWindow>-->
+
+
+        <vm:AutoHideRootControl Grid.Row="1"
+                                Visibility="Visible">
+            <!--<vm:AutoHideRootControl.AutoHideChannelLeftItems>
+                <vm:AutoHideChannelItem Title="1000" />
+                <vm:AutoHideChannelItem Title="2000" />
+                <vm:AutoHideChannelItem Title="3000" />
+            </vm:AutoHideRootControl.AutoHideChannelLeftItems>-->
+            <!--<vm:AutoHideChannelControl vm:AutoHideChannelControl.ChannelDock="Left">
+                <vm:AutoHideChannelItem Title="1000" />
+                <vm:AutoHideChannelItem Title="2000" />
+            </vm:AutoHideChannelControl>-->
+
+            <!--<vm:AutoHideChannelControl vm:AutoHideChannelControl.ChannelDock="Bottom">
+                <vm:AutoHideChannelItem Title="3000" />
+                <vm:AutoHideChannelItem Title="4000" />
+            </vm:AutoHideChannelControl>-->
+
+            <!--<vm:AutoHideChannelControl vm:AutoHideChannelControl.ChannelDock="Right">
+                <vm:AutoHideChannelItem Title="5000" />
+                <vm:AutoHideChannelItem Title="6000" />
+            </vm:AutoHideChannelControl>-->
+
+            <!--<vm:AutoHideChannelControl vm:AutoHideChannelControl.ChannelDock="Top">
+                <vm:AutoHideChannelItem Title="7000" />
+                <vm:AutoHideChannelItem Title="8000" />
+            </vm:AutoHideChannelControl>-->
+
+            <vm:DockRootControl Grid.Row="1">
+                <vm:DockGroupControl x:Name="_DockGroup"
+                                     Tag="99">
+                    <vm:ViewTabGroupControl>
+                        <vm:TabGroupTabItem Header="0000"
+                                            Title="{Binding RelativeSource={RelativeSource Self},Path=Header}">
+                            <Border Background="#FFF5F5F5">
+                                <Button Width="120"
+                                        Height="30"
+                                        Content="0000"></Button>
+                            </Border>
+                        </vm:TabGroupTabItem>
+
+                        <vm:TabGroupTabItem Header="0001"
+                                            Title="{Binding RelativeSource={RelativeSource Self},Path=Header}">
+                            <Border Background="#FFF5F5F5">
+                                <Button Width="120"
+                                        Height="30"
+                                        Content="0001"></Button>
+                            </Border>
+                        </vm:TabGroupTabItem>
+
+                        <vm:TabGroupTabItem Header="0002"
+                                            Title="{Binding RelativeSource={RelativeSource Self},Path=Header}">
+                            <Border Background="#FFF5F5F5">
+                                <Button Width="120"
+                                        Height="30"
+                                        Content="0002"></Button>
+                            </Border>
+                        </vm:TabGroupTabItem>
+
+                        <vm:TabGroupTabItem Header="0003"
+                                            Title="{Binding RelativeSource={RelativeSource Self},Path=Header}">
+                            <Border Background="#FFF5F5F5">
+                                <Button Width="120"
+                                        Height="30"
+                                        Content="0003"></Button>
+                            </Border>
+                        </vm:TabGroupTabItem>
+
+                        <vm:TabGroupTabItem Header="0004"
+                                            Title="{Binding RelativeSource={RelativeSource Self},Path=Header}">
+                            <Border Background="#FFF5F5F5">
+                                <Button Width="120"
+                                        Height="30"
+                                        Content="0004"></Button>
+                            </Border>
+                        </vm:TabGroupTabItem>
+
+                        <vm:TabGroupTabItem Header="0005"
+                                            Title="{Binding RelativeSource={RelativeSource Self},Path=Header}">
+                            <Border Background="#FFF5F5F5">
+                                <Button Width="120"
+                                        Height="30"
+                                        Content="0005"></Button>
+                            </Border>
+                        </vm:TabGroupTabItem>
+
+                        <vm:TabGroupTabItem Header="0006"
+                                            Title="{Binding RelativeSource={RelativeSource Self},Path=Header}">
+                            <Border Background="#FFF5F5F5">
+                                <Button Width="120"
+                                        Height="30"
+                                        Content="0006"></Button>
+                            </Border>
+                        </vm:TabGroupTabItem>
+
+                        <vm:TabGroupTabItem Header="0007"
+                                            Title="{Binding RelativeSource={RelativeSource Self},Path=Header}">
+                            <Border Background="#FFF5F5F5">
+                                <Button Width="120"
+                                        Height="30"
+                                        Content="0007"></Button>
+                            </Border>
+                        </vm:TabGroupTabItem>
+
+                        <vm:TabGroupTabItem Header="0008"
+                                            Title="{Binding RelativeSource={RelativeSource Self},Path=Header}">
+                            <Border Background="#FFF5F5F5">
+                                <Button Width="120"
+                                        Height="30"
+                                        Content="0008"></Button>
+                            </Border>
+                        </vm:TabGroupTabItem>
+
+                        <vm:TabGroupTabItem Header="0009"
+                                            Title="{Binding RelativeSource={RelativeSource Self},Path=Header}">
+                            <Border Background="#FFF5F5F5">
+                                <Button Width="120"
+                                        Height="30"
+                                        Content="0009"></Button>
+                            </Border>
+                        </vm:TabGroupTabItem>
+                    </vm:ViewTabGroupControl>
+                </vm:DockGroupControl>
+            </vm:DockRootControl>
+        </vm:AutoHideRootControl>
+
     </Grid>
 </vm:Dialog>

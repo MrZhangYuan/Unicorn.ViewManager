@@ -371,7 +371,7 @@ namespace System.Windows
             {
                 if (owner == null)
                 {
-                    owner = ViewManager.Instance.ActiveContainer;
+                    owner = ViewManager.Instance.ActivePopupContainer;
                 }
 
                 MessageDialogBox messageDialogBox = new MessageDialogBox

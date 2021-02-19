@@ -40,6 +40,20 @@ namespace ViewManagerDemo.Views
             this.Shown += DockViewDemo_Shown;
         }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Key == Key.A && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+            {
+                this.AddTabView();
+            }
+        }
+
+        private void AddTabView()
+        {
+
+        }
+
         private void DockViewDemo_Shown(object sender, EventArgs e)
         {
             //for (int i = 0; i < 7; i++)

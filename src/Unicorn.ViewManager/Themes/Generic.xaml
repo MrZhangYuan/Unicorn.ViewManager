@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Unicorn.ViewManager"
                     xmlns:vm="clr-namespace:Unicorn.ViewManager"
-                    xmlns:utl="clr-namespace:Unicorn.Utilities;assembly=Unicorn.Utilities">
+                    xmlns:utl="clr-namespace:Unicorn.Utilities;assembly=Unicorn.Utilities"
+                    xmlns:utlcmd="clr-namespace:Unicorn.Utilities.Commands;assembly=Unicorn.Utilities">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/MessageDialogBox.xaml" />
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/ProcessDialogBox.xaml" />
@@ -28,60 +29,163 @@
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/DockGroupAdorner.xaml" />
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/DockPreviewWindow.xaml" />
 
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/AutoHideRootControl.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/WindowResizeGrip.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/DockDragGrip.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/DockGroupControl.xaml" />
+        <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/DockRootControl.xaml" />
+
         <ResourceDictionary Source="/Unicorn.ViewManager;component/Themes/Brushs.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 
     <Style TargetType="{x:Type local:TabGroupTabItem}">
-        <!--<Setter Property="Height"
+        <Setter Property="Height"
                 Value="26" />
         <Setter Property="Width"
-                Value="120" />-->
-        <Setter Property="BorderBrush"
+                Value="120" />
+        <Setter Property="Padding"
+                Value="10,0" />
+        <!--<Setter Property="BorderBrush"
                 Value="Black" />
         <Setter Property="BorderThickness"
-                Value="1,1,1,0" />
+                Value="1,1,1,0" />-->
+        <Setter Property="HorizontalContentAlignment"
+                Value="Stretch" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Stretch" />
+        <Setter Property="TitleTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Border Height="26"
+                            Background="#FF007ACC">
+                        <DockPanel LastChildFill="True">
+                            <Button Height="20"
+                                    Width="20"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Content="x"
+                                    Command="local:ViewCommands.CloseToolTab"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:DockDragGrip},Path=Element}"
+                                    DockPanel.Dock="Right"
+                                    Margin="0,0,5,0" />
+                            <Button Height="20"
+                                    Width="20"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Content="H"
+                                    Command="local:ViewCommands.HideToolTabToAutoHide"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:DockDragGrip},Path=Element}"
+                                    DockPanel.Dock="Right"
+                                    Margin="0,0,5,0" />
+                            <Button Height="20"
+                                    Width="20"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Content="U"
+                                    Command="local:ViewCommands.UnHideAutoHideToToolTab"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:DockDragGrip},Path=Element}"
+                                    DockPanel.Dock="Right"
+                                    Margin="0,0,5,0" />
+                            <TextBlock  Text="{Binding}" />
+                        </DockPanel>
+                    </Border>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:TabGroupTabItem}">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <vm:DockDragGrip x:Name="PART_DragGrip"
-                                         Height="20"
-                                         WindowChrome.IsHitTestVisibleInChrome="True">
-                            <ContentPresenter Content="{TemplateBinding Header}" />
-                        </vm:DockDragGrip>
+                        <Border x:Name="_innerBd">
+                            <Border Background="Transparent">
+                                <vm:DockDragGrip WindowChrome.IsHitTestVisibleInChrome="True">
+                                    <DockPanel LastChildFill="True">
+                                        <Button x:Name="_closeBt"
+                                                Height="20"
+                                                Width="20"
+                                                Command="{x:Static local:ViewCommands.CloseViewTab}"
+                                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Content="x"
+                                                Visibility="Hidden"
+                                                DockPanel.Dock="Right"
+                                                Margin="0,0,5,0" />
+                                        <ContentPresenter Margin="{TemplateBinding Padding}"
+                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                          Content="{TemplateBinding Header}" />
+                                    </DockPanel>
+                                </vm:DockDragGrip>
+                            </Border>
+                        </Border>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="_innerBd"
+                                    Property="Background"
+                                    Value="#FF319AFF" />
+                            <Setter Property="TextBlock.Foreground"
+                                    Value="White" />
+                            <Setter TargetName="_closeBt"
+                                    Property="Visibility"
+                                    Value="Visible" />
+                        </Trigger>
+
+                        <Trigger Property="IsSelected"
+                                 Value="True">
+                            <Setter TargetName="_innerBd"
+                                    Property="Background"
+                                    Value="#FF007ACC" />
+                            <Setter Property="TextBlock.Foreground"
+                                    Value="White" />
+                        </Trigger>
+
+                        <!--<Trigger Property="IsFocused"
+                                 Value="False">
+                            <Setter TargetName="_innerBd"
+                                    Property="Background"
+                                    Value="#FFCCCEDB" />
+                        </Trigger>-->
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type local:TabGroupControl}">
+    
+    
+    <Style TargetType="{x:Type local:ViewTabGroupControl}">
+        <Setter Property="vm:DockTarget.DockOrientation"
+                Value="All" />
         <Setter Property="HorizontalContentAlignment"
                 Value="Stretch" />
         <Setter Property="VerticalContentAlignment"
                 Value="Stretch" />
         <Setter Property="BorderBrush"
-                Value="Green" />
+                Value="#FF007ACC" />
         <Setter Property="BorderThickness"
                 Value="0,2,0,0" />
         <!--<Setter Property="Padding"
                 Value="2" />-->
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:TabGroupControl}">
-                    <vm:DockTarget vm:DockTarget.Orientation="{TemplateBinding vm:DockTarget.Orientation}"
+                <ControlTemplate TargetType="{x:Type local:ViewTabGroupControl}">
+                    <vm:DockTarget vm:DockTarget.DockOrientation="{TemplateBinding vm:DockTarget.DockOrientation}"
                                    Background="Transparent"
                                    FindMode="Ignore"
                                    DockTargetType="Center">
                         <Grid SnapsToDevicePixels="true"
                               Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition x:Name="Col0" />
+                                <ColumnDefinition x:Name="Col0"
+                                                  Width="Auto" />
                                 <ColumnDefinition x:Name="Col1"
-                                                  Width="0" />
+                                                  Width="*" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition x:Name="Row0"
@@ -89,17 +193,13 @@
                                 <RowDefinition x:Name="Row1"
                                                Height="*" />
                             </Grid.RowDefinitions>
-                            <utl:PaginationWrapPanel x:Name="headerPanel"
-                                                     Background="Transparent"
-                                                     Grid.Column="0"
-                                                     Rows="1"
-                                                     Height="30"
-                                                     ItemHeight="26"
-                                                     ItemWidth="120"
-                                                     IsItemsHost="true"
-                                                     Grid.Row="0" />
+                            <VirtualizingStackPanel x:Name="headerPanel"
+                                                    Orientation="Horizontal"
+                                                    Grid.Column="1"
+                                                    Background="#FFF0F0F0"
+                                                    IsItemsHost="true" />
                             <Border x:Name="contentPanel"
-                                    Grid.Column="0"
+                                    Grid.Column="1"
                                     Grid.Row="1"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
@@ -116,96 +216,92 @@
 
 
 
-    <Style TargetType="{x:Type local:DockRootControl}">
-        <Setter Property="vm:DockTarget.Orientation"
-                Value="{x:Null}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:DockRootControl}">
-                    <vm:DockTarget vm:DockTarget.Orientation="{TemplateBinding vm:DockTarget.Orientation}"
-                                   Background="Transparent"
-                                   DockTargetType="Outside"
-                                   FindMode="Always">
-                        <ContentPresenter ContentSource="{TemplateBinding Content}" />
-                    </vm:DockTarget>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-
-    <Style TargetType="{x:Type local:DockGroupControl}">
-        <Setter Property="Orientation"
-                Value="Horizontal" />
-        <Setter Property="vm:DockTarget.Orientation"
-                Value="{x:Null}" />
+    <Style TargetType="{x:Type local:ToolTabGroupControl}">
+        <Style.Resources>
+            <Style TargetType="{x:Type local:TabGroupTabItem}">
+                <Setter Property="Height"
+                        Value="22" />
+                <Setter Property="Width"
+                        Value="100" />
+            </Style>
+        </Style.Resources>
+        <Setter Property="vm:DockTarget.DockOrientation"
+                Value="All" />
+        <Setter Property="HorizontalContentAlignment"
+                Value="Stretch" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Stretch" />
         <Setter Property="BorderBrush"
-                Value="Red" />
+                Value="#FF007ACC" />
         <Setter Property="BorderThickness"
-                Value="1" />
-        <Setter Property="Padding"
-                Value="2" />
+                Value="0,0,0,2" />
+        <!--<Setter Property="Padding"
+                Value="2" />-->
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:DockGroupControl}">
-                    <Border Padding="{TemplateBinding Padding}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                        <vm:DockTarget vm:DockTarget.Orientation="{TemplateBinding vm:DockTarget.Orientation}"
-                                       Background="Transparent"
-                                       DockTargetType="Center">
-                            <vm:SplitterPanel Orientation="{TemplateBinding vm:SplitterItemsControl.Orientation}"
-                                              Panel.IsItemsHost="true"
-                                              SnapsToDevicePixels="True"
-                                              UseLayoutRounding="True" />
-                        </vm:DockTarget>
-                    </Border>
+                <ControlTemplate TargetType="{x:Type local:ToolTabGroupControl}">
+                    <vm:DockTarget vm:DockTarget.DockOrientation="{TemplateBinding vm:DockTarget.DockOrientation}"
+                                   Background="Transparent"
+                                   FindMode="Ignore"
+                                   DockTargetType="Center">
+                        <DockPanel LastChildFill="True">
+                            <ContentPresenter   DockPanel.Dock="Top"
+                                                x:Name="PART_TitleContainer" />
+                            <Grid SnapsToDevicePixels="true"
+                                  Margin="{TemplateBinding Padding}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition x:Name="Col0"
+                                                      Width="Auto" />
+                                    <ColumnDefinition x:Name="Col1"
+                                                      Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition x:Name="Row0"
+                                                   Height="*" />
+                                    <RowDefinition x:Name="Row1"
+                                                   Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Border x:Name="contentPanel"
+                                        Grid.Column="1"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        Background="{TemplateBinding Background}">
+                                    <ContentPresenter x:Name="PART_SelectedContentHost"
+                                                      ContentSource="SelectedContent" />
+                                </Border>
+
+                                <VirtualizingStackPanel x:Name="headerPanel"
+                                                        Orientation="Horizontal"
+                                                        Grid.Column="1"
+                                                        Grid.Row="1"
+                                                        Background="#FFF0F0F0"
+                                                        IsItemsHost="true" />
+                            </Grid>
+                        </DockPanel>
+                    </vm:DockTarget>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHeaderVisible"
+                                 Value="False">
+                            <Setter TargetName="Row1"
+                                    Property="Height"
+                                    Value="0" />
+                            <Setter Property="BorderThickness"
+                                    Value="0" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
 
-    <Style TargetType="{x:Type local:DockItem}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:DockItem}">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                        <vm:DockTarget vm:DockTarget.Orientation="{x:Null}"
-                                       Background="Transparent"
-                                       DockTargetType="Center">
-                            <DockPanel LastChildFill="True">
-                                <vm:DockDragGrip x:Name="PART_DragGrip"
-                                                 Height="20"
-                                                 DockPanel.Dock="Top"
-                                                 Background="Black"
-                                                 Opacity="0.3"
-                                                 WindowChrome.IsHitTestVisibleInChrome="True" />
-                                <ContentPresenter ContentSource="Content" />
-                            </DockPanel>
-                        </vm:DockTarget>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+
+    
 
 
 
 
-    <Style TargetType="{x:Type vm:DockDragGrip}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type vm:DockDragGrip}">
-                    <Border Background="Transparent">
-                        <ContentPresenter ContentSource="Content" />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+    
 
 </ResourceDictionary>

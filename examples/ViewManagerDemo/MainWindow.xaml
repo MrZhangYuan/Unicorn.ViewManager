@@ -14,7 +14,7 @@
     mc:Ignorable="d">
     <WindowChrome.WindowChrome>
         <WindowChrome
-            CaptionHeight="60"
+            CaptionHeight="40"
             CornerRadius="0"
             GlassFrameThickness="1"
             NonClientFrameEdges="None"

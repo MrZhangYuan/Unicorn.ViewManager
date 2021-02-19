@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Unicorn.Utilities.Collections;
 using Unicorn.ViewManager.Preferences;
 
 namespace Unicorn.ViewManager
@@ -27,6 +28,9 @@ namespace Unicorn.ViewManager
         {
 
         }
+
+
+        private readonly WeakCollection<TabGroupTabItem> _allTabViews = new WeakCollection<TabGroupTabItem>(50);
 
 
         private RichViewControl _richViewControl = null;
@@ -91,8 +95,12 @@ namespace Unicorn.ViewManager
             return this.MainRichView.Close();
         }
 
+        internal void RegisterTabView(TabGroupTabItem tabitem)
+        {
+            this._allTabViews.Add(tabitem);
+        }
 
-        public IPopupItemContainer ActiveContainer
+        public IPopupItemContainer ActivePopupContainer
         {
             get
             {

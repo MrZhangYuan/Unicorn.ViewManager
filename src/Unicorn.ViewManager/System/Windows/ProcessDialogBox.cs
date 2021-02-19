@@ -427,7 +427,7 @@ namespace System.Windows
             {
                 if (owner == null)
                 {
-                    owner = ViewManager.Instance.ActiveContainer;
+                    owner = ViewManager.Instance.ActivePopupContainer;
                 }
 
                 ProcessDialogBox processDialogBox = new ProcessDialogBox
