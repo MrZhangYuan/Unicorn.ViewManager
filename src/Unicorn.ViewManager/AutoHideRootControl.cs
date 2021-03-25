@@ -44,10 +44,27 @@ namespace Unicorn.ViewManager
             }
         }
 
+
+
+        private DockRootControl EnsureInitlizeDockRoot(DockRootControl dockroot)
+        {
+            if (this._dockRoot == null)
+            {
+                this._dockRoot = dockroot != null ? dockroot : new DockRootControl();
+            }
+
+            if (!this.Items.Contains(this._dockRoot))
+            {
+                this.Items.Add(this._dockRoot);
+            }
+
+            return this._dockRoot;
+        }
+
+        private DockRootControl _dockRoot = null;
         public DockRootControl DockRoot
         {
-            get;
-            set;
+            get => EnsureInitlizeDockRoot(null);
         }
 
         public AutoHideChannelControl AutoHideChannelLeft
@@ -73,33 +90,48 @@ namespace Unicorn.ViewManager
 
         static AutoHideRootControl()
         {
-            FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(typeof(AutoHideRootControl), new FrameworkPropertyMetadata(typeof(AutoHideRootControl)));
-            CommandManager.RegisterClassCommandBinding(typeof(AutoHideRootControl), new CommandBinding(ViewCommands.HideToolTabToAutoHide, new ExecutedRoutedEventHandler(AutoHideRootControl.OnHideToolTabToAutoHide), new CanExecuteRoutedEventHandler(AutoHideRootControl.OnCanHideToolTabToAutoHide)));
-            CommandManager.RegisterClassCommandBinding(typeof(AutoHideRootControl), new CommandBinding(ViewCommands.UnHideAutoHideToToolTab, new ExecutedRoutedEventHandler(AutoHideRootControl.OnUnHideAutoHideToToolTab), new CanExecuteRoutedEventHandler(AutoHideRootControl.OnCanUnHideAutoHideToToolTab)));
+            FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(
+                typeof(AutoHideRootControl), 
+                new FrameworkPropertyMetadata(typeof(AutoHideRootControl)));
+
+            CommandManager.RegisterClassCommandBinding(
+                typeof(AutoHideRootControl),
+                new CommandBinding(
+                    ViewCommands.HideToolTabToAutoHide,
+                    new ExecutedRoutedEventHandler(AutoHideRootControl.OnHideToolTabToAutoHide), 
+                    new CanExecuteRoutedEventHandler(AutoHideRootControl.OnCanHideToolTabToAutoHide)));
+
+            CommandManager.RegisterClassCommandBinding(
+                typeof(AutoHideRootControl),
+                new CommandBinding(
+                    ViewCommands.UnHideAutoHideToToolTab,
+                    new ExecutedRoutedEventHandler(AutoHideRootControl.OnUnHideAutoHideToToolTab), 
+                    new CanExecuteRoutedEventHandler(AutoHideRootControl.OnCanUnHideAutoHideToToolTab)));
         }
 
         private static void OnCanUnHideAutoHideToToolTab(object sender, CanExecuteRoutedEventArgs e)
         {
             AutoHideRootControl autoHideRoot = (AutoHideRootControl)sender;
-            //if (e.Parameter is TabGroupTabItem item)
-            //{
-            //    switch ((Dock)item.GetValue(AutoHideChannelControl.ChannelDockProperty))
-            //    {
-            //        case Dock.Top:
-            //            break;
+            if (e.Parameter is TabGroupTabItem item)
+            {
+                //switch ((Dock)item.GetValue(AutoHideChannelControl.ChannelDockProperty))
+                //{
+                //    case Dock.Top:
+                //        break;
 
-            //        case Dock.Right:
-            //            break;
+                //    case Dock.Right:
+                //        break;
 
-            //        case Dock.Bottom:
-            //            break;
+                //    case Dock.Bottom:
+                //        break;
 
-            //        case Dock.Left:
-            //        default:
+                //    case Dock.Left:
+                //    default:
 
-            //            break;
-            //    }
-            //}
+                //        break;
+                //}
+                //e.CanExecute = autoHideRoot.EnsureInitlizeChannels(null, (Dock)item.GetValue(AutoHideChannelControl.ChannelDockProperty)).Items.Contains(item);
+            }
 
             e.CanExecute = true;
 
@@ -146,11 +178,21 @@ namespace Unicorn.ViewManager
             AutoHideRootControl autoHideRoot = (AutoHideRootControl)sender;
             if (e.Parameter is TabGroupTabItem item)
             {
-                var autoHideChannel = autoHideRoot.EnsureInitlizeChannels(null, (Dock)item.GetValue(AutoHideChannelControl.ChannelDockProperty));
-                AutoHideChannelItem channelItem = new AutoHideChannelItem();
+                var autoHideChannel = autoHideRoot.EnsureInitlizeChannels(
+                    null,
+                    (Dock)item.GetValue(AutoHideChannelControl.ChannelDockProperty));
+
+                AutoHideChannelItem channelItem = new AutoHideChannelItem()
+                {
+                    Title = item.Title
+                };
                 channelItem.Dock(item);
-                channelItem.Title = item.Title;
-                autoHideChannel.Items.Add(channelItem);
+                autoHideChannel.Dock(channelItem);
+
+                if (!autoHideRoot.Items.Contains(autoHideChannel))
+                {
+                    autoHideRoot.Items.Add(autoHideChannel);
+                }
             }
         }
 
@@ -162,7 +204,16 @@ namespace Unicorn.ViewManager
 
             if (element is AutoHideChannelControl channelControl)
             {
+                //已经初始化了对应位置的AutoHideChannelControl，不允许再次赋予不同的对象
+                var index = (int)AutoHideChannelControl.GetChannelDock(channelControl);
+                if (_autoHideChannels[index] != null
+                    && !object.ReferenceEquals(_autoHideChannels[index], channelControl))
+                {
+                    throw new InvalidOperationException();
+                }
+
                 Panel.SetZIndex(uIElement, 1);
+
                 switch (AutoHideChannelControl.GetChannelDock(channelControl))
                 {
                     case Dock.Left:
@@ -187,7 +238,7 @@ namespace Unicorn.ViewManager
             {
                 if (element is DockRootControl dockroot)
                 {
-                    this.DockRoot = dockroot;
+                    this.EnsureInitlizeDockRoot(dockroot);
                 }
 
                 Panel.SetZIndex(uIElement, 0);
@@ -230,7 +281,7 @@ namespace Unicorn.ViewManager
             obj.SetValue(ChannelDockProperty, value);
         }
 
-        public static readonly DependencyProperty ChannelDockProperty = DependencyProperty.RegisterAttached("ChannelDock", typeof(Dock), typeof(AutoHideChannelControl), new PropertyMetadata(Dock.Left));
+        public static readonly DependencyProperty ChannelDockProperty = DependencyProperty.RegisterAttached("ChannelDock", typeof(Dock), typeof(AutoHideChannelControl), new PropertyMetadata(System.Windows.Controls.Dock.Left));
 
         static AutoHideChannelControl()
         {
@@ -283,6 +334,13 @@ namespace Unicorn.ViewManager
             return new AutoHideChannelItem();
         }
 
+        public void Dock(AutoHideChannelItem channelitem)
+        {
+            if (!this.Items.Contains(channelitem))
+            {
+                this.Items.Add(channelitem);
+            }
+        }
 
         public void UnDock(DependencyObject item)
         {

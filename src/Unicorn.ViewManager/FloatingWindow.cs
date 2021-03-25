@@ -8,5 +8,10 @@ namespace Unicorn.ViewManager
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(FloatingWindow), new FrameworkPropertyMetadata(typeof(FloatingWindow)));
         }
+
+        internal FloatingWindow()
+        {
+
+        }
     }
 }

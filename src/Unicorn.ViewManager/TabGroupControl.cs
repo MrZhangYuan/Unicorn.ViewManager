@@ -74,7 +74,7 @@ namespace Unicorn.ViewManager
 
             if (this.Items.Count == 1)
             {
-                this.SelectedIndex = 0;
+                this.SelectedItem = this.Items[0];
             }
         }
 
