@@ -256,6 +256,11 @@ namespace Unicorn.ViewManager
                                     tab.Dock(draggedtab);
                                     targetdock.Dock(DockDirection.Fill, tab);
                                 }
+                                else
+                                {
+                                    var dockroot = currentcontext.HitDockSiteAdorner.AdornedDockTarget.FindAncestor<DockRootControl>();
+                                    dockroot?.Dock(DockDirection.Fill, draggedtab);
+                                }
                             }
                         }
                         break;
@@ -393,9 +398,123 @@ namespace Unicorn.ViewManager
                                 }
                                 else
                                 {
-                                    if (tabtarget != null)
+                                    var docktarget = currentcontext.HitDockSiteAdorner.AdornedDockTarget.FindAncestor<DockGroupControl>();
+                                    if (docktarget != null)
                                     {
+                                        var parentdock = docktarget.ParentHost;
+                                        if (parentdock != null)
+                                        {
+                                            int index = parentdock.Items.IndexOf(docktarget);
+                                            var orientation = parentdock.Items.Count <= 1 ? null : (Orientation?)parentdock.Orientation;
+                                            var newtab = DockManager.CreateDockGroupTabGroup(docktarget);
+                                            newtab.Dock(draggedtab);
 
+                                            switch (orientation)
+                                            {
+                                                case Orientation.Horizontal:
+                                                    H2:
+                                                    {
+                                                        index = currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Right ? index + 1 : index;
+                                                        switch (currentcontext.HitDockSiteAdorner.DockDirection)
+                                                        {
+                                                            case DockDirection.Left:
+                                                            case DockDirection.Right:
+                                                                {
+                                                                    parentdock.Items.Insert(index, newtab);
+                                                                }
+                                                                break;
+
+                                                            case DockDirection.Top:
+                                                            case DockDirection.Bottom:
+                                                                {
+                                                                    parentdock.UnDock(docktarget);
+                                                                    DockGroupControl newgroup = new DockGroupControl();
+                                                                    newgroup.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Vertical);
+
+                                                                    if (currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Top)
+                                                                    {
+                                                                        newgroup.Items.Add(newtab);
+                                                                        newgroup.Items.Add(docktarget);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        newgroup.Items.Add(docktarget);
+                                                                        newgroup.Items.Add(newtab);
+                                                                    }
+
+                                                                    parentdock.Items.Insert(index, newgroup);
+                                                                }
+                                                                break;
+                                                        }
+                                                    }
+                                                    break;
+
+                                                case Orientation.Vertical:
+                                                    V2:
+                                                    {
+                                                        index = currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Bottom ? index + 1 : index;
+                                                        switch (currentcontext.HitDockSiteAdorner.DockDirection)
+                                                        {
+                                                            case DockDirection.Left:
+                                                            case DockDirection.Right:
+                                                                {
+                                                                    parentdock.UnDock(docktarget);
+                                                                    DockGroupControl newgroup = new DockGroupControl();
+                                                                    newgroup.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Horizontal);
+
+                                                                    if (currentcontext.HitDockSiteAdorner.DockDirection == DockDirection.Left)
+                                                                    {
+                                                                        newgroup.Items.Add(newtab);
+                                                                        newgroup.Items.Add(docktarget);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        newgroup.Items.Add(docktarget);
+                                                                        newgroup.Items.Add(newtab);
+                                                                    }
+
+                                                                    parentdock.Items.Insert(index, newgroup);
+                                                                }
+                                                                break;
+
+                                                            case DockDirection.Top:
+                                                            case DockDirection.Bottom:
+                                                                {
+                                                                    parentdock.Items.Insert(index, newtab);
+                                                                }
+                                                                break;
+                                                        }
+                                                    }
+                                                    break;
+
+                                                default:
+                                                    {
+                                                        switch (currentcontext.HitDockSiteAdorner.DockDirection)
+                                                        {
+                                                            case DockDirection.Left:
+                                                            case DockDirection.Right:
+                                                                parentdock.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Horizontal);
+                                                                goto H2;
+
+                                                            case DockDirection.Top:
+                                                            case DockDirection.Bottom:
+                                                                parentdock.SetValue(SplitterItemsControl.OrientationProperty, Orientation.Vertical);
+                                                                goto V2;
+                                                        }
+                                                    }
+                                                    break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var dockroot = currentcontext.HitDockSiteAdorner.AdornedDockTarget.FindAncestor<DockRootControl>();
+                                            dockroot?.Dock(currentcontext.HitDockSiteAdorner.DockDirection, draggedtab);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var dockroot = currentcontext.HitDockSiteAdorner.AdornedDockTarget.FindAncestor<DockRootControl>();
+                                        dockroot?.Dock(currentcontext.HitDockSiteAdorner.DockDirection, draggedtab);
                                     }
                                 }
                             }
@@ -448,6 +567,28 @@ namespace Unicorn.ViewManager
                 floatwindow.Activate();
                 floatwindow.DragMove();
             }
+        }
+
+        private static TabGroupControl CreateDockGroupTabGroup(DockGroupControl dockgroup)
+        {
+            foreach (var item in dockgroup.Items)
+            {
+                if (item is TabGroupControl tabgroup)
+                {
+                    return tabgroup.CreateTabGroup();
+                }
+
+                if (item is DockGroupControl childgroup)
+                {
+                    var result = DockManager.CreateDockGroupTabGroup(childgroup);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            return new ViewTabGroupControl();
         }
 
 
