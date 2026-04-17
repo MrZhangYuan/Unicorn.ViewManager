@@ -44,6 +44,8 @@ namespace Unicorn.ViewManager
         public static readonly DependencyProperty DeviceTopProperty;
         public static readonly DependencyProperty DeviceWidthProperty;
         public static readonly DependencyProperty DeviceHeightProperty;
+        public static readonly DependencyProperty PreviewDockTargetTypeProperty;
+        public static readonly DependencyProperty PreviewDockDirectionProperty;
 
 
         public IntPtr Handle
@@ -101,6 +103,18 @@ namespace Unicorn.ViewManager
             }
         }
 
+        public DockTargetType PreviewDockTargetType
+        {
+            get => (DockTargetType)GetValue(PreviewDockTargetTypeProperty);
+            private set => SetValue(PreviewDockTargetTypeProperty, value);
+        }
+
+        public DockDirection PreviewDockDirection
+        {
+            get => (DockDirection)GetValue(PreviewDockDirectionProperty);
+            private set => SetValue(PreviewDockDirectionProperty, value);
+        }
+
         private bool IsChanged
         {
             get;
@@ -119,6 +133,8 @@ namespace Unicorn.ViewManager
             DeviceTopProperty = DependencyProperty.Register("DeviceTop", typeof(double), typeof(DockPreviewWindow), new FrameworkPropertyMetadata(OnPropertyChanged));
             DeviceWidthProperty = DependencyProperty.Register("DeviceWidth", typeof(double), typeof(DockPreviewWindow), new FrameworkPropertyMetadata(0d, OnDeviceWidthChanged));
             DeviceHeightProperty = DependencyProperty.Register("DeviceHeight", typeof(double), typeof(DockPreviewWindow), new FrameworkPropertyMetadata(0d, OnDeviceHeightChanged));
+            PreviewDockTargetTypeProperty = DependencyProperty.Register("PreviewDockTargetType", typeof(DockTargetType), typeof(DockPreviewWindow), new FrameworkPropertyMetadata(DockTargetType.Center, OnPropertyChanged));
+            PreviewDockDirectionProperty = DependencyProperty.Register("PreviewDockDirection", typeof(DockDirection), typeof(DockPreviewWindow), new FrameworkPropertyMetadata(DockDirection.Fill, OnPropertyChanged));
             FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(typeof(DockPreviewWindow), new FrameworkPropertyMetadata(typeof(DockPreviewWindow)));
             FrameworkElement.WidthProperty.OverrideMetadata(typeof(DockPreviewWindow), new FrameworkPropertyMetadata(OnPropertyChanged));
             FrameworkElement.HeightProperty.OverrideMetadata(typeof(DockPreviewWindow), new FrameworkPropertyMetadata(OnPropertyChanged));
@@ -200,6 +216,8 @@ namespace Unicorn.ViewManager
             DeviceHeight = args.previewRect.Height;
             _screenPoint = args.screenPoint;
             _dockTargetType = args.dockTargetType;
+            PreviewDockTargetType = args.dockTargetType;
+            PreviewDockDirection = args.dockDirection;
 
             //if (DockTargetType.InsertTabPreview == dockTargetType && tabInfo != null)
             //{

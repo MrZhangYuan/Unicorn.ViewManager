@@ -15,11 +15,24 @@
                             Opacity="0.3"
                             ZIndex="1">
                             <Border
+                                x:Name="PreviewBorder"
                                 Background="{StaticResource {x:Static SystemColors.HotTrackBrushKey}}"
                                 BorderBrush="{StaticResource {x:Static SystemColors.GrayTextBrushKey}}"
                                 BorderThickness="5" />
                         </Grid>
                     </Canvas>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="PreviewDockDirection" Value="Fill">
+                            <Setter TargetName="DockPreviewGrid" Property="Opacity" Value="0.18" />
+                            <Setter TargetName="PreviewBorder" Property="BorderThickness" Value="3" />
+                        </Trigger>
+                        <Trigger Property="PreviewDockTargetType" Value="Outside">
+                            <Setter TargetName="DockPreviewGrid" Property="Opacity" Value="0.4" />
+                        </Trigger>
+                        <Trigger Property="PreviewDockTargetType" Value="Center">
+                            <Setter TargetName="PreviewBorder" Property="BorderBrush" Value="{StaticResource {x:Static SystemColors.HighlightBrushKey}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

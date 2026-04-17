@@ -782,7 +782,7 @@ namespace Unicorn.ViewManager
                                                     adornerwindow.AdornedElement,
                                                     draggrip.FindAncestor<TabGroupControl>()
                                                 ),
-                    dockTargetType = DockTargetType.Outside,
+                    dockTargetType = adornerwindow.DockTargetType,
                     screenPoint = e.ScreenPoint,
                     dockDirection = docksiteadorner.DockDirection,
                     adornedElement = adornerwindow.AdornedElement
