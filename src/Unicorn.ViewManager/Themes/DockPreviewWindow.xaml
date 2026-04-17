@@ -19,6 +19,19 @@
                                 Background="{StaticResource {x:Static SystemColors.HotTrackBrushKey}}"
                                 BorderBrush="{StaticResource {x:Static SystemColors.GrayTextBrushKey}}"
                                 BorderThickness="5" />
+                            <Canvas x:Name="InsertMarkerLayer" Visibility="Collapsed">
+                                <Border
+                                    x:Name="InsertMarker"
+                                    Canvas.Left="{TemplateBinding InsertMarkerLeft}"
+                                    Canvas.Top="{TemplateBinding InsertMarkerTop}"
+                                    Width="{TemplateBinding InsertMarkerWidth}"
+                                    Height="{TemplateBinding InsertMarkerHeight}"
+                                    Background="#FFF59E0B"
+                                    BorderBrush="#FFFFFFFF"
+                                    BorderThickness="2"
+                                    CornerRadius="2"
+                                    Opacity="0.95" />
+                            </Canvas>
                         </Grid>
                     </Canvas>
                     <ControlTemplate.Triggers>
@@ -31,6 +44,11 @@
                         </Trigger>
                         <Trigger Property="PreviewDockTargetType" Value="Center">
                             <Setter TargetName="PreviewBorder" Property="BorderBrush" Value="{StaticResource {x:Static SystemColors.HighlightBrushKey}}" />
+                        </Trigger>
+                        <Trigger Property="PreviewIsTabInsert" Value="True">
+                            <Setter TargetName="DockPreviewGrid" Property="Opacity" Value="0.24" />
+                            <Setter TargetName="PreviewBorder" Property="BorderThickness" Value="2" />
+                            <Setter TargetName="InsertMarkerLayer" Property="Visibility" Value="Visible" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

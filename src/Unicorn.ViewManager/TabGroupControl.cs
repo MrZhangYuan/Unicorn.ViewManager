@@ -97,10 +97,37 @@ namespace Unicorn.ViewManager
 
         public void Dock(TabGroupTabItem tabitem)
         {
-            if (!this.Items.Contains(tabitem))
+            this.Dock(tabitem, this.Items.Count);
+        }
+
+        public void Dock(TabGroupTabItem tabitem, int index)
+        {
+            if (tabitem == null)
             {
-                this.Items.Add(tabitem);
+                return;
             }
+
+            if (index < 0)
+            {
+                index = 0;
+            }
+
+            if (index > this.Items.Count)
+            {
+                index = this.Items.Count;
+            }
+
+            if (this.Items.Contains(tabitem))
+            {
+                this.Items.Remove(tabitem);
+                if (index > this.Items.Count)
+                {
+                    index = this.Items.Count;
+                }
+            }
+
+            this.Items.Insert(index, tabitem);
+            this.SelectedItem = tabitem;
         }
 
         public void UnDock()

@@ -233,6 +233,9 @@ namespace Unicorn.ViewManager
                 currentcontext.DockDragGrip.IsWindowTitleBar = false;
 
                 var draggedtab = (TabGroupTabItem)currentcontext.DockDragGrip.Element ?? currentcontext.DockDragGrip.FindAncestor<TabGroupTabItem>();
+                var originalParentHost = draggedtab?.ParentHost;
+                int originalIndex = originalParentHost?.Items.IndexOf(draggedtab) ?? -1;
+
                 if (draggedtab?.ParentHost != null)
                 {
                     draggedtab.ParentHost.UnDock(draggedtab);
@@ -245,7 +248,22 @@ namespace Unicorn.ViewManager
                             var targettab = currentcontext.HitDockSiteAdorner.AdornedDockTarget.FindAncestor<TabGroupControl>();
                             if (targettab != null)
                             {
-                                targettab.Dock(draggedtab);
+                                int insertIndex = currentcontext.DockPreviewWindow.InsertPosition;
+                                if (insertIndex >= 0)
+                                {
+                                    if (ReferenceEquals(targettab, originalParentHost)
+                                        && originalIndex >= 0
+                                        && insertIndex > originalIndex)
+                                    {
+                                        insertIndex--;
+                                    }
+
+                                    targettab.Dock(draggedtab, insertIndex);
+                                }
+                                else
+                                {
+                                    targettab.Dock(draggedtab);
+                                }
                             }
                             else
                             {
@@ -762,14 +780,9 @@ namespace Unicorn.ViewManager
 
         public static void UpdatePreviewWindow(DockDragGrip draggrip, DragAbsoluteEventArgs e, Window draggedwindow)
         {
-            DockSiteHitTestResult hitresult = DockManager.FindValidHitElement<DockSiteAdorner>(
-                e.ScreenPoint,
-                _ds => _ds.Visual != draggedwindow,
-                out DockSiteAdorner docksiteadorner,
-                out bool spflag
-            );
-
+            DockSiteAdorner docksiteadorner = DockManager.ResolveDockSiteAdorner(e.ScreenPoint, draggedwindow, out IntPtr ownerHandle);
             DockAdornerWindow adornerwindow = docksiteadorner?.FindAncestorOrSelf<DockAdornerWindow>();
+            TabGroupTabItem draggedTabItem = (TabGroupTabItem)draggrip.Element ?? draggrip.FindAncestor<TabGroupTabItem>();
 
             if (docksiteadorner != null
                 && adornerwindow != null
@@ -785,11 +798,12 @@ namespace Unicorn.ViewManager
                     dockTargetType = adornerwindow.DockTargetType,
                     screenPoint = e.ScreenPoint,
                     dockDirection = docksiteadorner.DockDirection,
-                    adornedElement = adornerwindow.AdornedElement
+                    adornedElement = adornerwindow.AdornedElement,
+                    draggedTabItem = draggedTabItem
                 };
 
                 DockManager.CurrentDraggedContext.DockPreviewWindow.SetupDockPreview(previewargs);
-                DockManager.CurrentDraggedContext.DockPreviewWindow.Show(hitresult.DockSite.Handle);
+                DockManager.CurrentDraggedContext.DockPreviewWindow.Show(ownerHandle);
 
                 //Site窗口置于预览窗口之上
                 NativeMethods.SetWindowPos(
@@ -809,12 +823,7 @@ namespace Unicorn.ViewManager
 
         private static void UpdateIsFloatingWindowDragWithin(DragAbsoluteEventArgs e, Window draggedwindow)
         {
-            DockSiteHitTestResult hitresult = DockManager.FindValidHitElement<DockSiteAdorner>(
-                e.ScreenPoint,
-                _ds => _ds.Visual != draggedwindow,
-                out DockSiteAdorner hitdocksite,
-                out bool spflag
-            );
+            DockSiteAdorner hitdocksite = DockManager.ResolveDockSiteAdorner(e.ScreenPoint, draggedwindow, out IntPtr ownerHandle);
 
             var oldadorner = DockManager.CurrentDraggedContext.HitDockSiteAdorner;
             if (oldadorner != null
@@ -824,10 +833,144 @@ namespace Unicorn.ViewManager
             }
 
             DockManager.CurrentDraggedContext.HitDockSiteAdorner = hitdocksite;
-            if (hitresult != null)
+            if (hitdocksite != null)
             {
                 hitdocksite.IsHighlighted = true;
             }
+        }
+
+        private static DockSiteAdorner ResolveDockSiteAdorner(Point screenPoint, Window draggedwindow, out IntPtr ownerHandle)
+        {
+            ownerHandle = IntPtr.Zero;
+
+            DockSiteHitTestResult hitresult = DockManager.FindValidHitElement<DockSiteAdorner>(
+                screenPoint,
+                _ds => _ds.Visual != draggedwindow,
+                out DockSiteAdorner docksiteadorner,
+                out bool spflag
+            );
+
+            if (hitresult != null
+                && docksiteadorner != null)
+            {
+                ownerHandle = hitresult.DockSite.Handle;
+                return docksiteadorner;
+            }
+
+            if (DockManager.TryResolveTabHeaderFillAdorner(screenPoint, draggedwindow, out DockSiteAdorner stickyDockSiteAdorner, out DockAdornerWindow stickyAdornerWindow))
+            {
+                ownerHandle = stickyAdornerWindow.Handle;
+                return stickyDockSiteAdorner;
+            }
+
+            return null;
+        }
+
+        private static bool TryResolveTabHeaderFillAdorner(Point screenPoint, Window draggedwindow, out DockSiteAdorner docksiteadorner, out DockAdornerWindow adornerwindow)
+        {
+            docksiteadorner = null;
+            adornerwindow = null;
+
+            DockSiteHitTestResult hitresult = DockManager.FindValidHitElement<DockTarget>(
+                screenPoint,
+                _ds => _ds.Visual != draggedwindow
+                        && !(_ds.Visual is DockAdornerWindow),
+                out DockTarget dockTarget,
+                out bool spflag
+            );
+
+            if (hitresult == null
+                || dockTarget == null
+                || dockTarget.DockTargetType == DockTargetType.Outside)
+            {
+                return false;
+            }
+
+            TabGroupControl tabGroup = dockTarget.FindAncestor<TabGroupControl>();
+            if (tabGroup == null
+                || !DockManager.TryGetTabHeaderBounds(tabGroup, out Rect headerBounds)
+                || !headerBounds.Contains(screenPoint))
+            {
+                return false;
+            }
+
+            if (!DockManager.CurrentDraggedContext.Adorners.TryGetValue(dockTarget, out List<DockAdornerWindow> adornerWindows))
+            {
+                return false;
+            }
+
+            adornerwindow = adornerWindows.FirstOrDefault(_window => _window.DockTargetType == DockTargetType.Center);
+            if (adornerwindow == null)
+            {
+                return false;
+            }
+
+            docksiteadorner = DockManager.FindVisualDescendant<DockSiteAdorner>(
+                adornerwindow,
+                _adorner => _adorner.DockDirection == DockDirection.Fill);
+
+            return docksiteadorner != null;
+        }
+
+        private static bool TryGetTabHeaderBounds(TabGroupControl tabGroup, out Rect headerBounds)
+        {
+            headerBounds = default;
+
+            List<Rect> tabBounds = new List<Rect>();
+            for (int i = 0; i < tabGroup.Items.Count; i++)
+            {
+                if (!(tabGroup.ItemContainerGenerator.ContainerFromIndex(i) is TabGroupTabItem tabItem)
+                    || !tabItem.IsVisible
+                    || tabItem.ActualWidth <= 0
+                    || tabItem.ActualHeight <= 0)
+                {
+                    continue;
+                }
+
+                Point screenPoint = tabItem.PointToScreen(new Point(0.0, 0.0));
+                Size deviceSize = DpiHelper.LogicalToDeviceUnits(tabItem.RenderSize);
+                tabBounds.Add(new Rect(screenPoint, deviceSize));
+            }
+
+            if (tabBounds.Count == 0)
+            {
+                return false;
+            }
+
+            headerBounds = tabBounds[0];
+            for (int i = 1; i < tabBounds.Count; i++)
+            {
+                headerBounds.Union(tabBounds[i]);
+            }
+
+            return true;
+        }
+
+        private static T FindVisualDescendant<T>(DependencyObject parent, Func<T, bool> predicate = null) where T : DependencyObject
+        {
+            if (parent == null)
+            {
+                return null;
+            }
+
+            int childCount = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < childCount; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T target
+                    && (predicate == null || predicate(target)))
+                {
+                    return target;
+                }
+
+                T descendant = DockManager.FindVisualDescendant(child, predicate);
+                if (descendant != null)
+                {
+                    return descendant;
+                }
+            }
+
+            return null;
         }
 
         private static Rect GetDockPreviewRect(DockDirection dockDirection, FrameworkElement docktarget, TabGroupControl tabhost)
