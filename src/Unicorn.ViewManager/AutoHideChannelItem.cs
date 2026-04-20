@@ -76,7 +76,7 @@ namespace Unicorn.ViewManager
 
                     case System.Windows.Controls.Dock.Top:
                     case System.Windows.Controls.Dock.Bottom:
-                        if (this._autoHideWindow.Width.IsNonreal())
+                        if (this._autoHideWindow.Height.IsNonreal())
                         {
                             this._autoHideWindow.Height = 300;
                         }

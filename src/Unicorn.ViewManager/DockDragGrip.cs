@@ -99,6 +99,8 @@ namespace Unicorn.ViewManager
             set => this.SetValue(DockDragGrip.IsWindowTitleBarProperty, value);
         }
 
+        internal Point DragStartScreenPoint => this._originalScreenPoint;
+
 
         public object Element
         {

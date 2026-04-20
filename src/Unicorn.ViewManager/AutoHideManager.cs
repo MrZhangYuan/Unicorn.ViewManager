@@ -19,7 +19,7 @@ namespace Unicorn.ViewManager
 
         }
 
-        public static void Dock(DockSiteAdorner hitsite, TabGroupTabItem draggedtab)
+        public static void Dock(DockSiteAdorner hitsite, TabGroupTabItem draggedtab, double preferredLength = double.NaN)
         {
             var antohideroot = hitsite.AdornedDockTarget.FindAncestor<AutoHideRootControl>();
 
@@ -38,7 +38,7 @@ namespace Unicorn.ViewManager
                 case DockDirection.Top:
                 case DockDirection.Bottom:
                     {
-                        antohideroot.DockRoot.Dock(hitsite.DockDirection, draggedtab);
+                        antohideroot.DockRoot.Dock(hitsite.DockDirection, draggedtab, preferredLength);
                     }
                     break;
             }

@@ -54,42 +54,85 @@
                 Value="Stretch" />
         <Setter Property="VerticalContentAlignment"
                 Value="Stretch" />
+        <Setter Property="Foreground"
+                Value="#FF2D2D30" />
+        <Setter Property="FontWeight"
+                Value="Normal" />
         <Setter Property="TitleTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <Border Height="26"
-                            Background="#FF007ACC">
+                    <Border x:Name="ToolTitleBorder"
+                            Height="26"
+                            Background="#FFD9DEE5"
+                            BorderBrush="#FFB7C0CA"
+                            BorderThickness="0,0,0,1">
                         <DockPanel LastChildFill="True">
-                            <Button Height="20"
+                            <Button x:Name="ToolTitleCloseButton"
+                                    Height="20"
                                     Width="20"
                                     Background="Transparent"
                                     BorderThickness="0"
+                                    Foreground="#FF2D2D30"
                                     Content="x"
                                     Command="local:ViewCommands.CloseToolTab"
                                     CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:DockDragGrip},Path=Element}"
                                     DockPanel.Dock="Right"
                                     Margin="0,0,5,0" />
-                            <Button Height="20"
+                            <Button x:Name="ToolTitleHideButton"
+                                    Height="20"
                                     Width="20"
                                     Background="Transparent"
                                     BorderThickness="0"
+                                    Foreground="#FF2D2D30"
                                     Content="H"
                                     Command="local:ViewCommands.HideToolTabToAutoHide"
                                     CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:DockDragGrip},Path=Element}"
                                     DockPanel.Dock="Right"
                                     Margin="0,0,5,0" />
-                            <Button Height="20"
+                            <Button x:Name="ToolTitleUnHideButton"
+                                    Height="20"
                                     Width="20"
                                     Background="Transparent"
                                     BorderThickness="0"
+                                    Foreground="#FF2D2D30"
                                     Content="U"
                                     Command="local:ViewCommands.UnHideAutoHideToToolTab"
                                     CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:DockDragGrip},Path=Element}"
                                     DockPanel.Dock="Right"
                                     Margin="0,0,5,0" />
-                            <TextBlock  Text="{Binding}" />
+                            <TextBlock x:Name="ToolTitleText"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Foreground="#FF2D2D30"
+                                       Text="{Binding}" />
                         </DockPanel>
                     </Border>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=local:DockDragGrip},Path=Element.IsActive}"
+                                     Value="True">
+                            <Setter TargetName="ToolTitleBorder"
+                                    Property="Background"
+                                    Value="#FF007ACC" />
+                            <Setter TargetName="ToolTitleBorder"
+                                    Property="BorderBrush"
+                                    Value="#FF0A5F9E" />
+                            <Setter TargetName="ToolTitleText"
+                                    Property="Foreground"
+                                    Value="White" />
+                            <Setter TargetName="ToolTitleText"
+                                    Property="FontWeight"
+                                    Value="SemiBold" />
+                            <Setter TargetName="ToolTitleCloseButton"
+                                    Property="Foreground"
+                                    Value="White" />
+                            <Setter TargetName="ToolTitleHideButton"
+                                    Property="Foreground"
+                                    Value="White" />
+                            <Setter TargetName="ToolTitleUnHideButton"
+                                    Property="Foreground"
+                                    Value="White" />
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
                 </DataTemplate>
             </Setter.Value>
         </Setter>
@@ -99,7 +142,8 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <Border x:Name="_innerBd">
+                        <Border x:Name="_innerBd"
+                                Background="Transparent">
                             <Border Background="Transparent">
                                 <vm:DockDragGrip WindowChrome.IsHitTestVisibleInChrome="True">
                                     <DockPanel LastChildFill="True">
@@ -128,22 +172,45 @@
                                  Value="True">
                             <Setter TargetName="_innerBd"
                                     Property="Background"
-                                    Value="#FF319AFF" />
+                                    Value="#FFCAE4FB" />
                             <Setter Property="TextBlock.Foreground"
-                                    Value="White" />
+                                    Value="#FF10385D" />
                             <Setter TargetName="_closeBt"
                                     Property="Visibility"
                                     Value="Visible" />
                         </Trigger>
 
-                        <Trigger Property="IsSelected"
-                                 Value="True">
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected"
+                                           Value="True" />
+                                <Condition Property="IsActive"
+                                           Value="True" />
+                            </MultiTrigger.Conditions>
                             <Setter TargetName="_innerBd"
                                     Property="Background"
                                     Value="#FF007ACC" />
                             <Setter Property="TextBlock.Foreground"
                                     Value="White" />
-                        </Trigger>
+                            <Setter Property="FontWeight"
+                                    Value="SemiBold" />
+                        </MultiTrigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected"
+                                           Value="True" />
+                                <Condition Property="IsActive"
+                                           Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="_innerBd"
+                                    Property="Background"
+                                    Value="#FFD8DDE5" />
+                            <Setter Property="TextBlock.Foreground"
+                                    Value="#FF2D2D30" />
+                            <Setter Property="FontWeight"
+                                    Value="Normal" />
+                        </MultiTrigger>
 
                         <!--<Trigger Property="IsFocused"
                                  Value="False">

@@ -102,7 +102,18 @@ namespace Unicorn.ViewManager
 
         public void Active()
         {
+            if (this.ParentHost != null)
+            {
+                if (!ReferenceEquals(this.ParentHost.SelectedItem, this))
+                {
+                    this.ParentHost.SelectedItem = this;
+                }
 
+                ViewManager.Instance.NotifyTabSelection(this.ParentHost, this);
+                return;
+            }
+
+            ViewManager.Instance.SetActiveTab(this);
         }
 
         public void ShowFloating()

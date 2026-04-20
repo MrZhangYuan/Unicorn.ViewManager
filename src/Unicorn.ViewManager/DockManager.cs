@@ -206,7 +206,7 @@ namespace Unicorn.ViewManager
                 if (Math.Abs(DockManager.CurrentDraggedContext.DragStartPoint.X - e.ScreenPoint.X) >= 10
                     || Math.Abs(DockManager.CurrentDraggedContext.DragStartPoint.Y - e.ScreenPoint.Y) >= 10)
                 {
-                    DockManager.DragFloating(dragGrip);
+                    DockManager.DragFloating(dragGrip, e.ScreenPoint);
                 }
             }
             else
@@ -235,6 +235,7 @@ namespace Unicorn.ViewManager
                 var draggedtab = (TabGroupTabItem)currentcontext.DockDragGrip.Element ?? currentcontext.DockDragGrip.FindAncestor<TabGroupTabItem>();
                 var originalParentHost = draggedtab?.ParentHost;
                 int originalIndex = originalParentHost?.Items.IndexOf(draggedtab) ?? -1;
+                double preferredDockLength = DockLayoutHelper.GetPreferredDockLength(originalParentHost, currentcontext.HitDockSiteAdorner.DockDirection);
 
                 if (draggedtab?.ParentHost != null)
                 {
@@ -292,7 +293,7 @@ namespace Unicorn.ViewManager
                             //停靠外侧，去找相应的AutoHideChannel
                             if (currentcontext.HitDockSiteAdorner.AdornedDockTarget.DockTargetType == DockTargetType.Outside)
                             {
-                                AutoHideManager.Dock(currentcontext.HitDockSiteAdorner, draggedtab);
+                                AutoHideManager.Dock(currentcontext.HitDockSiteAdorner, draggedtab, preferredDockLength);
                             }
                             else
                             {
@@ -319,6 +320,7 @@ namespace Unicorn.ViewManager
                                                         {
                                                             TabGroupControl newtab = tabtarget.CreateTabGroup();
                                                             newtab.Dock(draggedtab);
+                                                            DockLayoutHelper.ApplyPreferredDockLength(targetdock, newtab, Orientation.Horizontal, preferredDockLength);
                                                             targetdock.Items.Insert(index, newtab);
                                                         }
                                                         break;
@@ -344,6 +346,7 @@ namespace Unicorn.ViewManager
                                                                 newgroup.Items.Add(newtab);
                                                             }
 
+                                                            DockLayoutHelper.ApplyPreferredDockLength(newgroup, newtab, Orientation.Vertical, preferredDockLength);
                                                             targetdock.Items.Insert(index, newgroup);
                                                         }
                                                         break;
@@ -378,6 +381,7 @@ namespace Unicorn.ViewManager
                                                                 newgroup.Items.Add(newtab);
                                                             }
 
+                                                            DockLayoutHelper.ApplyPreferredDockLength(newgroup, newtab, Orientation.Horizontal, preferredDockLength);
                                                             targetdock.Items.Insert(index, newgroup);
                                                         }
                                                         break;
@@ -388,6 +392,7 @@ namespace Unicorn.ViewManager
                                                         {
                                                             TabGroupControl newtab = tabtarget.CreateTabGroup();
                                                             newtab.Dock(draggedtab);
+                                                            DockLayoutHelper.ApplyPreferredDockLength(targetdock, newtab, Orientation.Vertical, preferredDockLength);
                                                             targetdock.Items.Insert(index, newtab);
                                                         }
                                                         break;
@@ -438,6 +443,7 @@ namespace Unicorn.ViewManager
                                                             case DockDirection.Left:
                                                             case DockDirection.Right:
                                                                 {
+                                                                    DockLayoutHelper.ApplyPreferredDockLength(parentdock, newtab, Orientation.Horizontal, preferredDockLength);
                                                                     parentdock.Items.Insert(index, newtab);
                                                                 }
                                                                 break;
@@ -460,6 +466,7 @@ namespace Unicorn.ViewManager
                                                                         newgroup.Items.Add(newtab);
                                                                     }
 
+                                                                    DockLayoutHelper.ApplyPreferredDockLength(newgroup, newtab, Orientation.Vertical, preferredDockLength);
                                                                     parentdock.Items.Insert(index, newgroup);
                                                                 }
                                                                 break;
@@ -491,6 +498,7 @@ namespace Unicorn.ViewManager
                                                                         newgroup.Items.Add(newtab);
                                                                     }
 
+                                                                    DockLayoutHelper.ApplyPreferredDockLength(newgroup, newtab, Orientation.Horizontal, preferredDockLength);
                                                                     parentdock.Items.Insert(index, newgroup);
                                                                 }
                                                                 break;
@@ -498,6 +506,7 @@ namespace Unicorn.ViewManager
                                                             case DockDirection.Top:
                                                             case DockDirection.Bottom:
                                                                 {
+                                                                    DockLayoutHelper.ApplyPreferredDockLength(parentdock, newtab, Orientation.Vertical, preferredDockLength);
                                                                     parentdock.Items.Insert(index, newtab);
                                                                 }
                                                                 break;
@@ -526,13 +535,13 @@ namespace Unicorn.ViewManager
                                         else
                                         {
                                             var dockroot = currentcontext.HitDockSiteAdorner.AdornedDockTarget.FindAncestor<DockRootControl>();
-                                            dockroot?.Dock(currentcontext.HitDockSiteAdorner.DockDirection, draggedtab);
+                                            dockroot?.Dock(currentcontext.HitDockSiteAdorner.DockDirection, draggedtab, preferredDockLength);
                                         }
                                     }
                                     else
                                     {
                                         var dockroot = currentcontext.HitDockSiteAdorner.AdornedDockTarget.FindAncestor<DockRootControl>();
-                                        dockroot?.Dock(currentcontext.HitDockSiteAdorner.DockDirection, draggedtab);
+                                        dockroot?.Dock(currentcontext.HitDockSiteAdorner.DockDirection, draggedtab, preferredDockLength);
                                     }
                                 }
                             }
@@ -548,7 +557,7 @@ namespace Unicorn.ViewManager
 
 
 
-        public static void DragFloating(DockDragGrip draggrip)
+        public static void DragFloating(DockDragGrip draggrip, Point currentScreenPoint)
         {
             TabGroupTabItem draggedtab = (TabGroupTabItem)draggrip.Element ?? draggrip.FindAncestor<TabGroupTabItem>();
 
@@ -558,22 +567,20 @@ namespace Unicorn.ViewManager
                 draggrip.CancelDrag();
 
                 TabGroupControl host = draggedtab.ParentHost;
-
-                //var undockedrect = new Rect(draggedtab.PointToScreen(new Point(0.0, 0.0)), DpiHelper.LogicalToDeviceUnits(host != null ? host.RenderSize : new Size(300, 300)));
-
-                var undockedrect = new Rect(
-                        host != null ? host.PointToScreen(new Point(0.0, 0.0)) : draggedtab.PointToScreen(new Point(0.0, 0.0)),
-                        DpiHelper.LogicalToDeviceUnits(host != null ? host.RenderSize : new Size(300, 300))
-                    );
+                Point anchorPointInGrip = draggrip.PointFromScreen(draggrip.DragStartScreenPoint);
+                Size floatingSize = host != null && host.RenderSize.Width > 0.0 && host.RenderSize.Height > 0.0
+                    ? host.RenderSize
+                    : new Size(300.0, 300.0);
+                Point initialWindowLocation = DpiHelper.DeviceToLogicalUnits(currentScreenPoint);
 
                 draggedtab.UnDock();
 
                 FloatingWindow floatwindow = new FloatingWindow()
                 {
-                    Top = undockedrect.Y,
-                    Left = undockedrect.X,
-                    Height = undockedrect.Height,
-                    Width = undockedrect.Width
+                    Top = initialWindowLocation.Y,
+                    Left = initialWindowLocation.X,
+                    Height = floatingSize.Height,
+                    Width = floatingSize.Width
                 };
 
                 DockGroupControl dockgroup = new DockGroupControl();
@@ -582,9 +589,30 @@ namespace Unicorn.ViewManager
                 tabgroup.Dock(draggedtab);
                 floatwindow.Content = dockgroup;
                 floatwindow.Show();
+                floatwindow.UpdateLayout();
+                DockManager.AlignFloatingWindowDragAnchor(floatwindow, draggrip, anchorPointInGrip, currentScreenPoint);
                 floatwindow.Activate();
                 floatwindow.DragMove();
             }
+        }
+
+        private static void AlignFloatingWindowDragAnchor(Window floatingWindow, DockDragGrip draggrip, Point anchorPointInGrip, Point currentScreenPoint)
+        {
+            if (floatingWindow == null
+                || draggrip == null
+                || !draggrip.IsConnectedToPresentationSource())
+            {
+                return;
+            }
+
+            Rect floatingRect = DpiHelper.GetDeviceRect(floatingWindow);
+            Point anchorScreenPoint = draggrip.PointToScreen(anchorPointInGrip);
+            Vector anchorOffset = Point.Subtract(anchorScreenPoint, floatingRect.Location);
+            Point desiredWindowDevicePoint = Point.Subtract(currentScreenPoint, anchorOffset);
+            Point desiredWindowLogicalPoint = DpiHelper.DeviceToLogicalUnits(desiredWindowDevicePoint);
+
+            floatingWindow.Left = desiredWindowLogicalPoint.X;
+            floatingWindow.Top = desiredWindowLogicalPoint.Y;
         }
 
         private static TabGroupControl CreateDockGroupTabGroup(DockGroupControl dockgroup)
@@ -788,12 +816,14 @@ namespace Unicorn.ViewManager
                 && adornerwindow != null
                 && adornerwindow.AdornedElement != null)
             {
+                double preferredDockLength = DockLayoutHelper.GetPreferredDockLength(draggedTabItem?.ParentHost, docksiteadorner.DockDirection);
                 SetupDockPreviewArgs previewargs = new SetupDockPreviewArgs
                 {
                     previewRect = DockManager.GetDockPreviewRect(
                                                     docksiteadorner.DockDirection,
                                                     adornerwindow.AdornedElement,
-                                                    draggrip.FindAncestor<TabGroupControl>()
+                                                    draggrip.FindAncestor<TabGroupControl>(),
+                                                    preferredDockLength
                                                 ),
                     dockTargetType = adornerwindow.DockTargetType,
                     screenPoint = e.ScreenPoint,
@@ -973,7 +1003,7 @@ namespace Unicorn.ViewManager
             return null;
         }
 
-        private static Rect GetDockPreviewRect(DockDirection dockDirection, FrameworkElement docktarget, TabGroupControl tabhost)
+        private static Rect GetDockPreviewRect(DockDirection dockDirection, FrameworkElement docktarget, TabGroupControl tabhost, double preferredDockLength)
         {
             Orientation orientation = Orientation.Horizontal;
             switch (dockDirection)
@@ -996,11 +1026,11 @@ namespace Unicorn.ViewManager
                 {
                     if (orientation == panel.Orientation)
                     {
-                        return PreviewDockSameOrientation(dockDirection, panel, docktarget, tabhost, orientation);
+                        return PreviewDockSameOrientation(dockDirection, panel, docktarget, orientation, preferredDockLength);
                     }
                 }
                 //非Fill情况下 分半屏
-                return PreviewDockCounterOrientation(dockDirection, docktarget, orientation);
+                return PreviewDockCounterOrientation(dockDirection, docktarget, orientation, preferredDockLength);
             }
 
             return PreviewDockFill(docktarget);
@@ -1009,8 +1039,8 @@ namespace Unicorn.ViewManager
         private static Rect PreviewDockSameOrientation(DockDirection dockDirection,
             SplitterPanel targetpanel,
             FrameworkElement docktarget,
-            TabGroupControl tabhost,
-            Orientation orientation)
+            Orientation orientation,
+            double preferredDockLength)
         {
             //找到父SplitterPanel 和 停靠目标 SplitterItem 的索引位置
             int originalIndex = -1;
@@ -1026,29 +1056,30 @@ namespace Unicorn.ViewManager
                 originalIndex++;
             }
 
-            double length = 0;
-            switch (dockDirection)
+            List<UIElement> templist = new List<UIElement>();
+            foreach (UIElement child in targetpanel.Children)
             {
-                case DockDirection.Left:
-                case DockDirection.Right:
-                    length = targetpanel.ActualWidth / (targetpanel.ActualWidth + tabhost.ActualWidth) * tabhost.ActualWidth;
-                    break;
+                SplitterItem proxy = new SplitterItem();
+                double currentLength = DockLayoutHelper.GetCurrentSplitterLength(child, orientation);
+                if (!currentLength.IsNonreal()
+                    && currentLength > 0.0)
+                {
+                    SplitterPanel.SetSplitterLength(proxy, new SplitterLength(currentLength));
+                }
 
-                case DockDirection.Top:
-                case DockDirection.Bottom:
-                    length = targetpanel.ActualHeight / (targetpanel.ActualHeight + tabhost.ActualHeight) * tabhost.ActualHeight;
-                    break;
+                SplitterPanel.SetMinimumLength(proxy, SplitterPanel.GetMinimumLength(child));
+                SplitterPanel.SetMaximumLength(proxy, SplitterPanel.GetMaximumLength(child));
+                templist.Add(proxy);
             }
 
             Size spacesize = new Size(targetpanel.ActualWidth, targetpanel.ActualHeight);
 
-            //SplitterLength previewlength = new SplitterLength(length);
             SplitterItem drageditem = new SplitterItem();
-            double maxlength = (orientation == Orientation.Horizontal) ? (spacesize.Width / 2.0) : (spacesize.Height / 2.0);
-            SplitterPanel.SetMaximumLength(drageditem, maxlength);
-            SplitterPanel.SetActualSplitterLength(drageditem, length);
-
-            List<UIElement> templist = targetpanel.Children.Cast<UIElement>().ToList();
+            if (!preferredDockLength.IsNonreal()
+                && preferredDockLength > 0.0)
+            {
+                SplitterPanel.SetSplitterLength(drageditem, new SplitterLength(preferredDockLength));
+            }
             templist.Insert(originalIndex, drageditem);
 
             Point point = targetpanel.PointToScreen(new Point(0.0, 0.0));
@@ -1062,11 +1093,24 @@ namespace Unicorn.ViewManager
 
         private static Rect PreviewDockCounterOrientation(DockDirection dockDirection,
             FrameworkElement docktarget,
-            Orientation orientation)
+            Orientation orientation,
+            double preferredDockLength)
         {
             List<UIElement> templist = new List<UIElement>();
             SplitterItem drageditem = new SplitterItem();
             SplitterItem targetitem = new SplitterItem();
+            double currentLength = DockLayoutHelper.GetCurrentSplitterLength(docktarget, orientation);
+            if (!currentLength.IsNonreal()
+                && currentLength > 0.0)
+            {
+                SplitterPanel.SetSplitterLength(targetitem, new SplitterLength(currentLength));
+            }
+
+            if (!preferredDockLength.IsNonreal()
+                && preferredDockLength > 0.0)
+            {
+                SplitterPanel.SetSplitterLength(drageditem, new SplitterLength(preferredDockLength));
+            }
 
             templist.Add(targetitem);
             int index = 0;
@@ -1078,9 +1122,6 @@ namespace Unicorn.ViewManager
             templist.Insert(index, drageditem);
 
             Size spacesize = new Size(docktarget.ActualWidth, docktarget.ActualHeight);
-
-            double length = (orientation == Orientation.Horizontal) ? (spacesize.Width / 2.0) : (spacesize.Height / 2.0);
-            SplitterPanel.SetMaximumLength(drageditem, length);
 
             //默认均分
             //SplitterLength previewlength = new SplitterLength(length);

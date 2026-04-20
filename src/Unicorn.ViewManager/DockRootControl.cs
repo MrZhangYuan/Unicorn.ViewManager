@@ -47,7 +47,7 @@ namespace Unicorn.ViewManager
         }
 
 
-        public void Dock(DockDirection direction, TabGroupTabItem draggedtab)
+        public void Dock(DockDirection direction, TabGroupTabItem draggedtab, double preferredLength = double.NaN)
         {
             this.EnsureInitDockGroup();
 
@@ -107,6 +107,7 @@ namespace Unicorn.ViewManager
                                             {
                                                 ToolTabGroupControl newtab = new ToolTabGroupControl();
                                                 newtab.Dock(draggedtab);
+                                                DockLayoutHelper.ApplyPreferredDockLength(this.DockGroup, newtab, Orientation.Horizontal, preferredLength);
                                                 if (direction == DockDirection.Left)
                                                 {
                                                     this.DockGroup.Items.Insert(0, newtab);
@@ -141,6 +142,7 @@ namespace Unicorn.ViewManager
                                                     newgroup.Items.Add(newtab);
                                                 }
 
+                                                DockLayoutHelper.ApplyPreferredDockLength(newgroup, newtab, Orientation.Vertical, preferredLength);
                                                 this.DockGroup = newgroup;
                                             }
                                             break;
@@ -176,6 +178,7 @@ namespace Unicorn.ViewManager
                                                     newgroup.Items.Add(newtab);
                                                 }
 
+                                                DockLayoutHelper.ApplyPreferredDockLength(newgroup, newtab, Orientation.Horizontal, preferredLength);
                                                 this.DockGroup = newgroup;
                                             }
                                             break;
@@ -186,6 +189,7 @@ namespace Unicorn.ViewManager
                                             {
                                                 ToolTabGroupControl newtab = new ToolTabGroupControl();
                                                 newtab.Dock(draggedtab);
+                                                DockLayoutHelper.ApplyPreferredDockLength(this.DockGroup, newtab, Orientation.Vertical, preferredLength);
 
                                                 if (direction == DockDirection.Top)
                                                 {
